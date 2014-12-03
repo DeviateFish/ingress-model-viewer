@@ -1,0 +1,16 @@
+{
+  "name": "ingress-model-viewer",
+  "version": "0.8.0",
+  "main": "dist/ingress-model-viewer.min.js",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "src"
+  ],
+  "dependencies": {
+    "java-deserializer": "git@github.com:DeviateFish/java-deserializer.git#~0.1.0"
+  },
+  "private": true
+}

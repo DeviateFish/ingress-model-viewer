@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ingress Model Sandbox</title>
+    <script src="three.min.js"></script>
+    <script src="java-deserializer.js"></script>
+    <script src="ingress-model-viewer.js"></script>   
+</head>
+<body>
+<canvas id="screen" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;"></canvas>
+<div style="width: 100%; text-align: center; color: #ccc; position: fixed; top: 0;height: 50px; line-height: 50px"
+     id="controls"></div>
+<script type="text/javascript">
+    var imv = window.IMV;
+    var controls = document.getElementById('controls'), canvas = document.getElementById('screen');
+    var camControls = new imv.Controls.OrbitControls(canvas, 25, {distanceMax: 150, target: new THREE.Vector3(0, 0, 0)});
+    var w = window.innerWidth, h = window.innerHeight;
+    var engine = new imv.Engine(canvas, {cameraOptions: {aspect: w / h, far: 500}});
+    var helper = new THREE.AxisHelper(10);
+
+    var loader = new imv.AssetManager('/assets/');
+
+    window.addEventListener('resize', function()
+    {
+        w = window.innerWidth, h = window.innerHeight;
+        engine.camera.aspect = w / h;
+        engine.camera.updateProjectionMatrix();
+        engine.renderer.setSize(w, h);
+    });
+
+    engine.renderer.setSize(w, h);
+    engine.scene.add(helper);
+    engine.registerPeriodic(function()
+    {
+        camControls.updateCamera(engine.camera);
+    });
+
+    var updateNormals = function(tick)
+    {
+        var inc = tick / 300,
+          inc2 = inc * 0.05;
+        engine.getUniform('u_elapsedTime').value = (inc % 300) / 2.0;
+        engine.getUniform('u_rotation').value = inc;
+        engine.getUniform('u_rampTarget').value = Math.sin(Math.PI / 2 * (inc - Math.floor(inc)));
+        engine.getUniform('u_rampTargetInvWidth').value.x = 1.5 - (inc - Math.floor(inc)) * 2.0;
+        var s = inc * 2 * Math.PI;
+        engine.getUniform('u_baseColor').value.set(
+                Math.sin(s) * 0.5 + 0.5,
+                Math.sin(s + 2 * Math.PI / 3) * 0.5 + 0.5,
+                Math.sin(s + 4 * Math.PI / 3) * 0.5 + 0.5,
+                Math.sin(inc) * 0.25 + 0.75);
+        engine.getUniform('u_texCoordOffset0').value.set(inc2 * -0.25, -0.15 * inc2);
+        engine.getUniform('u_texCoordOffset1').value.set(inc2, inc2);
+    };
+    engine.registerPeriodic(updateNormals);
+
+    var Entity = function(assetManager, assets, constr)
+    {
+        var _assets = assets;
+        var _keys = Object.keys(assets);
+        var _models = {};
+        var _loader = assetManager;
+        var _loaded = false;
+
+        var ent = function(engine)
+        {
+            if(!_loaded)
+            {
+                throw 'Assets not loaded';
+            }
+            this._models = {};
+            this._engine = engine;
+            var args = Array.prototype.slice.call(arguments, 1);
+            constr.apply(this, args);
+        };
+
+        ent.getAssets = function()
+        {
+            return _assets;
+        };
+
+        ent.getModels = function()
+        {
+            if(!_loaded)
+            {
+                throw 'Assets not loaded';
+            }
+            return _models;
+        };
+
+        ent.load = function(callback)
+        {
+            if(_loaded)
+            {
+                callback(null);
+                return;
+            }
+            var l = _keys.length, c = new Array(l);
+            var d = function()
+            {
+                var t = true;
+                for(var i = 0; i < l; i++)
+                {
+                    t = t && c[i];
+                }
+                if(t)
+                {
+                    _loaded = true;
+                    callback(null);
+                }
+            };
+            var f = function(err)
+            {
+                callback(err);
+            };
+            for(var i = 0; i < l; i++)
+            {
+                (function(k, x)
+                {
+                    c[x] = false;
+                    _loader.loadModel(_assets[k], function(err, m)
+                    {
+                        if(err)
+                        {
+                            f(err);
+                        }
+                        else
+                        {
+                            c[x] = true;
+                            _models[k] = m;
+                            d();
+                        }
+                    });
+                }(_keys[i], i));
+            }
+        };
+
+        ent.prototype.forEach = function(fn, _this)
+        {
+            for(var i in this._models)
+            {
+                if(this._models.hasOwnProperty(i))
+                {
+                    fn.call(_this, this._models[i]);
+                }
+            }
+        };
+
+        ent.prototype.add = function()
+        {
+            this.forEach(this._engine.addModel, this._engine);
+        };
+        ent.prototype.remove = function()
+        {
+            this.forEach(this._engine.removeModel, this._engine);
+        };
+        ent.prototype.setPosition = function(x, y, z)
+        {
+            this.forEach(function(m)
+            {
+                m.mesh.position.set(x, y, z);
+                m.mesh.updateMatrix();
+            }, this);
+        };
+
+        ent.prototype.cloneModels = function()
+        {
+            if(!_loaded)
+            {
+                throw 'Assets not loaded';
+            }
+            for(var i in _models)
+            {
+                if(_models.hasOwnProperty(i))
+                {
+                    this._models[i] = _models[i].clone();
+                }
+            }
+        };
+
+        return ent;
+    };
+
+    var Portal = Entity(
+            loader,
+            {
+                'Portal': {model: 'TexturedPortalMesh', texture: 'GlowrampTexture', shaders: 'portal_scanner'},
+                'Resonator': {
+                    model: 'ResonatorUnitLowResMesh',
+                    texture: 'FlipCardTexture',
+                    shaders: 'bicolor_textured'
+                },
+                'ShieldEffect': {model: 'PortalShieldMesh', texture: 'PortalShieldTexture', shaders: 'shield' },
+                // this one is a dummy to load the proper texture only.
+                'ResonatorLink': { model: 'SingleResonatorMesh', texture: 'ResonatorLinkTexture', shaders: 'textured' },
+                // same here:
+                'PortalLink': { model: 'SingleResonatorMesh', texture: 'PortalLinkTexture', shaders: 'textured' }
+            },
+            function(team)
+            {
+                var m = Portal.getModels();
+                this._models.Portal = m.Portal.clone();
+                this._models.Portal.mesh.scale.set(6.0, 6.0, 6.0);
+                this._models.Portal.mesh.updateMatrix();
+                this._models.ResonatorLinks = new imv.Model(new imv.Geometry.ResonatorLinkGeometry(), m.ResonatorLink.texture.clone(), loader.getRawShader('LinkShader'));
+                this._models.PortalLinks = new imv.Model(new imv.Geometry.PortalLinkGeometry(), m.PortalLink.texture.clone(), loader.getRawShader('LinkShader'));
+                if(team in imv.Constants.teamColors)
+                {
+                    this._models.Portal.setUniform('u_baseColor',
+                            {type: "v4", value: imv.Constants.teamColors[team].clone()});
+                    this.teamColor = imv.Constants.teamColors[team].clone();
+                }
+                else
+                {
+                    this.teamColor = this._engine.getUniform('u_baseColor').value.clone();
+                }
+            }
+    );
+    Portal.prototype.addResonator = function(slot, level, dist)
+    {
+        level = +level;
+        slot = +slot;
+        if(level < 1 || level > 8)
+        {
+            throw 'Invalid level: ' + level;
+        }
+        if(slot < 0 || slot > 7)
+        {
+            throw 'Invalid slot: ' + slot;
+        }
+        var m = Portal.getModels();
+        var r = m.Resonator.clone();
+        var a = slot * Math.PI / 4;
+        if(this._models['Resonator' + slot])
+        {
+            this._engine.removeModel(this._models['Resonator' + slot]);
+            delete this._models['Resonator' + slot];
+        }
+        //r.mesh.scale.set(6.0, 6.0, 6.0);
+        r.mesh.position.set(dist * Math.sin(a), 0, dist * Math.cos(a));
+        r.mesh.updateMatrix();
+        r.mesh.matrix.multiply(this._models.Portal.mesh.matrix);
+        r.setUniform('u_color0', {type: "v4", value: imv.Constants.qualityColors['L' + level].clone()});
+        //r.mesh.updateMatrixWorld();
+        this._models['Resonator' + slot] = r;
+        this._models.ResonatorLinks.mesh.position.copy(this._models.Portal.mesh.position);
+        this._models.ResonatorLinks.mesh.updateMatrix();
+        this._models.ResonatorLinks.geometry.addLink(
+            {x: 0, y: 0, percent: 1.0},
+            {x: dist * Math.sin(a), y: dist * Math.cos(a), percent: 1.0},
+            this.teamColor
+        );
+        this.add();
+    };
+    Portal.prototype.addLink = function(x, y, percent)
+    {
+        this._models.PortalLinks.geometry.addLink(
+            {x: 0, y: 0, percent: 1.0},
+            {x: x, y: y, percent: percent},
+            this.teamColor
+        );
+        this.add();
+    };
+    Portal.prototype.addShield = function()
+    {
+        if(this._models.Shield)
+        {
+            this._engine.removeModel(this._models.Shield);
+            delete this._models['Shield'];
+        }
+        var m = Portal.getModels();
+        var r = m.ShieldEffect.clone();
+        r.mesh.scale.set(12.0, 12.0, 12.0);
+        r.mesh.position.copy(this._models.Portal.mesh.position);
+        r.mesh.updateMatrix();
+        r.setUniform('u_color', this._models.Portal.uniforms.u_baseColor);
+        this._models.Shield = r;
+        this.add();
+    };
+
+    var createGenericEntity = function(name, caps)
+    {
+        var assets = {};
+        assets[name] = {model: name + 'Mesh', texture: 'FlipCardTexture', shaders: 'bicolor_textured'};
+        assets[name + 'XM'] = {
+            model: name + 'X' + (caps ? 'M' : 'm') + 'Mesh',
+            texture: 'ObjectXMTexture',
+            shaders: 'xm'
+        };
+        return Entity(
+                loader,
+                assets,
+                function()
+                {
+                    this.cloneModels();
+                }
+        );
+    };
+
+    var generics = {
+        'HeatSink': false,
+        'MultiHack': false,
+        'Resonator': true,
+        'Turret': false,
+        'ForceAmp': false,
+        'LinkAmp': false,
+        'ResShield': true,
+        'Xmp': true,
+        'Ultrastrike': true,
+        'Capsule': false,
+        'ExtraShield': true
+    };
+    var assets = null;
+    var lastModel = null;
+    var entities = {
+        'Portal': Portal
+    };
+    for(var i in generics)
+    {
+        if(generics.hasOwnProperty(i))
+        {
+            entities[i] = createGenericEntity(i, generics[i]);
+        }
+    }
+
+    // create the select for the models:
+    var container = document.createElement('div');
+    container.style.display = 'inline-block';
+    container.style.padding = '0px 10px';
+    var label = document.createElement('label');
+    label.for = 'models-id';
+    label.innerHTML = 'Models: ';
+    container.appendChild(label);
+    var select = document.createElement('select');
+    select.id = 'models-id';
+    container.appendChild(select);
+    var add = document.createElement('button');
+    add.id = 'model-add-id';
+    add.innerHTML = 'Add';
+    add.onclick = function()
+    {
+        var c = entities[select.value];
+        if(c)
+        {
+            console.log('adding ' + select.value);
+            lastModel = new c(engine);
+            //lastModel.setPosition((Math.random() * 2 - 1) * spread, 0.0, (Math.random() * 2 - 1) * spread);
+            lastModel.add();
+        }
+    };
+    container.appendChild(add);
+    controls.appendChild(container);
+
+    var handleAssets = function(list)
+    {
+        assets = list;
+        loader.setAssets(list);
+        var loading = true;
+        var prog = loader.preloadAssets(function()
+        {
+            loading = false;
+            var i = 0, j = Object.keys(entities), n = j.length;
+            var next = function()
+            {
+                if(i < n)
+                {
+                    var m = j[i++];
+                    entities[m].load(function(err)
+                    {
+                        if(err)
+                        {
+                            console.log(err);
+                        }
+                        else
+                        {
+                            var opt = document.createElement('option');
+                            opt.value = m;
+                            opt.innerHTML = m;
+                            select.appendChild(opt);
+                        }
+                        setTimeout(next, 0);
+                    });
+                }
+                else
+                {
+                    console.log('done');
+                }
+            };
+            setTimeout(next, 0);
+        });
+        var progress = function()
+        {
+            if(loading) setTimeout(progress, 100);
+            console.info('preloading: ' + Math.round(prog() * 100) + '%');
+        };
+        setTimeout(progress, 100);
+    };
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/assets.json');
+    xhr.responseType = 'text';
+    xhr.onload = function(e)
+    {
+        try
+        {
+            var a = JSON.parse(e.target.responseText);
+            if(typeof(a) == 'object')
+            {
+                handleAssets(a);
+            }
+        }
+        catch(e)
+        {
+            console.error('unable to open or parse assets' + e.toString());
+        }
+    };
+    xhr.onerror = function(e)
+    {
+        console.log(e);
+    };
+
+    xhr.send();
+</script>
+</body>
+</html>
