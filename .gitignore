@@ -5,7 +5,7 @@ tmp/
 logs/
 log/
 results/
-assets*
+assets
 
 *.seed
 *.log

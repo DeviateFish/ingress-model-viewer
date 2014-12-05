@@ -1652,7 +1652,8 @@ var IMV = (function(JavaDeserializer, THREE){
       precision: this.options.shaderPrecision,
       premultipliedAlpha: this.options.premultipliedAlpha,
       alpha: this.options.alpha,
-      preserveDrawingBuffer: this.options.preserveDrawingBuffer
+      preserveDrawingBuffer: this.options.preserveDrawingBuffer,
+      antialias: true
     });
     //this.renderer.sortObjects = false;
 
