@@ -6,11 +6,13 @@ module.exports = function(grunt) {
 
     concat: {
       options: {
-        separator: "\n\n"
+        separator: "\n\n",
+        sourceMap: true
       },
       dist: {
         src: [
           'src/_intro.js',
+          'src/polyfill.js',
           'src/main.js',
           'src/_outro.js'
         ],
@@ -20,7 +22,8 @@ module.exports = function(grunt) {
 
     uglify: {
       options: {
-        banner: '/*! <%= pkg.name.replace(".js", "") %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
+        banner: '/*! <%= pkg.name.replace(".js", "") %> <%= grunt.template.today("dd-mm-yyyy") %> */\n',
+        sourceMap: true
       },
       dist: {
         files: {
@@ -30,7 +33,13 @@ module.exports = function(grunt) {
     },
 
     qunit: {
-      files: ['test/*.html']
+      all: {
+        options: {
+          urls: [
+            'http://localhost:8082/test/all.html'
+          ]
+        }
+      }
     },
 
     jshint: {

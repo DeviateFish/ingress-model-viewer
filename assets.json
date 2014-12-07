@@ -4,7 +4,7 @@
         "PortalKeyResourceUnitTexture": { "path": "scanner/portalKeyResourceUnitTexture.png", "minFilter": "MipMapLinearLinear", "magFilter": "Linear", "wrapS": "ClampToEdge", "wrapT": "ClampToEdge" },
         "MediaCubeTexture": { "path": "scanner/mediaCubeTexture.png", "minFilter": "Linear", "magFilter": "Linear", "wrapS": "ClampToEdge", "wrapT": "ClampToEdge" },
         "FlipCardTexture": { "path": "scanner/genericModTexture.png", "minFilter": "Linear", "magFilter": "Linear", "wrapS": "ClampToEdge", "wrapT": "ClampToEdge" },
-        "ObjectXMTexture": { "path": "scanner/objectXMTexture.png", "minFilter": "MipMapLinearLinear", "magFilter": "Linear", "wrapS": "Repeat", "wrapT": "Repeat" },
+        "ObjectXMTexture": { "path": "scanner/objectXMTexture.tga", "minFilter": "MipMapLinearLinear", "magFilter": "Linear", "wrapS": "Repeat", "wrapT": "Repeat" },
         "GlowrampTexture": { "path": "scanner/portalTexture.png", "minFilter": "MipMapLinearNearest", "magFilter": "Linear", "wrapS": "Repeat", "wrapT": "Repeat" },
         "FtWaypointTexture": { "path": "scanner/ftTexture.png", "minFilter": "MipMapLinearNearest", "magFilter": "Linear", "wrapS": "Repeat", "wrapT": "Repeat" },
         "PortalShieldTexture": { "path": "scanner/portalShieldMod.png", "minFilter": "MipMapLinearLinear", "magFilter": "Linear", "wrapS": "Repeat", "wrapT": "Repeat" },

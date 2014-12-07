@@ -1,14 +1,15 @@
 {
-    "node": true,
-    "camelcase": true,
+    "browser": true,
+    "camelcase": false,
     "curly": true,
     "immed": true,
     "latedef": true,
-    "newcap": true,
+    "newcap": false,
     "noarg": true,
     "undef": true,
     "unused": true,
     "strict": true,
     "trailing": true,
-    "smarttabs": true
+    "smarttabs": true,
+    "predef": ["THREE", "JavaDeserializer", "libtga"]
 }
