@@ -1188,9 +1188,23 @@ var ShaderSet = (function(){
     return attributes;
   };
 
+  var fixPrecision = function(shader)
+  {
+    if(/precision mediump float/g.test(shader))
+    {
+      return shader;
+    }
+    else
+    {
+      var lines = shader.split("\n");
+      lines.splice(1, 0, "#ifdef GL_ES", "precision mediump float;", "#endif");
+      return lines.join("\n");
+    }
+  };
+
   var shaderset = function(vertex, fragment)
   {
-    this.vertex = vertex;
+    this.vertex = fixPrecision(vertex);
     this.fragment = fragment;
     this.uniforms = getUniforms(vertex + "\n" + fragment);
     this.attributes = getAttributes(vertex + "\n" + fragment);
@@ -1808,7 +1822,7 @@ var imv = {
     setParams: setParams,
     inherits: inherits
   },
-  VERSION: '0.9.1'
+  VERSION: '0.9.2'
 };
 
 root.IMV = imv;
