@@ -1,6 +1,6 @@
 {
   "name": "ingress-model-viewer",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "main": "dist/ingress-model-viewer.min.js",
   "ignore": [
     "**/.*",
@@ -11,7 +11,7 @@
   ],
   "dependencies": {
     "java-deserializer": "git://github.com/DeviateFish/java-deserializer.git#~0.1.0",
-    "libtga": "git://github.com/DeviateFish/libtga"
+    "libtga": "git://github.com/DeviateFish/libtga#>0.2.2"
   },
   "private": true
 }
