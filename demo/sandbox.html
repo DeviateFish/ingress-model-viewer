@@ -24,9 +24,7 @@
     window.addEventListener('resize', function()
     {
         w = window.innerWidth, h = window.innerHeight;
-        engine.camera.aspect = w / h;
-        engine.camera.updateProjectionMatrix();
-        engine.renderer.setSize(w, h);
+        engine.updateViewport(w, h);
     });
 
     engine.renderer.setSize(w, h);

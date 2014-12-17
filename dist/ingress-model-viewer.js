@@ -2,6 +2,19 @@
 
   "use strict";
 
+  var imv = {};
+
+
+if(!JavaDeserializer || !THREE || !libtga)
+{
+  throw 'Missing dependencies';
+}
+
+var console = console || {
+  log: function(){},
+  warn: function(){},
+  info: function(){}
+};
 
 // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
 // http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
@@ -36,16 +49,235 @@
     }
 }());
 
-if(!JavaDeserializer || !THREE || !libtga)
-{
-  throw 'Missing dependencies';
-}
+/**
+ * @author troffmo5 / http://github.com/troffmo5
+ *
+ * Effect to render the scene in stereo 3d side by side with lens distortion.
+ * It is written to be used with the Oculus Rift (http://www.oculusvr.com/) but
+ * it works also with other HMD using the same technology
+ */
 
-var console = console || {
-  log: function(){},
-  warn: function(){},
-  info: function(){}
+ // slight cleanup to pass jshint
+
+THREE.OculusRiftEffect = function ( renderer, options ) {
+	// worldFactor indicates how many units is 1 meter
+	var worldFactor = (options && options.worldFactor) ? options.worldFactor: 1.0;
+
+	// Specific HMD parameters
+	var HMD = (options && options.HMD) ? options.HMD: {
+		// DK1
+		hResolution: 1280,
+		vResolution: 800,
+		hScreenSize: 0.14976,
+		vScreenSize: 0.0936,
+		interpupillaryDistance: 0.064,
+		lensSeparationDistance: 0.064,
+		eyeToScreenDistance: 0.041,
+		distortionK : [1.0, 0.22, 0.24, 0.0],
+		chromaAbParameter: [ 0.996, -0.004, 1.014, 0.0]
+		/*
+		// DK2
+		hResolution: 1920,
+		vResolution: 1080,
+		hScreenSize: 0.12576,
+		vScreenSize: 0.07074,
+		interpupillaryDistance: 0.0635,
+		lensSeparationDistance: 0.0635,
+		eyeToScreenDistance: 0.041,
+		distortionK : [1.0, 0.22, 0.24, 0.0],
+		chromaAbParameter: [ 0.996, -0.004, 1.014, 0.0]
+		*/
+	};
+	this.HMD = HMD;
+
+	// Perspective camera
+	var pCamera = new THREE.PerspectiveCamera();
+	pCamera.matrixAutoUpdate = false;
+	pCamera.target = new THREE.Vector3();
+
+	// Orthographic camera
+	var oCamera = new THREE.OrthographicCamera( -1, 1, 1, -1, 1, 1000 );
+	oCamera.position.z = 1;
+
+	// pre-render hooks
+	this.preLeftRender = function() {};
+	this.preRightRender = function() {};
+
+	renderer.autoClear = false;
+	var emptyColor = new THREE.Color("black");
+
+	// Render target
+	var RTParams = { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat };
+	var renderTarget = new THREE.WebGLRenderTarget( 640, 800, RTParams );
+	var RTMaterial = new THREE.ShaderMaterial( {
+		uniforms: {
+			"texid": { type: "t", value: renderTarget },
+			"scale": { type: "v2", value: new THREE.Vector2(1.0,1.0) },
+			"scaleIn": { type: "v2", value: new THREE.Vector2(1.0,1.0) },
+			"lensCenter": { type: "v2", value: new THREE.Vector2(0.0,0.0) },
+			"hmdWarpParam": { type: "v4", value: new THREE.Vector4(1.0,0.0,0.0,0.0) },
+			"chromAbParam": { type: "v4", value: new THREE.Vector4(1.0,0.0,0.0,0.0) }
+		},
+		vertexShader: [
+			"varying vec2 vUv;",
+			"void main() {",
+			" vUv = uv;",
+			"	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+			"}"
+		].join("\n"),
+
+		fragmentShader: [
+			"uniform vec2 scale;",
+			"uniform vec2 scaleIn;",
+			"uniform vec2 lensCenter;",
+			"uniform vec4 hmdWarpParam;",
+			'uniform vec4 chromAbParam;',
+			"uniform sampler2D texid;",
+			"varying vec2 vUv;",
+			"void main()",
+			"{",
+			"  vec2 uv = (vUv*2.0)-1.0;", // range from [0,1] to [-1,1]
+			"  vec2 theta = (uv-lensCenter)*scaleIn;",
+			"  float rSq = theta.x*theta.x + theta.y*theta.y;",
+			"  vec2 rvector = theta*(hmdWarpParam.x + hmdWarpParam.y*rSq + hmdWarpParam.z*rSq*rSq + hmdWarpParam.w*rSq*rSq*rSq);",
+			'  vec2 rBlue = rvector * (chromAbParam.z + chromAbParam.w * rSq);',
+			"  vec2 tcBlue = (lensCenter + scale * rBlue);",
+			"  tcBlue = (tcBlue+1.0)/2.0;", // range from [-1,1] to [0,1]
+			"  if (any(bvec2(clamp(tcBlue, vec2(0.0,0.0), vec2(1.0,1.0))-tcBlue))) {",
+			"    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);",
+			"    return;}",
+			"  vec2 tcGreen = lensCenter + scale * rvector;",
+			"  tcGreen = (tcGreen+1.0)/2.0;", // range from [-1,1] to [0,1]
+			"  vec2 rRed = rvector * (chromAbParam.x + chromAbParam.y * rSq);",
+			"  vec2 tcRed = lensCenter + scale * rRed;",
+			"  tcRed = (tcRed+1.0)/2.0;", // range from [-1,1] to [0,1]
+			"  gl_FragColor = vec4(texture2D(texid, tcRed).r, texture2D(texid, tcGreen).g, texture2D(texid, tcBlue).b, 1);",
+			"}"
+		].join("\n")
+	} );
+
+	var mesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 2, 2 ), RTMaterial );
+
+	// Final scene
+	var finalScene = new THREE.Scene();
+	finalScene.add( oCamera );
+	finalScene.add( mesh );
+
+    var left = {}, right = {};
+    var distScale = 1.0;
+	this.setHMD = function(v) {
+		HMD = v;
+		// Compute aspect ratio and FOV
+		var aspect = HMD.hResolution / (2*HMD.vResolution);
+
+		// Fov is normally computed with:
+		//   THREE.Math.radToDeg( 2*Math.atan2(HMD.vScreenSize,2*HMD.eyeToScreenDistance) );
+		// But with lens distortion it is increased (see Oculus SDK Documentation)
+		var r = -1.0 - (4 * (HMD.hScreenSize/4 - HMD.lensSeparationDistance/2) / HMD.hScreenSize);
+		distScale = (HMD.distortionK[0] + HMD.distortionK[1] * Math.pow(r,2) + HMD.distortionK[2] * Math.pow(r,4) + HMD.distortionK[3] * Math.pow(r,6));
+		var fov = THREE.Math.radToDeg(2*Math.atan2(HMD.vScreenSize*distScale, 2*HMD.eyeToScreenDistance));
+
+		// Compute camera projection matrices
+		var proj = (new THREE.Matrix4()).makePerspective( fov, aspect, 0.3, 10000 );
+		var h = 4 * (HMD.hScreenSize/4 - HMD.interpupillaryDistance/2) / HMD.hScreenSize;
+		left.proj = ((new THREE.Matrix4()).makeTranslation( h, 0.0, 0.0 )).multiply(proj);
+		right.proj = ((new THREE.Matrix4()).makeTranslation( -h, 0.0, 0.0 )).multiply(proj);
+
+		// Compute camera transformation matrices
+		left.tranform = (new THREE.Matrix4()).makeTranslation( -worldFactor * HMD.interpupillaryDistance/2, 0.0, 0.0 );
+		right.tranform = (new THREE.Matrix4()).makeTranslation( worldFactor * HMD.interpupillaryDistance/2, 0.0, 0.0 );
+
+		// Compute Viewport
+		left.viewport = [0, 0, HMD.hResolution/2, HMD.vResolution];
+		right.viewport = [HMD.hResolution/2, 0, HMD.hResolution/2, HMD.vResolution];
+
+		// Distortion shader parameters
+		var lensShift = 4 * (HMD.hScreenSize/4 - HMD.lensSeparationDistance/2) / HMD.hScreenSize;
+		left.lensCenter = new THREE.Vector2(lensShift, 0.0);
+		right.lensCenter = new THREE.Vector2(-lensShift, 0.0);
+
+		RTMaterial.uniforms.hmdWarpParam.value = new THREE.Vector4(HMD.distortionK[0], HMD.distortionK[1], HMD.distortionK[2], HMD.distortionK[3]);
+		RTMaterial.uniforms.chromAbParam.value = new THREE.Vector4(HMD.chromaAbParameter[0], HMD.chromaAbParameter[1], HMD.chromaAbParameter[2], HMD.chromaAbParameter[3]);
+		RTMaterial.uniforms.scaleIn.value = new THREE.Vector2(1.0,1.0/aspect);
+		RTMaterial.uniforms.scale.value = new THREE.Vector2(1.0/distScale, 1.0*aspect/distScale);
+
+		// Create render target
+		if ( renderTarget )
+		{
+		  renderTarget.dispose();
+		}
+		renderTarget = new THREE.WebGLRenderTarget( ( HMD.hResolution * distScale / 2 ) * renderer.devicePixelRatio, ( HMD.vResolution * distScale ) * renderer.devicePixelRatio, RTParams );
+		RTMaterial.uniforms.texid.value = renderTarget;
+
+	};
+	this.getHMD = function() {return HMD;};
+
+	this.setHMD(HMD);
+
+	this.setSize = function ( width, height ) {
+		left.viewport = [width/2 - HMD.hResolution/2, height/2 - HMD.vResolution/2, HMD.hResolution/2, HMD.vResolution];
+		right.viewport = [width/2, height/2 - HMD.vResolution/2, HMD.hResolution/2, HMD.vResolution];
+
+		renderer.setSize( width, height );
+	};
+
+	this.render = function ( scene, camera ) {
+		var cc = renderer.getClearColor().clone();
+
+		// Clear
+		renderer.setClearColor(emptyColor);
+		renderer.clear();
+		renderer.setClearColor(cc);
+
+		// camera parameters
+		if (camera.matrixAutoUpdate)
+		{
+		  camera.updateMatrix();
+		}
+
+		// Render left
+		pCamera.projectionMatrix.copy(left.proj);
+
+		pCamera.matrix.copy(camera.matrix).multiply(left.tranform);
+		pCamera.matrixWorldNeedsUpdate = true;
+
+		this.preLeftRender(pCamera);
+
+		renderer.setViewport(left.viewport[0], left.viewport[1], left.viewport[2], left.viewport[3]);
+
+		RTMaterial.uniforms.lensCenter.value = left.lensCenter;
+		renderer.render( scene, pCamera, renderTarget, true );
+
+		renderer.render( finalScene, oCamera );
+
+		// Render right
+		pCamera.projectionMatrix.copy(right.proj);
+
+		pCamera.matrix.copy(camera.matrix).multiply(right.tranform);
+		pCamera.matrixWorldNeedsUpdate = true;
+
+		this.preRightRender(pCamera);
+
+		renderer.setViewport(right.viewport[0], right.viewport[1], right.viewport[2], right.viewport[3]);
+
+		RTMaterial.uniforms.lensCenter.value = right.lensCenter;
+
+		renderer.render( scene, pCamera, renderTarget, true );
+		renderer.render( finalScene, oCamera );
+
+	};
+
+	this.dispose = function() {
+		if ( RTMaterial ) {
+			RTMaterial.dispose();
+		}
+		if ( renderTarget ) {
+			renderTarget.dispose();
+		}
+	};
+
 };
+
 
 var constants = {
   teamColors: {
@@ -99,6 +331,8 @@ var constants = {
   }
 };
 
+imv.Constants = constants;
+
 var inherits = function(a, b) {
   function C(){}
   C.prototype = b.prototype;
@@ -143,63 +377,6 @@ var copyInto = function(obj, params)
     }
   }
   return obj;
-};
-
-var loadResource = function(url, type, callback)
-{
-  if(type === 'image' || type === 'image.co')
-  {
-    if(/\.tga$/.test(url))
-    {
-      libtga.loadFile(url, function(err, tga) {
-        if(err)
-        {
-          callback(err, null);
-          return;
-        }
-        var canvas = document.createElement('canvas');
-        var context = canvas.getContext('2d');
-        var imageData = context.createImageData(tga.width, tga.height);
-        imageData.data.set(tga.imageData);
-        canvas.height = tga.height;
-        canvas.width = tga.width;
-        context.putImageData(imageData, 0, 0);
-        callback(null, canvas);
-      });
-    }
-    else
-    {
-      var i = new Image();
-      // cross-origin image:
-      if(type === 'image.co')
-      {
-        i.crossOrigin = 'anoymous';
-      }
-      i.onload = function()
-      {
-        callback(null, this);
-      };
-      i.onerror = function(e)
-      {
-        callback(e, null);
-      };
-      i.src = url;
-    }
-  }
-  else
-  {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url);
-    xhr.responseType = type;
-    xhr.onload = function() {
-      callback(null, this.response);
-    };
-    xhr.onerror = function(e) {
-      callback(e, null);
-    };
-
-    xhr.send();
-  }
 };
 
 var cloneUniforms = function(uniforms, exclude)
@@ -254,45 +431,12 @@ var asyncForeach = function(arr, callback, complete, delay)
   setTimeout(next, 0);
 };
 
-var AssetLoader = function(type, transform)
-{
-  type = type || 'text';
-  transform = transform || function(v) { return v; };
-  var _callbacks = {};
-  var _assets = {};
-
-  this.loadAsset = function(name, url, callback, options)
-  {
-    if(_assets[name])
-    {
-      callback(null, _assets[name]);
-      return;
-    }
-    _callbacks[name] = _callbacks[name] || [];
-    _callbacks[name].push(callback);
-    if(!_assets.hasOwnProperty(name))
-    {
-      _assets[name] = false;
-      loadResource(url, type, function(err, value) {
-        if(!err)
-        {
-          value = transform(value, options);
-          _assets[name] = value;
-        }
-        var cb;
-        while((cb = _callbacks[name].shift()))
-        {
-          cb(err, value);
-        }
-      });
-    }
-  };
-
-  this.getAsset = function(name)
-  {
-    return _assets[name];
-  };
-};
+imv.Utilities = imv.Utilities || {};
+imv.Utilities.cloneUniforms = cloneUniforms;
+imv.Utilities.copyUniforms = copyUniforms;
+imv.Utilities.asyncForeach = asyncForeach;
+imv.Utilities.setParams = setParams;
+imv.Utilities.inherits = inherits;
 
 var OrbitControls = (function() {
 
@@ -549,6 +693,9 @@ var OrbitControls = (function() {
   return controls;
 }());
 
+imv.Controls = imv.Controls || {};
+imv.Controls.OrbitControls = OrbitControls;
+
 var Geometry = function(options)
 {
   this.geometry = new THREE.BufferGeometry();
@@ -560,6 +707,9 @@ Geometry.prototype.getAttributeNames = function()
 {
   return Object.keys(this.attributes);
 };
+
+imv.Geometry = imv.Geometry || {};
+imv.Geometry.Geometry = Geometry;
 
 var IngressGeometry = (function(){
 
@@ -670,6 +820,9 @@ var IngressGeometry = (function(){
 
   return ingressgeometry;
 }());
+
+imv.Geometry = imv.Geometry || {};
+imv.Geometry.IngressGeometry = IngressGeometry;
 
 var PortalLinkGeometry = (function(){
 
@@ -824,6 +977,9 @@ var PortalLinkGeometry = (function(){
   return linkgeometry;
 }());
 
+imv.Geometry = imv.Geometry || {};
+imv.Geometry.PortalLinkGeometry = PortalLinkGeometry;
+
 var ResonatorLinkGeometry = (function(){
 
   // 5 sets of 4 points, breaking the link into 4 pieces, each providing 4 faces
@@ -975,6 +1131,10 @@ var ResonatorLinkGeometry = (function(){
   return linkgeometry;
 }());
 
+imv.Geometry = imv.Geometry || {};
+imv.Geometry.ResonatorLinkGeometry = ResonatorLinkGeometry;
+
+
 var FieldGeometry = (function(){
 
   // 5 sets of 4 points, breaking the link into 4 pieces, each providing 4 faces
@@ -1076,6 +1236,9 @@ var FieldGeometry = (function(){
   return fieldgeometry;
 }());
 
+imv.Geometry = imv.Geometry || {};
+imv.Geometry.FieldGeometry = FieldGeometry;
+
 var ParametricGeometry = (function(){
 
   // basic template for our parametric function.
@@ -1156,22 +1319,8 @@ var ParametricGeometry = (function(){
   return parametric;
 }());
 
-var GeometryLoader = function(basepath, type)
-{
-  this.base = basepath;
-  type = type || Geometry;
-  this.geometries = new AssetLoader('arraybuffer', function(v, opt) { return new (type)(v, opt);});
-};
-
-GeometryLoader.prototype.loadAsset = function(name, asset, callback)
-{
-  this.geometries.loadAsset(name, this.base+asset.path, callback, asset);
-};
-
-GeometryLoader.prototype.getAsset = function(name)
-{
-  return this.geometries.getAsset(name);
-};
+imv.Geometry = imv.Geometry || {};
+imv.Geometry.ParametricGeometry = ParametricGeometry;
 
 var ShaderSet = (function(){
 
@@ -1261,6 +1410,181 @@ var ShaderSet = (function(){
   return shaderset;
 }());
 
+imv.ShaderSet = ShaderSet;
+
+var Model = (function(){
+
+  var model = function(geometry, texture, shaders)
+  {
+    this.geometry = geometry;
+    this.texture = texture;
+    this.texture.needsUpdate = true;
+    this.shaders = shaders;
+    this.uniforms = {};
+    this.uniforms.u_texture = { type: "t", value: this.texture };
+
+    var params = {
+      uniforms: this.uniforms,
+      attributes: this.geometry.attributes,
+      vertexShader: this.shaders.vertex,
+      fragmentShader: this.shaders.fragment,
+      transparent: this.geometry.transparent,
+      side: THREE.DoubleSide,
+      depthWrite: !this.geometry.transparent
+    };
+    this.material = new THREE.RawShaderMaterial(params);
+
+    this.mesh = new THREE.Mesh(this.geometry.geometry, this.material);
+    this.mesh.frustumCulled = false;
+    this.mesh.updateMatrix();
+    this.mesh.matrixAutoUpdate = false;
+    this.id = null;
+  };
+
+  model.prototype.setUniform = function(name, newUniform)
+  {
+    if((name in this.material.uniforms) && newUniform.type != this.material.uniforms[name].type)
+    {
+      console.warn('uniform type mismatch');
+      return false;
+    }
+    this.uniforms[name] = newUniform;
+    this.material.needsUpdate = true;
+    return this;
+  };
+
+  model.prototype.clone = function()
+  {
+    var uniforms = copyUniforms(this.uniforms, {u_texture: 1, u_modelViewProject: 1});
+    return new model(this.geometry, this.texture, this.shaders, uniforms, this.options);
+  };
+
+  return model;
+}());
+
+imv.Model = Model;
+
+var loadResource = function(url, type, callback)
+{
+  if(type === 'image' || type === 'image.co')
+  {
+    if(/\.tga$/.test(url))
+    {
+      libtga.loadFile(url, function(err, tga) {
+        if(err)
+        {
+          callback(err, null);
+          return;
+        }
+        var canvas = document.createElement('canvas');
+        var context = canvas.getContext('2d');
+        var imageData = context.createImageData(tga.width, tga.height);
+        imageData.data.set(tga.imageData);
+        canvas.height = tga.height;
+        canvas.width = tga.width;
+        context.putImageData(imageData, 0, 0);
+        callback(null, canvas);
+      });
+    }
+    else
+    {
+      var i = new Image();
+      // cross-origin image:
+      if(type === 'image.co')
+      {
+        i.crossOrigin = 'anoymous';
+      }
+      i.onload = function()
+      {
+        callback(null, this);
+      };
+      i.onerror = function(e)
+      {
+        callback(e, null);
+      };
+      i.src = url;
+    }
+  }
+  else
+  {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url);
+    xhr.responseType = type;
+    xhr.onload = function() {
+      callback(null, this.response);
+    };
+    xhr.onerror = function(e) {
+      callback(e, null);
+    };
+
+    xhr.send();
+  }
+};
+
+var AssetLoader = function(type, transform)
+{
+  type = type || 'text';
+  transform = transform || function(v) { return v; };
+  var _callbacks = {};
+  var _assets = {};
+
+  this.loadAsset = function(name, url, callback, options)
+  {
+    if(_assets[name])
+    {
+      callback(null, _assets[name]);
+      return;
+    }
+    _callbacks[name] = _callbacks[name] || [];
+    _callbacks[name].push(callback);
+    if(!_assets.hasOwnProperty(name))
+    {
+      _assets[name] = false;
+      loadResource(url, type, function(err, value) {
+        if(!err)
+        {
+          value = transform(value, options);
+          _assets[name] = value;
+        }
+        var cb;
+        while((cb = _callbacks[name].shift()))
+        {
+          cb(err, value);
+        }
+      });
+    }
+  };
+
+  this.getAsset = function(name)
+  {
+    return _assets[name];
+  };
+};
+
+imv.AssetLoader = AssetLoader;
+imv.Utilities = imv.Utilities || {};
+imv.Utilities.loadResource = loadResource;
+
+var GeometryLoader = function(basepath, type)
+{
+  this.base = basepath;
+  type = type || Geometry;
+  this.geometries = new AssetLoader('arraybuffer', function(v, opt) { return new (type)(v, opt);});
+};
+
+GeometryLoader.prototype.loadAsset = function(name, asset, callback)
+{
+  this.geometries.loadAsset(name, this.base+asset.path, callback, asset);
+};
+
+GeometryLoader.prototype.getAsset = function(name)
+{
+  return this.geometries.getAsset(name);
+};
+
+imv.Loaders = imv.Loaders || {};
+imv.Loaders.GeometryLoader = GeometryLoader;
+
 var ShaderLoader = function(basepath)
 {
   this.base = basepath;
@@ -1308,6 +1632,9 @@ ShaderLoader.prototype.getAsset = function(name)
   }
   return null;
 };
+
+imv.Loaders = imv.Loaders || {};
+imv.Loaders.ShaderLoader = ShaderLoader;
 
 var TextureLoader = (function(){
 
@@ -1363,55 +1690,8 @@ var TextureLoader = (function(){
   return textureloader;
 }());
 
-var Model = (function(){
-
-  var model = function(geometry, texture, shaders)
-  {
-    this.geometry = geometry;
-    this.texture = texture;
-    this.texture.needsUpdate = true;
-    this.shaders = shaders;
-    this.uniforms = {};
-    this.uniforms.u_texture = { type: "t", value: this.texture };
-
-    var params = {
-      uniforms: this.uniforms,
-      attributes: this.geometry.attributes,
-      vertexShader: this.shaders.vertex,
-      fragmentShader: this.shaders.fragment,
-      transparent: this.geometry.transparent,
-      side: THREE.DoubleSide,
-      depthWrite: !this.geometry.transparent
-    };
-    this.material = new THREE.RawShaderMaterial(params);
-
-    this.mesh = new THREE.Mesh(this.geometry.geometry, this.material);
-    this.mesh.frustumCulled = false;
-    this.mesh.updateMatrix();
-    this.mesh.matrixAutoUpdate = false;
-    this.id = null;
-  };
-
-  model.prototype.setUniform = function(name, newUniform)
-  {
-    if((name in this.material.uniforms) && newUniform.type != this.material.uniforms[name].type)
-    {
-      console.warn('uniform type mismatch');
-      return false;
-    }
-    this.uniforms[name] = newUniform;
-    this.material.needsUpdate = true;
-    return this;
-  };
-
-  model.prototype.clone = function()
-  {
-    var uniforms = copyUniforms(this.uniforms, {u_texture: 1, u_modelViewProject: 1});
-    return new model(this.geometry, this.texture, this.shaders, uniforms, this.options);
-  };
-
-  return model;
-}());
+imv.Loaders = imv.Loaders || {};
+imv.Loaders.TextureLoader = TextureLoader;
 
 var AssetManager = function(basepath, map) {
 
@@ -1558,6 +1838,8 @@ var AssetManager = function(basepath, map) {
 
   return this;
 };
+
+imv.AssetManager = AssetManager;
 
 var Engine = function(canvas, options)
 {
@@ -1742,13 +2024,6 @@ var Engine = function(canvas, options)
   });
   //this.renderer.sortObjects = false;
 
-  this.updateViewport = function(w, h)
-  {
-    this.camera.aspect = w / h;
-    this.camera.updateProjectionMatrix();
-    this.renderer.setSize(w, h);
-  };
-
   var tick = 0, _this = this;
   var _periodics = [];
   this.getTick = function() { return tick; };
@@ -1771,18 +2046,10 @@ var Engine = function(canvas, options)
     return this;
   };
 
-  var suspended = false;
-  var cleared = false;
-  var render = function() {
-    if(suspended)
-    {
-        cleared = true;
-        return;
-    }
-    window.requestAnimationFrame(render);
-    // update the default worldview.
-    projectView.multiplyMatrices(_this.camera.projectionMatrix, _this.camera.matrixWorldInverse);
-    cameraFwd.set(0, 0, -1).applyQuaternion(_this.camera.quaternion);
+  var updateViewUniforms = function(camera)
+  {
+    projectView.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+    cameraFwd.set(0, 0, -1).applyQuaternion(camera.quaternion);
     var i;
     for(i in models)
     {
@@ -1801,13 +2068,69 @@ var Engine = function(canvas, options)
         }*/
       }
     }
-    _this.renderer.render(_this.scene, _this.camera);
+  };
+
+  var _ovr = false;
+  var _effect = null;
+  this.enableOVR = function() {
+    if(!_effect)
+    {
+      _effect = new THREE.OculusRiftEffect(this.renderer);
+      _effect.preLeftRender = updateViewUniforms;
+      _effect.preRightRender = updateViewUniforms;
+    }
+    _ovr = true;
+  };
+
+  var width, height;
+  var updateViewport = function()
+  {
+    _this.camera.aspect = width / height;
+    _this.camera.updateProjectionMatrix();
+    _this.renderer.setSize(width, height);
+    if(_effect)
+    {
+      _effect.setSize(width, height);
+    }
+  };
+
+  this.updateViewport = function(w, h)
+  {
+    width = w;
+    height = h;
+    updateViewport();
+  };
+
+  this.disableOVR = function() {
+    _ovr = false;
+    updateViewport();
+  };
+
+  var suspended = false;
+  var cleared = false;
+  var render = function() {
+    if(suspended)
+    {
+        cleared = true;
+        return;
+    }
+    // update the default worldview.
+    if(_ovr)
+    {
+      _effect.render(_this.scene, _this.camera.clone());
+    }
+    else
+    {
+      updateViewUniforms(_this.camera);
+      _this.renderer.render(_this.scene, _this.camera);
+    }
     var l = _periodics.length;
-    for(i = 0; i < l; i++)
+    for(var i = 0; i < l; i++)
     {
       _periodics[i](tick);
     }
     tick++;
+    window.requestAnimationFrame(render);
   };
 
   this.suspend = function()
@@ -1834,37 +2157,11 @@ var Engine = function(canvas, options)
   return this;
 };
 
-var imv = {
-  AssetLoader: AssetLoader,
-  Geometry: {
-    IngressGeometry: IngressGeometry,
-    ParametricGeometry: ParametricGeometry,
-    Geometry: Geometry,
-    ResonatorLinkGeometry: ResonatorLinkGeometry,
-    PortalLinkGeometry: PortalLinkGeometry,
-    FieldGeometry: FieldGeometry
-  },
-  Model: Model,
-  Controls: {
-    OrbitControls: OrbitControls
-  },
-  ShaderSet: ShaderSet,
-  AssetManager: AssetManager,
-  Engine: Engine,
-  Constants: constants,
-  Utilities: {
-    cloneUniforms: cloneUniforms,
-    copyUniforms: copyUniforms,
-    loadResource: loadResource,
-    asyncForeach: asyncForeach,
-    setParams: setParams,
-    inherits: inherits
-  },
-  VERSION: '0.9.2'
-};
+imv.Engine = Engine;
 
-root.IMV = imv;
+  imv.VERSION = '0.9.3';
 
+  root.IMV = imv;
 
 }(this));
 
