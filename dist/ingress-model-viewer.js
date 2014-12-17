@@ -2115,9 +2115,10 @@ var Engine = function(canvas, options)
         return;
     }
     // update the default worldview.
+    window.requestAnimationFrame(render);
     if(_ovr)
     {
-      _effect.render(_this.scene, _this.camera.clone());
+      _effect.render(_this.scene, _this.camera);
     }
     else
     {
@@ -2130,7 +2131,6 @@ var Engine = function(canvas, options)
       _periodics[i](tick);
     }
     tick++;
-    window.requestAnimationFrame(render);
   };
 
   this.suspend = function()
