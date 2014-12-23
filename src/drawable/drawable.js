@@ -6,13 +6,14 @@ var Drawable = (function(){
     this.material = null;
     this.mesh = null;
     this.shaders = null;
+    this.elapsed = 0;
     this.uniforms = {};
     this.options = {};
   };
 
-  drawable.prototype.init = function(geometry, shaders, options)
+  drawable.prototype.init = function(geometry, shaders)
   {
-    if(!(geometry instanceof imv.Geometry))
+    if(!(geometry instanceof imv.Geometry.Geometry))
     {
       throw 'Geometry must inherit from base';
     }
@@ -21,10 +22,9 @@ var Drawable = (function(){
       throw 'Shaders must inherit from base';
     }
     var params = {
-      transparent: true
+      transparent: false
     };
-    options = options || {};
-    this.options = setParams(params, options);
+    this.options = setParams(params, this.options);
     this.geometry = geometry;
     this.shaders = shaders;
 
@@ -37,7 +37,7 @@ var Drawable = (function(){
       side: THREE.DoubleSide,
       depthWrite: !this.options.transparent
     };
-    this.material = new THREE.RawShaderMaterial(params);
+    this.material = new THREE.RawShaderMaterial(materialParams);
 
     this.mesh = new THREE.Mesh(geometry.geometry, this.material);
     this.mesh.frustumCulled = false;
@@ -46,6 +46,27 @@ var Drawable = (function(){
     this.id = null;
 
     return this;
+  };
+
+  drawable.prototype.updateView = function() {
+    // this most basic is usually a u_modelViewProject update:
+    console.warn('Nothing to udpate');
+  };
+
+  drawable.prototype.updateTime = function(time) {
+    this.elapsed += time;
+  };
+
+  drawable.prototype.updateUniformF = function(name, value) {
+    this.uniforms[name].value = value;
+  };
+
+  drawable.prototype.updateUniformV = function(name, value) {
+    this.uniforms[name].value.copy(value);
+  };
+
+  drawable.prototype.updateUniformM = function(name, value) {
+    this.uniforms[name].value.copy(value);
   };
 
   return drawable;

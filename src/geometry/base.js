@@ -1,6 +1,7 @@
 var Geometry = function(options)
 {
   this.geometry = new THREE.BufferGeometry();
+  this.transparent = (options && options.transparent) || false;
   this.attributes = {};
 };
 

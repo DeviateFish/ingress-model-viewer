@@ -47,6 +47,10 @@ var constants = {
       artifactsRedGlow: new THREE.Vector4(0.79, 0.11, 0.49, 1.0),
       artifactsPurpleGlow: new THREE.Vector4(0.58, 0.17, 1.0, 1.0)
     }
+  },
+  xmColors: {
+    coreGlow: new THREE.Vector4(0.92, 0.7, 0.89, 1.0),
+    coreGlowAlt: new THREE.Vector4(0.6, 0.4, 0.6, 0.8)
   }
 };
 

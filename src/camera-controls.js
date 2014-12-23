@@ -114,15 +114,22 @@ var OrbitControls = (function() {
 
   controls.prototype.updateCamera = function(camera)
   {
-    this.rotation.x += (this.target.x - this.rotation.x) * this.options.friction;
-    this.rotation.y += (this.target.y - this.rotation.y) * this.options.friction;
-    this.distance += (this.distanceTarget - this.distance) * this.options.distanceScale;
+    var dx = this.target.x - this.rotation.x,
+      dy = this.target.y - this.rotation.y,
+      dz = this.distanceTarget - this.distance;
+    if(Math.abs(dx) > 0.00001 || Math.abs(dy) > 0.00001 || Math.abs(dz) > 0.00001)
+    {
+      this.rotation.x += dx * this.options.friction;
+      this.rotation.y += dy * this.options.friction;
+      this.distance += dz * this.options.distanceScale;
 
-    camera.position.x = this.distance * Math.sin(this.rotation.x) * Math.cos(this.rotation.y) + this.options.target.x;
-    camera.position.y = this.distance * Math.sin(this.rotation.y) + this.options.target.y;
-    camera.position.z = this.distance * Math.cos(this.rotation.x) * Math.cos(this.rotation.y) + this.options.target.z;
+      camera.position.x = this.distance * Math.sin(this.rotation.x) * Math.cos(this.rotation.y) + this.options.target.x;
+      camera.position.y = this.distance * Math.sin(this.rotation.y) + this.options.target.y;
+      camera.position.z = this.distance * Math.cos(this.rotation.x) * Math.cos(this.rotation.y) + this.options.target.z;
 
-    camera.lookAt(this.options.target);
+      camera.lookAt(this.options.target);
+      camera.matrixWorldNeedsUpdate = true;
+    }
   };
 
   controls.prototype.onMouseWheel = function(ev)

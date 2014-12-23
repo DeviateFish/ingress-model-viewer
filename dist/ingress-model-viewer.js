@@ -328,6 +328,10 @@ var constants = {
       artifactsRedGlow: new THREE.Vector4(0.79, 0.11, 0.49, 1.0),
       artifactsPurpleGlow: new THREE.Vector4(0.58, 0.17, 1.0, 1.0)
     }
+  },
+  xmColors: {
+    coreGlow: new THREE.Vector4(0.92, 0.7, 0.89, 1.0),
+    coreGlowAlt: new THREE.Vector4(0.6, 0.4, 0.6, 0.8)
   }
 };
 
@@ -554,15 +558,22 @@ var OrbitControls = (function() {
 
   controls.prototype.updateCamera = function(camera)
   {
-    this.rotation.x += (this.target.x - this.rotation.x) * this.options.friction;
-    this.rotation.y += (this.target.y - this.rotation.y) * this.options.friction;
-    this.distance += (this.distanceTarget - this.distance) * this.options.distanceScale;
+    var dx = this.target.x - this.rotation.x,
+      dy = this.target.y - this.rotation.y,
+      dz = this.distanceTarget - this.distance;
+    if(Math.abs(dx) > 0.00001 || Math.abs(dy) > 0.00001 || Math.abs(dz) > 0.00001)
+    {
+      this.rotation.x += dx * this.options.friction;
+      this.rotation.y += dy * this.options.friction;
+      this.distance += dz * this.options.distanceScale;
 
-    camera.position.x = this.distance * Math.sin(this.rotation.x) * Math.cos(this.rotation.y) + this.options.target.x;
-    camera.position.y = this.distance * Math.sin(this.rotation.y) + this.options.target.y;
-    camera.position.z = this.distance * Math.cos(this.rotation.x) * Math.cos(this.rotation.y) + this.options.target.z;
+      camera.position.x = this.distance * Math.sin(this.rotation.x) * Math.cos(this.rotation.y) + this.options.target.x;
+      camera.position.y = this.distance * Math.sin(this.rotation.y) + this.options.target.y;
+      camera.position.z = this.distance * Math.cos(this.rotation.x) * Math.cos(this.rotation.y) + this.options.target.z;
 
-    camera.lookAt(this.options.target);
+      camera.lookAt(this.options.target);
+      camera.matrixWorldNeedsUpdate = true;
+    }
   };
 
   controls.prototype.onMouseWheel = function(ev)
@@ -1412,57 +1423,341 @@ var ShaderSet = (function(){
 
 imv.ShaderSet = ShaderSet;
 
-var Model = (function(){
+var Drawable = (function(){
 
-  var model = function(geometry, texture, shaders)
+  var drawable = function()
   {
-    this.geometry = geometry;
-    this.texture = texture;
-    this.texture.needsUpdate = true;
-    this.shaders = shaders;
+    this.geometry = null;
+    this.material = null;
+    this.mesh = null;
+    this.shaders = null;
+    this.elapsed = 0;
     this.uniforms = {};
-    this.uniforms.u_texture = { type: "t", value: this.texture };
+    this.options = {};
+  };
 
+  drawable.prototype.init = function(geometry, shaders)
+  {
+    if(!(geometry instanceof imv.Geometry.Geometry))
+    {
+      throw 'Geometry must inherit from base';
+    }
+    if(!(shaders instanceof imv.ShaderSet))
+    {
+      throw 'Shaders must inherit from base';
+    }
     var params = {
-      uniforms: this.uniforms,
-      attributes: this.geometry.attributes,
-      vertexShader: this.shaders.vertex,
-      fragmentShader: this.shaders.fragment,
-      transparent: this.geometry.transparent,
-      side: THREE.DoubleSide,
-      depthWrite: !this.geometry.transparent
+      transparent: false
     };
-    this.material = new THREE.RawShaderMaterial(params);
+    this.options = setParams(params, this.options);
+    this.geometry = geometry;
+    this.shaders = shaders;
 
-    this.mesh = new THREE.Mesh(this.geometry.geometry, this.material);
+    var materialParams = {
+      uniforms: this.uniforms,
+      attributes: geometry.attributes,
+      vertexShader: shaders.vertex,
+      fragmentShader: shaders.fragment,
+      transparent: this.options.transparent,
+      side: THREE.DoubleSide,
+      depthWrite: !this.options.transparent
+    };
+    this.material = new THREE.RawShaderMaterial(materialParams);
+
+    this.mesh = new THREE.Mesh(geometry.geometry, this.material);
     this.mesh.frustumCulled = false;
     this.mesh.updateMatrix();
     this.mesh.matrixAutoUpdate = false;
     this.id = null;
-  };
 
-  model.prototype.setUniform = function(name, newUniform)
-  {
-    if((name in this.material.uniforms) && newUniform.type != this.material.uniforms[name].type)
-    {
-      console.warn('uniform type mismatch');
-      return false;
-    }
-    this.uniforms[name] = newUniform;
-    this.material.needsUpdate = true;
     return this;
   };
 
-  model.prototype.clone = function()
-  {
-    var uniforms = copyUniforms(this.uniforms, {u_texture: 1, u_modelViewProject: 1});
-    return new model(this.geometry, this.texture, this.shaders, uniforms, this.options);
+  drawable.prototype.updateView = function() {
+    // this most basic is usually a u_modelViewProject update:
+    console.warn('Nothing to udpate');
   };
 
-  return model;
+  drawable.prototype.updateTime = function(time) {
+    this.elapsed += time;
+  };
+
+  drawable.prototype.updateUniformF = function(name, value) {
+    this.uniforms[name].value = value;
+  };
+
+  drawable.prototype.updateUniformV = function(name, value) {
+    this.uniforms[name].value.copy(value);
+  };
+
+  drawable.prototype.updateUniformM = function(name, value) {
+    this.uniforms[name].value.copy(value);
+  };
+
+  return drawable;
 }());
 
-imv.Model = Model;
+imv.Drawable = Drawable;
+
+var ModelDrawable = (function() {
+
+  var modelDrawable = function() {
+    Drawable.call(this);
+    this.uniforms.u_modelViewProject = {
+      type: "m4",
+      value: new THREE.Matrix4()
+    };
+    this.projectView = new THREE.Matrix4();
+  };
+  inherits(modelDrawable, Drawable);
+
+  modelDrawable.prototype.updateView = function(camera) {
+    // this most basic is usually a u_modelViewProject update:
+    this.projectView.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+    this.updateModel();
+  };
+
+  // signals that the model's mesh has been updated in some way...
+  // means we need to recalculate the u_modelViewProject uniform
+  modelDrawable.prototype.updateModel = function() {
+    var modelViewProject = this.projectView.clone().multiply(this.mesh.matrixWorld);
+    this.updateUniformM('u_modelViewProject', modelViewProject);
+  };
+
+  return modelDrawable;
+}());
+
+imv.Drawables = imv.Drawables || {};
+imv.Drawables.Model = ModelDrawable;
+
+var TexturedDrawable = (function(){
+
+  var texturedDrawable = function(texture) {
+    ModelDrawable.call(this);
+    if(!(texture instanceof THREE.Texture))
+    {
+      throw 'Texture must be a THREE.Texture';
+    }
+    this.uniforms.u_texture = {
+      type: "t",
+      value: texture
+    };
+    texture.needsUpdate = true; // not sure I need this here now.
+  };
+  inherits(texturedDrawable, ModelDrawable);
+
+  return texturedDrawable;
+}());
+
+imv.Drawables = imv.Drawables || {};
+imv.Drawables.Textured = TexturedDrawable;
+
+var BicoloredDrawable = (function(){
+
+  // default quality color: very rare
+  var defaultColor0 = new THREE.Vector4().copy(constants.qualityColors.VERY_RARE);
+
+  // default glow color: xm color
+  var defaultColor1 = new THREE.Vector4().copy(constants.xmColors.coreGlow);
+
+  var bicolorDrawable = function(texture, u_color0, u_color1) {
+    TexturedDrawable.call(this, texture);
+    this.uniforms.u_color0 = {
+      type: "v4",
+      value: u_color0 || (defaultColor0.clone())
+    };
+    this.uniforms.u_color1 = {
+      type: "v4",
+      value: u_color1 || (defaultColor1.clone())
+    };
+  };
+  inherits(bicolorDrawable, TexturedDrawable);
+
+  bicolorDrawable.prototype.setPrimaryColor = function(color)
+  {
+    this.updateUniformV('u_color0', color);
+  };
+
+  bicolorDrawable.prototype.setSecondaryColor = function(color)
+  {
+    this.updateUniformV('u_color1', color);
+  };
+
+  return bicolorDrawable;
+}());
+
+imv.Drawables = imv.Drawables || {};
+imv.Drawables.Bicolored = BicoloredDrawable;
+
+var XmDrawable = (function(){
+
+  var defaultTeamColor = new THREE.Vector4().copy(constants.xmColors.coreGlow);
+  var defaultAltColor = new THREE.Vector4().copy(constants.xmColors.coreGlowAlt);
+
+  var xmDrawable = function(texture, teamColor, altColor, elapsed) {
+    TexturedDrawable.call(this, texture);
+    this.uniforms.u_elapsedTime = {
+      type: "f",
+      value: elapsed || 0
+    };
+    this.uniforms.u_teamColor = {
+      type: "v4",
+      value: teamColor || defaultTeamColor.clone()
+    };
+    this.uniforms.u_altColor = {
+      type: "v4",
+      value: altColor || defaultAltColor.clone()
+    };
+  };
+  inherits(xmDrawable, TexturedDrawable);
+
+  xmDrawable.prototype.setTeamColor = function(color) {
+    this.updateUniformV('u_teamColor', color);
+  };
+
+  xmDrawable.prototype.setAltColor = function(color) {
+    this.updateUniformV('u_altColor', color);
+  };
+
+  xmDrawable.prototype.updateTime = function(tick) {
+    Drawable.prototype.updateTime.call(this, tick);
+    this.updateUniformF('u_elapsedTime', ((this.elapsed / 1000) % 300.0) * 0.1);
+  };
+
+  return xmDrawable;
+}());
+
+imv.Drawables = imv.Drawables || {};
+imv.Drawables.Xm = XmDrawable;
+
+var GlowrampDrawable = (function(){
+
+  // default base color: neutral portal color
+  var defaultBaseColor = new THREE.Vector4().copy(imv.Constants.teamColors.NEUTRAL);
+
+  var glowrampDrawable = function(texture, baseColor, rotation, rampTarget, alpha) {
+    TexturedDrawable.call(this, texture);
+    this.uniforms.u_baseColor = {
+      type: "v4",
+      value: baseColor || defaultBaseColor.clone()
+    };
+    this.uniforms.u_rotation = {
+      type: "f",
+      value: rotation || 0
+    };
+    this.uniforms.u_rampTarget = {
+      type: "f",
+      value: rampTarget || 0
+    };
+    this.uniforms.u_alpha = {
+      type: "f",
+      value: alpha || 0.6
+    };
+    this.options.transparent = true;
+  };
+  inherits(glowrampDrawable, TexturedDrawable);
+
+  glowrampDrawable.prototype.setBaseColor = function(color) {
+    this.updateUniformV('u_baseColor', color);
+  };
+
+  glowrampDrawable.prototype.setAlpha = function(alpha) {
+    this.updateuniformF('u_alpha', alpha);
+  };
+
+  glowrampDrawable.prototype.updateTime = function(tick) {
+    Drawable.prototype.updateTime.call(this, tick);
+    var inc = this.elapsed / 5000;
+    this.updateUniformF('u_rotation', inc);
+    this.updateUniformF('u_rampTarget', Math.sin(Math.PI / 2 * (inc - Math.floor(inc))));
+  };
+
+  return glowrampDrawable;
+}());
+
+imv.Drawables = imv.Drawables || {};
+imv.Drawables.Glowramp = GlowrampDrawable;
+
+var LinkDrawable = (function(){
+
+  // no defaults here.
+
+  var linkDrawable = function(texture) {
+    TexturedDrawable.call(this, texture);
+    this.uniforms.u_cameraFwd = {
+      type: "v3",
+      value: new THREE.Vector3(0, 0, -1)
+    };
+    this.uniforms.u_elapsedTime = {
+      type: "f",
+      value: 0
+    };
+    this.options.transparent = true;
+  };
+  inherits(linkDrawable, TexturedDrawable);
+
+  linkDrawable.prototype.updateView = function(camera) {
+    var fwd = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
+    this.updateUniformV('u_cameraFwd', fwd);
+    ModelDrawable.prototype.updateView.call(this, camera);
+  };
+
+  linkDrawable.prototype.updateTime = function(tick) {
+    Drawable.prototype.updateTime.call(this, tick);
+    this.updateUniformF('u_elapsedTime', ((this.elapsed / 1000) % 300.0) * 0.1);
+  };
+
+  return linkDrawable;
+}());
+
+imv.Drawables = imv.Drawables || {};
+imv.Drawables.Link = LinkDrawable;
+
+var ShieldEffectDrawable = (function(){
+
+  // these defaults are whack.  Need to find the real
+  // functions used to update these, too
+  // As of 1.62.0, that was in ...ingress.common.scanner.b.a.d
+  // The baksmali is a little jacked up, though.
+  var defaultColor = new THREE.Vector4().copy(imv.Constants.teamColors.NEUTRAL),
+    defaultRampTargetInv = new THREE.Vector2(0.5, 1.3),
+    defaultContributions = new THREE.Vector3(0.5, 0.5, 0.5);
+
+  var shieldEffectDrawable = function(texture, color, rampTargetInvWidth, contributions) {
+    TexturedDrawable.call(this, texture);
+    this.uniforms.u_color = {
+      type: "v4",
+      value: color || defaultColor
+    };
+    this.uniforms.u_rampTargetInvWidth = {
+      type: "v2",
+      value: rampTargetInvWidth || defaultRampTargetInv.clone()
+    };
+    this.uniforms.u_contributionsAndAlpha = {
+      type: "v3",
+      value: contributions || defaultContributions.clone()
+    };
+    this.options.transparent = true;
+  };
+  inherits(shieldEffectDrawable, TexturedDrawable);
+
+  shieldEffectDrawable.prototype.setColor = function(color) {
+    this.updateUniformV('u_color', color);
+  };
+
+  shieldEffectDrawable.prototype.updateTime = function(tick) {
+    Drawable.prototype.updateTime.call(this, tick);
+    var inc = this.elapsed / 10000;
+    var v = this.uniforms.u_rampTargetInvWidth.value.clone();
+    v.x = (inc - Math.floor(inc)) * 2.0 - 0.5;
+    this.updateUniformV('u_rampTargetInvWidth', v);
+  };
+
+  return shieldEffectDrawable;
+}());
+
+imv.Drawables = imv.Drawables || {};
+imv.Drawables.ShieldEffect = ShieldEffectDrawable;
 
 var loadResource = function(url, type, callback)
 {
@@ -1703,43 +1998,6 @@ var AssetManager = function(basepath, map) {
   };
   var keys = Object.keys(cache);
 
-  this.loadModel = function(asset, callback)
-  {
-    var loaded = {}, loading = false, i;
-    var onload = function(){
-      if(!loading && loaded.model && loaded.texture && loaded.shaders)
-      {
-        loading = true;
-        callback(null, new Model(loaded.model, loaded.texture, loaded.shaders));
-      }
-    };
-    for(i = 0; i < keys.length; i++)
-    {
-      var k = keys[i];
-      if(!(asset[k] in assetMap[k]))
-      {
-        console.warn('unknown ' + k + ': ' + asset[k]);
-        return false;
-      }
-    }
-    var fetch = function(k) {
-      cache[k].loadAsset(asset[k], assetMap[k][asset[k]], function(err, value) {
-        if(err)
-        {
-          callback(err, null);
-          return;
-        }
-        loaded[k] = value;
-        onload();
-      });
-    };
-    for(i = 0; i < keys.length; i++)
-    {
-      fetch(keys[i]);
-    }
-    return this;
-  };
-
   this.setAssets = function(list)
   {
     assetMap = list;
@@ -1756,18 +2014,6 @@ var AssetManager = function(basepath, map) {
     if(type in cache)
     {
       return cache[type].getAsset(key);
-    }
-    return null;
-  };
-
-  this.getModel = function(model, texture, shaders)
-  {
-    var m = cache.model.getAsset(model),
-      t = cache.texture.getAsset(texture),
-      s = cache.shaders.getAsset(shaders);
-    if(m && t && s)
-    {
-      return new Model(m, t, s);
     }
     return null;
   };
@@ -1841,6 +2087,513 @@ var AssetManager = function(basepath, map) {
 
 imv.AssetManager = AssetManager;
 
+var Entity = (function(){
+
+  var entity = function(loader) {
+    this.loader = loader;
+    this.models = [];
+  };
+
+  // Add functions for translations, rotations, etc
+  // Anything you'd want to manipulate the entire entity at once.
+
+  // TODO: Centralized resource listing
+  // TODO: Provide "read-only" access to asset lists.
+
+  return entity;
+}());
+
+imv.Entity = Entity;
+
+var LeveledXMItemEntity = (function(){
+
+  var ITEM_TEXTURE = 'FlipCardTexture',
+    ITEM_SHADER = 'bicolor_textured',
+    CORE_TEXTURE = 'ObjectXMTexture',
+    CORE_SHADER = 'xm';
+
+  var leveledItem = function(loader, meshName, coreName, quality) {
+    Entity.call(this, loader);
+    var itemGeometry = loader.getAsset('model', meshName);
+    var itemTexture = loader.getAsset('texture', ITEM_TEXTURE);
+    var itemShaders = loader.getAsset('shaders', ITEM_SHADER);
+    if(!itemGeometry)
+    {
+      throw 'Unable to load Geometry ' + meshName;
+    }
+    if(!itemTexture)
+    {
+      throw 'Unable to load texture ' + ITEM_TEXTURE;
+    }
+    if(!itemShaders)
+    {
+      throw 'Unable to load shaders: ' + ITEM_SHADER;
+    }
+    this.item = new BicoloredDrawable(itemTexture, this.quality);
+    this.item.init(itemGeometry, itemShaders);
+    var coreGeometry = loader.getAsset('model', coreName);
+    var coreTexture = loader.getAsset('texture', CORE_TEXTURE);
+    var coreShaders = loader.getAsset('shaders', CORE_SHADER);
+    if(!coreGeometry)
+    {
+      throw 'Unable to load Geometry ' + coreName;
+    }
+    if(!coreTexture)
+    {
+      throw 'Unable to load texture ' + CORE_TEXTURE;
+    }
+    if(!coreShaders)
+    {
+      throw 'Unable to load shaders: ' + CORE_SHADER;
+    }
+    this.core = new XmDrawable(coreTexture);
+    this.core.init(coreGeometry, coreShaders);
+    this.setQuality(quality);
+    this.models = [this.item, this.core];
+  };
+  inherits(leveledItem, Entity);
+
+  leveledItem.prototype.setQuality = function(quality)
+  {
+    if(quality instanceof THREE.Vector4)
+    {
+      this.quality = quality;
+    }
+    else if(!(quality in constants.qualityColors))
+    {
+      throw 'Unknown quality color ' + quality;
+    }
+    else
+    {
+      this.quality = constants.qualityColors[quality].clone();
+    }
+    if(this.item)
+    {
+      this.item.setPrimaryColor(this.quality);
+    }
+    return this;
+  };
+
+  return leveledItem;
+}());
+
+imv.Entities = imv.Entities || {};
+imv.Entities.LeveledXMItem = LeveledXMItemEntity;
+
+var CapsuleItemEntity = (function(){
+
+  // default quality to Rare, even though
+  // no colors need to be rendered
+  // Could be replaced with texturedDrawable, too
+  var defaultQuality = new THREE.Vector4().copy(constants.qualityColors.RARE);
+
+  var capsule = function(loader, quality) {
+    quality = quality || defaultQuality;
+    LeveledXMItemEntity.call(this, loader, 'CapsuleMesh', 'CapsuleXmMesh', quality);
+  };
+  inherits(capsule, LeveledXMItemEntity);
+
+  return capsule;
+}());
+
+imv.Entities = imv.Entities || {};
+imv.Entities.CapsuleItem = CapsuleItemEntity;
+
+var HeatSinkItemEntity = (function(){
+
+  // Defaulting to VR, because everyone likes VR.
+  var defaultQuality = new THREE.Vector4().copy(constants.qualityColors.VERY_RARE);
+
+  var heatsink = function(loader, quality) {
+    quality = quality || defaultQuality;
+    LeveledXMItemEntity.call(this, loader, 'HeatSinkMesh', 'HeatSinkXmMesh', quality);
+  };
+  inherits(heatsink, LeveledXMItemEntity);
+
+  return heatsink;
+}());
+
+imv.Entities = imv.Entities || {};
+imv.Entities.HeatSinkItem = HeatSinkItemEntity;
+
+var ExtraShieldItemEntity = (function(){
+
+  // Default quality to very rare
+  // They only seem to drop in VR rarieties, anyway.
+  var defaultQuality = new THREE.Vector4().copy(constants.qualityColors.VERY_RARE);
+
+  var extrashield = function(loader, quality) {
+    quality = quality || defaultQuality;
+    LeveledXMItemEntity.call(this, loader, 'ExtraShieldMesh', 'ResShieldXMMesh', quality);
+  };
+  inherits(extrashield, LeveledXMItemEntity);
+
+  return extrashield;
+}());
+
+imv.Entities = imv.Entities || {};
+imv.Entities.ExtraShieldItem = ExtraShieldItemEntity;
+
+var ForceAmpItemEntity = (function(){
+
+  // Defaulting to rare, since they only drop in the one quality
+  var defaultQuality = new THREE.Vector4().copy(constants.qualityColors.RARE);
+
+  var forceamp = function(loader, quality) {
+    quality = quality || defaultQuality;
+    LeveledXMItemEntity.call(this, loader, 'ForceAmpMesh', 'ForceAmpXmMesh', quality);
+  };
+  inherits(forceamp, LeveledXMItemEntity);
+
+  return forceamp;
+}());
+
+imv.Entities = imv.Entities || {};
+imv.Entities.ForceAmpItem = ForceAmpItemEntity;
+
+var LinkAmpItemEntity = (function(){
+
+  // Defaulting to rare, because wouldn't VR be nice?
+  var defaultQuality = new THREE.Vector4().copy(constants.qualityColors.RARE);
+
+  var linkamp = function(loader, quality) {
+    quality = quality || defaultQuality;
+    LeveledXMItemEntity.call(this, loader, 'LinkAmpMesh', 'LinkAmpXmMesh', quality);
+  };
+  inherits(linkamp, LeveledXMItemEntity);
+
+  return linkamp;
+}());
+
+imv.Entities = imv.Entities || {};
+imv.Entities.LinkAmpItem = LinkAmpItemEntity;
+
+var MultiHackItemEntity = (function(){
+
+  // Defaulting to VR, because everyone likes VR.
+  var defaultQuality = new THREE.Vector4().copy(constants.qualityColors.VERY_RARE);
+
+  var multihack = function(loader, quality) {
+    quality = quality || defaultQuality;
+    LeveledXMItemEntity.call(this, loader, 'MultiHackMesh', 'MultiHackXmMesh', quality);
+  };
+  inherits(multihack, LeveledXMItemEntity);
+
+  return multihack;
+}());
+
+imv.Entities = imv.Entities || {};
+imv.Entities.MultiHackItem = MultiHackItemEntity;
+
+var ResonatorItemEntity = (function(){
+
+  // Defaulting to a random level, because hey why not.
+  var r = Math.floor(Math.random() * 8) + 1;
+  var defaultQuality = new THREE.Vector4().copy(constants.qualityColors['L' + r]);
+
+  var resonator = function(loader, quality) {
+    quality = quality || defaultQuality;
+    LeveledXMItemEntity.call(this, loader, 'ResonatorMesh', 'ResonatorXMMesh', quality);
+  };
+  inherits(resonator, LeveledXMItemEntity);
+
+  return resonator;
+}());
+
+imv.Entities = imv.Entities || {};
+imv.Entities.ResonatorItem = ResonatorItemEntity;
+
+var ShieldItem = (function(){
+
+  // Defaulting to VR, because everyone likes VR.
+  var defaultQuality = new THREE.Vector4().copy(constants.qualityColors.VERY_RARE);
+
+  var shield = function(loader, quality) {
+    quality = quality || defaultQuality;
+    LeveledXMItemEntity.call(this, loader, 'ResShieldMesh', 'ResShieldXMMesh', quality);
+  };
+  inherits(shield, LeveledXMItemEntity);
+
+  return shield;
+}());
+
+imv.Entities = imv.Entities || {};
+imv.Entities.ShieldItem = ShieldItem;
+
+var TurretItem = (function(){
+
+  // Defaulting to Rare because that's the only quality they come.
+  var defaultQuality = new THREE.Vector4().copy(constants.qualityColors.RARE);
+
+  var turret = function(loader, quality) {
+    quality = quality || defaultQuality;
+    LeveledXMItemEntity.call(this, loader, 'TurretMesh', 'TurretXmMesh', quality);
+  };
+  inherits(turret, LeveledXMItemEntity);
+
+  return turret;
+}());
+
+imv.Entities = imv.Entities || {};
+imv.Entities.TurretItem = TurretItem;
+
+var UltraStrikeItem = (function(){
+
+  // Defaulting to a random level, because hey why not.
+  var r = Math.floor(Math.random() * 8) + 1;
+  var defaultQuality = new THREE.Vector4().copy(constants.qualityColors['L' + r]);
+
+  var ultrastrike = function(loader, quality) {
+    quality = quality || defaultQuality;
+    LeveledXMItemEntity.call(this, loader, 'UltrastrikeMesh', 'UltrastrikeXMMesh', quality);
+  };
+  inherits(ultrastrike, LeveledXMItemEntity);
+
+  return ultrastrike;
+}());
+
+imv.Entities = imv.Entities || {};
+imv.Entities.UltraStrikeItem = UltraStrikeItem;
+
+var XmpItem = (function(){
+
+  // Defaulting to a random level, because hey why not.
+  var r = Math.floor(Math.random() * 8) + 1;
+  var defaultQuality = new THREE.Vector4().copy(constants.qualityColors['L' + r]);
+
+  var xmp = function(loader, quality) {
+    quality = quality || defaultQuality;
+    LeveledXMItemEntity.call(this, loader, 'XmpMesh', 'XmpXMMesh', quality);
+  };
+  inherits(xmp, LeveledXMItemEntity);
+
+  return xmp;
+}());
+
+imv.Entities = imv.Entities || {};
+imv.Entities.XmpItem = XmpItem;
+
+var PortalLinkSystemEntity = (function(){
+
+  var LINK_TEXTURE = 'PortalLinkTexture',
+    LINK_SHADER = 'LinkShader';
+
+  var portalLinkSystem = function(loader, options) {
+    Entity.call(this, loader);
+    options = options || {};
+    this.linkGeometry = new PortalLinkGeometry();
+    var linkTexture = loader.getAsset('texture', LINK_TEXTURE);
+    var linkShaders = loader.getRawShader(LINK_SHADER);
+    if(!linkTexture)
+    {
+      throw 'Unable to load texture ' + LINK_TEXTURE;
+    }
+    if(!linkShaders)
+    {
+      throw 'Unable to load shaders: ' + LINK_SHADER;
+    }
+    this.linkSystem = new LinkDrawable(linkTexture);
+    this.linkSystem.init(this.linkGeometry, linkShaders);
+    this.models = [this.linkSystem];
+  };
+  inherits(portalLinkSystem, Entity);
+
+  portalLinkSystem.prototype.addLink = function(srcx, srcy, srcPercent,
+    destx, desty, destPercent, color)
+  {
+    if(!(color instanceof THREE.Vector4))
+    {
+      throw 'Color must be a Vector4';
+    }
+    this.linkGeometry.addLink({
+      x: srcx,
+      y: srcy,
+      percent: srcPercent
+    }, {
+      x: destx,
+      y: desty,
+      percent: destPercent
+    }, color);
+    return this;
+  };
+
+  return portalLinkSystem;
+}());
+
+imv.Entities = imv.Entities || {};
+imv.Entities.PortalLinkSystem = PortalLinkSystemEntity;
+
+var ResonatorLinkSystemEntity = (function(){
+
+  var LINK_TEXTURE = 'ResonatorLinkTexture',
+    LINK_SHADER = 'LinkShader';
+
+  var resonatorLinkSystem = function(loader, options) {
+    Entity.call(this, loader);
+    options = options || {};
+    this.linkGeometry = new ResonatorLinkGeometry();
+    var linkTexture = loader.getAsset('texture', LINK_TEXTURE);
+    var linkShaders = loader.getRawShader(LINK_SHADER);
+    if(!linkTexture)
+    {
+      throw 'Unable to load texture ' + LINK_TEXTURE;
+    }
+    if(!linkShaders)
+    {
+      throw 'Unable to load shaders: ' + LINK_SHADER;
+    }
+    this.linkSystem = new LinkDrawable(linkTexture);
+    this.linkSystem.init(this.linkGeometry, linkShaders);
+    this.models = [this.linkSystem];
+  };
+  inherits(resonatorLinkSystem, Entity);
+
+  resonatorLinkSystem.prototype.addLink = function(srcx, srcy, srcPercent,
+    destx, desty, destPercent, color)
+  {
+    if(!(color instanceof THREE.Vector4))
+    {
+      throw 'Color must be a Vector4';
+    }
+    this.linkGeometry.addLink({
+      x: srcx,
+      y: srcy,
+      percent: srcPercent
+    }, {
+      x: destx,
+      y: desty,
+      percent: destPercent
+    }, color);
+    return this;
+  };
+
+  return resonatorLinkSystem;
+}());
+
+imv.Entities = imv.Entities || {};
+imv.Entities.ResonatorLinkSystem = ResonatorLinkSystemEntity;
+
+var ShieldEffectEntity = (function(){
+
+  var SHIELD_GEOMETRY = 'PortalShieldMesh',
+    SHIELD_TEXTURE = 'PortalShieldTexture',
+    SHIELD_SHADER = 'shield',
+    SHIELD_SCALE = 12.0;
+
+  var shieldEffect = function(loader, color, options) {
+    Entity.call(this, loader);
+    options = options || {};
+    color = color || constants.teamColors.LOKI.clone();
+    this.setColor(color);
+    var geometry = loader.getAsset('model', SHIELD_GEOMETRY);
+    var texture = loader.getAsset('texture', SHIELD_TEXTURE);
+    var shaders = loader.getAsset('shaders', SHIELD_SHADER);
+    if(!geometry)
+    {
+      throw 'Unable to load Geometry ' + SHIELD_GEOMETRY;
+    }
+    if(!texture)
+    {
+      throw 'Unable to load texture ' + SHIELD_TEXTURE;
+    }
+    if(!shaders)
+    {
+      throw 'Unable to load shaders: ' + SHIELD_SHADER;
+    }
+    this.effect = new ShieldEffectDrawable(texture, this.color);
+    this.effect.init(geometry, shaders);
+    this.effect.mesh.scale.set(SHIELD_SCALE, SHIELD_SCALE, SHIELD_SCALE);
+    this.effect.mesh.updateMatrix();
+    this.effect.mesh.updateMatrixWorld();
+    this.effect.updateModel();
+    this.models = [this.effect];
+  };
+  inherits(shieldEffect, Entity);
+
+  shieldEffect.prototype.setColor = function(color)
+  {
+    if(!(color instanceof THREE.Vector4))
+    {
+      throw 'Color must be a Vector4';
+    }
+    this.color = color;
+    if(this.effect)
+    {
+      this.effect.setColor(this.color);
+    }
+    return this;
+  };
+
+  return shieldEffect;
+}());
+
+imv.Entities = imv.Entities || {};
+imv.Entities.ShieldEffect = ShieldEffectEntity;
+
+var PortalEntity = (function(){
+
+  var PORTAL_GEOMETRY = 'TexturedPortalMesh',
+    PORTAL_TEXTURE = 'GlowrampTexture',
+    PORTAL_SHADER = 'portal_scanner',
+    PORTAL_SCALE = 6.0;
+
+  var portal = function(loader, teamColor, options) {
+    Entity.call(this, loader);
+    options = options || {};
+    teamColor = teamColor || 'NEUTRAL';
+    this.setTeamColor(teamColor);
+    var portalGeometry = loader.getAsset('model', PORTAL_GEOMETRY);
+    var portalTexture = loader.getAsset('texture', PORTAL_TEXTURE);
+    var portalShaders = loader.getAsset('shaders', PORTAL_SHADER);
+    if(!portalGeometry)
+    {
+      throw 'Unable to load Geometry ' + PORTAL_GEOMETRY;
+    }
+    if(!portalTexture)
+    {
+      throw 'Unable to load texture ' + PORTAL_TEXTURE;
+    }
+    if(!portalShaders)
+    {
+      throw 'Unable to load shaders: ' + PORTAL_SHADER;
+    }
+    this.portal = new GlowrampDrawable(portalTexture, this.teamColor);
+    this.portal.init(portalGeometry, portalShaders);
+    this.portal.mesh.scale.set(PORTAL_SCALE, PORTAL_SCALE, PORTAL_SCALE);
+    this.portal.mesh.updateMatrix();
+    this.portal.mesh.updateMatrixWorld();
+    this.portal.updateModel();
+    this.models = [this.portal];
+  };
+  inherits(portal, Entity);
+
+  portal.prototype.setTeamColor = function(color)
+  {
+    if(color instanceof THREE.Vector4)
+    {
+      this.teamColor = color;
+    }
+    else if(!(color in constants.teamColors))
+    {
+      throw 'Unknown team color ' + color;
+    }
+    else
+    {
+      this.teamColor = constants.teamColors[color].clone();
+    }
+    if(this.portal)
+    {
+      this.portal.setBaseColor(this.teamColor);
+    }
+    return this;
+  };
+
+  return portal;
+}());
+
+imv.Entities = imv.Entities || {};
+imv.Entities.Portal = PortalEntity;
+
 var Engine = function(canvas, options)
 {
   options = options || {};
@@ -1855,124 +2608,74 @@ var Engine = function(canvas, options)
     premultipliedAlpha: true,
     alpha: false,
     preserveDrawingBuffer: false,
-    assetsBase: '/assets/'
   };
   this.options = setParams(params, options, true);
 
-  var projectView = new THREE.Matrix4();
-  var cameraFwd = new THREE.Vector3();
-  var uniforms = {
-    'u_color0': { type: "v4", value: new THREE.Vector4() },
-    'u_color1': { type: "v4", value: new THREE.Vector4(0xeb / 256, 0xb3 / 256, 0xe4 / 256, 1.0) },
-    'u_rotation': { type: "f", value: 0.0 },
-    'u_rampTarget': { type: "f", value: 0.5 },
-    'u_alpha': { type: "f", value: 0.60 },
-    'u_baseColor': { type: "v4", value: new THREE.Vector4().copy(constants.teamColors.RESISTANCE) },
-    'u_altColor': { type: "v4", value: new THREE.Vector4(0.6, 0.4, 0.6, 0.8) },
-    'u_teamColor': { type: "v4", value: new THREE.Vector4(0xeb / 256, 0xb3 / 256, 0xe4 / 256, 1.0) },
-    'u_elapsedTime': { type: "f", value: 0.0 },
-    'u_color': { type: "v4", value: new THREE.Vector4().copy(constants.teamColors.RESISTANCE) },
-    'u_rampTargetInvWidth': { type: "v2", value: new THREE.Vector2(0.5, 1.5) },
-    'u_contributionsAndAlpha': { type: "v3", value: new THREE.Vector3(0.5, 0.5, 0.5) },
-    'u_modelViewProject': { type: "m4", value: projectView },
-    'u_cameraFwd': { type: "v3", value: cameraFwd },
-    'u_modelToTexScale': { type: "v2", value: new THREE.Vector2(0.00666666667, 0.00666666667) },
-    'u_modelToTexOrigin': { type: "v2", value: new THREE.Vector2(0, 0) },
-    'u_texCoordOffset0': { type: "v2", value: new THREE.Vector2(0, 0) },
-    'u_texCoordOffset1': { type: "v2", value: new THREE.Vector2(0, 0) },
-    'u_texture': { type: "t", value: null }
-  };
-
-  this.getUniform = function(name)
-  {
-    return uniforms[name];
-  };
-
-  this.setUniform = function(name, value)
-  {
-    if(name in uniforms)
-    {
-      uniforms[name].value = value;
-    }
-    return this;
-  };
-
-  this.replaceGlobalUniform = function(name, uniform)
-  {
-    if(name in uniforms && uniforms[name].type == uniform.type)
-    {
-      uniforms[name] = uniform;
-    }
-    this.updateModels();
-    return this;
-  };
-
+  var created = Date.now();
   var models = {};
-  this.updateModels = function()
-  {
-    for(var i in models)
-    {
-      if(models.hasOwnProperty(i))
-      {
-        models[i].material.needsUpdate = true;
-      }
-    }
-  };
-
   var id = 0;
-  this.ensureDefaultUniforms = function(model)
+  this.addDrawable = function(model, soft)
   {
-    var uniformsList = model.shaders.getUniformsList();
-    for(var i = 0; i < uniformsList.length; i++)
+    if(!(model instanceof Drawable))
     {
-      var k = uniformsList[i];
-      if(uniforms.hasOwnProperty(k))
-      {
-        if(!model.uniforms.hasOwnProperty(k))
-        {
-          model.setUniform(k, uniforms[k]);
-        }
-      }
-      else
-      {
-        console.log('unknown uniform: ' + k);
-      }
-    }
-  };
-
-  this.addModel = function(model, soft)
-  {
-    if(!(model instanceof Model))
-    {
-      throw 'Object must be of type Model';
+      throw 'Object must be of type Drawable';
     }
     if(!model.id)
     {
       var n = id++;
       models[n] = model;
       model.id = n;
-      model.setUniform('u_modelViewProject', { type: "m4", value: new THREE.Matrix4() });
-      this.ensureDefaultUniforms(model);
     }
     else
     {
       models[model.id] = model;
     }
+    model.updateView(this.camera);
     if(!soft)
     {
       this.scene.add(model.mesh);
     }
   };
 
-  this.removeModel = function(model)
+  this.removeDrawable = function(model)
   {
+    if(!(model instanceof Drawable))
+    {
+      return false;
+    }
     var i = model.id;
     if(i in models)
     {
       this.scene.remove(models[i].mesh);
       delete models[i];
     }
-    return this;
+    return true;
+  };
+
+  this.addEntity = function(entity, soft)
+  {
+    if(!(entity instanceof Entity))
+    {
+      throw 'Must pass an instance of IMV.Entity';
+    }
+    for(var i = 0; i < entity.models.length; i++)
+    {
+      this.addDrawable(entity.models[i], soft);
+    }
+  };
+
+  this.removeEntity = function(entity)
+  {
+    if(!(entity instanceof Entity))
+    {
+      return false;
+    }
+    var t = true;
+    for(var i = 0; i < entity.models.length; i++)
+    {
+      t = this.removeDrawable(entity.models[i]) && t;
+    }
+    return t;
   };
 
   this.hideModel = function(model)
@@ -1997,12 +2700,11 @@ var Engine = function(canvas, options)
 
   this.clearScene = function()
   {
-    for(var i in models)
+    var keys = Object.keys(models);
+    for(var i = 0; i < keys.length; i++)
     {
-      if(models.hasOwnProperty(i))
-      {
-        this.scene.remove(models[i].mesh);
-      }
+      this.scene.remove(models[keys[i]].mesh);
+      delete models[keys[i]];
     }
     return this;
   };
@@ -2024,9 +2726,9 @@ var Engine = function(canvas, options)
   });
   //this.renderer.sortObjects = false;
 
-  var tick = 0, _this = this;
+  var _this = this;
   var _periodics = [];
-  this.getTick = function() { return tick; };
+  this.getElapsed = function() { return Date.now() - created; };
 
   this.registerPeriodic = function(fn)
   {
@@ -2046,26 +2748,37 @@ var Engine = function(canvas, options)
     return this;
   };
 
+  var lastTick = created;
+  var updatePeriodics = function()
+  {
+    var i;
+    var n = Date.now(), d = n - lastTick;
+    lastTick = n;
+    for(i in models)
+    {
+      if(models.hasOwnProperty(i) && models[i] instanceof Drawable)
+      {
+        models[i].updateTime(d);
+      }
+    }
+    var l = _periodics.length;
+    for(i = 0; i < l; i++)
+    {
+      _periodics[i](d);
+    }
+  };
+
   var updateViewUniforms = function(camera)
   {
-    projectView.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
-    cameraFwd.set(0, 0, -1).applyQuaternion(camera.quaternion);
     var i;
     for(i in models)
     {
       if(models.hasOwnProperty(i))
       {
-        if('u_modelViewProject' in models[i].uniforms)
+        if(models[i] instanceof Drawable)
         {
-          models[i].uniforms.u_modelViewProject.value.copy(projectView);
-          models[i].uniforms.u_modelViewProject.value.multiply(models[i].mesh.matrixWorld);
-          models[i].material.needsUpdate = true;
-        }/*
-        if('u_cameraFwd' in models[i].uniforms)
-        {
-          models[i].uniforms.u_cameraFwd.value.copy(cameraFwd);
-          models[i].material.needsUpdate = true;
-        }*/
+          models[i].updateView(camera);
+        }
       }
     }
   };
@@ -2087,6 +2800,7 @@ var Engine = function(canvas, options)
   {
     _this.camera.aspect = width / height;
     _this.camera.updateProjectionMatrix();
+    updateViewUniforms(_this.camera);
     _this.renderer.setSize(width, height);
     if(_effect)
     {
@@ -2116,21 +2830,19 @@ var Engine = function(canvas, options)
     }
     // update the default worldview.
     window.requestAnimationFrame(render);
+    updatePeriodics();
     if(_ovr)
     {
       _effect.render(_this.scene, _this.camera);
     }
     else
     {
-      updateViewUniforms(_this.camera);
+      if(_this.camera.matrixWorldNeedsUpdate)
+      {
+        updateViewUniforms(_this.camera);
+      }
       _this.renderer.render(_this.scene, _this.camera);
     }
-    var l = _periodics.length;
-    for(var i = 0; i < l; i++)
-    {
-      _periodics[i](tick);
-    }
-    tick++;
   };
 
   this.suspend = function()
@@ -2159,7 +2871,7 @@ var Engine = function(canvas, options)
 
 imv.Engine = Engine;
 
-  imv.VERSION = '0.9.3';
+  imv.VERSION = '0.11.0';
 
   root.IMV = imv;
 

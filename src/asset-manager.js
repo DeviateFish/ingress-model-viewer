@@ -8,43 +8,6 @@ var AssetManager = function(basepath, map) {
   };
   var keys = Object.keys(cache);
 
-  this.loadModel = function(asset, callback)
-  {
-    var loaded = {}, loading = false, i;
-    var onload = function(){
-      if(!loading && loaded.model && loaded.texture && loaded.shaders)
-      {
-        loading = true;
-        callback(null, new Model(loaded.model, loaded.texture, loaded.shaders));
-      }
-    };
-    for(i = 0; i < keys.length; i++)
-    {
-      var k = keys[i];
-      if(!(asset[k] in assetMap[k]))
-      {
-        console.warn('unknown ' + k + ': ' + asset[k]);
-        return false;
-      }
-    }
-    var fetch = function(k) {
-      cache[k].loadAsset(asset[k], assetMap[k][asset[k]], function(err, value) {
-        if(err)
-        {
-          callback(err, null);
-          return;
-        }
-        loaded[k] = value;
-        onload();
-      });
-    };
-    for(i = 0; i < keys.length; i++)
-    {
-      fetch(keys[i]);
-    }
-    return this;
-  };
-
   this.setAssets = function(list)
   {
     assetMap = list;
@@ -61,18 +24,6 @@ var AssetManager = function(basepath, map) {
     if(type in cache)
     {
       return cache[type].getAsset(key);
-    }
-    return null;
-  };
-
-  this.getModel = function(model, texture, shaders)
-  {
-    var m = cache.model.getAsset(model),
-      t = cache.texture.getAsset(texture),
-      s = cache.shaders.getAsset(shaders);
-    if(m && t && s)
-    {
-      return new Model(m, t, s);
     }
     return null;
   };

@@ -12,124 +12,74 @@ var Engine = function(canvas, options)
     premultipliedAlpha: true,
     alpha: false,
     preserveDrawingBuffer: false,
-    assetsBase: '/assets/'
   };
   this.options = setParams(params, options, true);
 
-  var projectView = new THREE.Matrix4();
-  var cameraFwd = new THREE.Vector3();
-  var uniforms = {
-    'u_color0': { type: "v4", value: new THREE.Vector4() },
-    'u_color1': { type: "v4", value: new THREE.Vector4(0xeb / 256, 0xb3 / 256, 0xe4 / 256, 1.0) },
-    'u_rotation': { type: "f", value: 0.0 },
-    'u_rampTarget': { type: "f", value: 0.5 },
-    'u_alpha': { type: "f", value: 0.60 },
-    'u_baseColor': { type: "v4", value: new THREE.Vector4().copy(constants.teamColors.RESISTANCE) },
-    'u_altColor': { type: "v4", value: new THREE.Vector4(0.6, 0.4, 0.6, 0.8) },
-    'u_teamColor': { type: "v4", value: new THREE.Vector4(0xeb / 256, 0xb3 / 256, 0xe4 / 256, 1.0) },
-    'u_elapsedTime': { type: "f", value: 0.0 },
-    'u_color': { type: "v4", value: new THREE.Vector4().copy(constants.teamColors.RESISTANCE) },
-    'u_rampTargetInvWidth': { type: "v2", value: new THREE.Vector2(0.5, 1.5) },
-    'u_contributionsAndAlpha': { type: "v3", value: new THREE.Vector3(0.5, 0.5, 0.5) },
-    'u_modelViewProject': { type: "m4", value: projectView },
-    'u_cameraFwd': { type: "v3", value: cameraFwd },
-    'u_modelToTexScale': { type: "v2", value: new THREE.Vector2(0.00666666667, 0.00666666667) },
-    'u_modelToTexOrigin': { type: "v2", value: new THREE.Vector2(0, 0) },
-    'u_texCoordOffset0': { type: "v2", value: new THREE.Vector2(0, 0) },
-    'u_texCoordOffset1': { type: "v2", value: new THREE.Vector2(0, 0) },
-    'u_texture': { type: "t", value: null }
-  };
-
-  this.getUniform = function(name)
-  {
-    return uniforms[name];
-  };
-
-  this.setUniform = function(name, value)
-  {
-    if(name in uniforms)
-    {
-      uniforms[name].value = value;
-    }
-    return this;
-  };
-
-  this.replaceGlobalUniform = function(name, uniform)
-  {
-    if(name in uniforms && uniforms[name].type == uniform.type)
-    {
-      uniforms[name] = uniform;
-    }
-    this.updateModels();
-    return this;
-  };
-
+  var created = Date.now();
   var models = {};
-  this.updateModels = function()
-  {
-    for(var i in models)
-    {
-      if(models.hasOwnProperty(i))
-      {
-        models[i].material.needsUpdate = true;
-      }
-    }
-  };
-
   var id = 0;
-  this.ensureDefaultUniforms = function(model)
+  this.addDrawable = function(model, soft)
   {
-    var uniformsList = model.shaders.getUniformsList();
-    for(var i = 0; i < uniformsList.length; i++)
+    if(!(model instanceof Drawable))
     {
-      var k = uniformsList[i];
-      if(uniforms.hasOwnProperty(k))
-      {
-        if(!model.uniforms.hasOwnProperty(k))
-        {
-          model.setUniform(k, uniforms[k]);
-        }
-      }
-      else
-      {
-        console.log('unknown uniform: ' + k);
-      }
-    }
-  };
-
-  this.addModel = function(model, soft)
-  {
-    if(!(model instanceof Model))
-    {
-      throw 'Object must be of type Model';
+      throw 'Object must be of type Drawable';
     }
     if(!model.id)
     {
       var n = id++;
       models[n] = model;
       model.id = n;
-      model.setUniform('u_modelViewProject', { type: "m4", value: new THREE.Matrix4() });
-      this.ensureDefaultUniforms(model);
     }
     else
     {
       models[model.id] = model;
     }
+    model.updateView(this.camera);
     if(!soft)
     {
       this.scene.add(model.mesh);
     }
   };
 
-  this.removeModel = function(model)
+  this.removeDrawable = function(model)
   {
+    if(!(model instanceof Drawable))
+    {
+      return false;
+    }
     var i = model.id;
     if(i in models)
     {
       this.scene.remove(models[i].mesh);
       delete models[i];
     }
-    return this;
+    return true;
+  };
+
+  this.addEntity = function(entity, soft)
+  {
+    if(!(entity instanceof Entity))
+    {
+      throw 'Must pass an instance of IMV.Entity';
+    }
+    for(var i = 0; i < entity.models.length; i++)
+    {
+      this.addDrawable(entity.models[i], soft);
+    }
+  };
+
+  this.removeEntity = function(entity)
+  {
+    if(!(entity instanceof Entity))
+    {
+      return false;
+    }
+    var t = true;
+    for(var i = 0; i < entity.models.length; i++)
+    {
+      t = this.removeDrawable(entity.models[i]) && t;
+    }
+    return t;
   };
 
   this.hideModel = function(model)
@@ -154,12 +104,11 @@ var Engine = function(canvas, options)
 
   this.clearScene = function()
   {
-    for(var i in models)
+    var keys = Object.keys(models);
+    for(var i = 0; i < keys.length; i++)
     {
-      if(models.hasOwnProperty(i))
-      {
-        this.scene.remove(models[i].mesh);
-      }
+      this.scene.remove(models[keys[i]].mesh);
+      delete models[keys[i]];
     }
     return this;
   };
@@ -181,9 +130,9 @@ var Engine = function(canvas, options)
   });
   //this.renderer.sortObjects = false;
 
-  var tick = 0, _this = this;
+  var _this = this;
   var _periodics = [];
-  this.getTick = function() { return tick; };
+  this.getElapsed = function() { return Date.now() - created; };
 
   this.registerPeriodic = function(fn)
   {
@@ -203,26 +152,37 @@ var Engine = function(canvas, options)
     return this;
   };
 
+  var lastTick = created;
+  var updatePeriodics = function()
+  {
+    var i;
+    var n = Date.now(), d = n - lastTick;
+    lastTick = n;
+    for(i in models)
+    {
+      if(models.hasOwnProperty(i) && models[i] instanceof Drawable)
+      {
+        models[i].updateTime(d);
+      }
+    }
+    var l = _periodics.length;
+    for(i = 0; i < l; i++)
+    {
+      _periodics[i](d);
+    }
+  };
+
   var updateViewUniforms = function(camera)
   {
-    projectView.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
-    cameraFwd.set(0, 0, -1).applyQuaternion(camera.quaternion);
     var i;
     for(i in models)
     {
       if(models.hasOwnProperty(i))
       {
-        if('u_modelViewProject' in models[i].uniforms)
+        if(models[i] instanceof Drawable)
         {
-          models[i].uniforms.u_modelViewProject.value.copy(projectView);
-          models[i].uniforms.u_modelViewProject.value.multiply(models[i].mesh.matrixWorld);
-          models[i].material.needsUpdate = true;
-        }/*
-        if('u_cameraFwd' in models[i].uniforms)
-        {
-          models[i].uniforms.u_cameraFwd.value.copy(cameraFwd);
-          models[i].material.needsUpdate = true;
-        }*/
+          models[i].updateView(camera);
+        }
       }
     }
   };
@@ -244,6 +204,7 @@ var Engine = function(canvas, options)
   {
     _this.camera.aspect = width / height;
     _this.camera.updateProjectionMatrix();
+    updateViewUniforms(_this.camera);
     _this.renderer.setSize(width, height);
     if(_effect)
     {
@@ -273,21 +234,19 @@ var Engine = function(canvas, options)
     }
     // update the default worldview.
     window.requestAnimationFrame(render);
+    updatePeriodics();
     if(_ovr)
     {
       _effect.render(_this.scene, _this.camera);
     }
     else
     {
-      updateViewUniforms(_this.camera);
+      if(_this.camera.matrixWorldNeedsUpdate)
+      {
+        updateViewUniforms(_this.camera);
+      }
       _this.renderer.render(_this.scene, _this.camera);
     }
-    var l = _periodics.length;
-    for(var i = 0; i < l; i++)
-    {
-      _periodics[i](tick);
-    }
-    tick++;
   };
 
   this.suspend = function()

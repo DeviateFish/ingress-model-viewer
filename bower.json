@@ -1,6 +1,6 @@
 {
   "name": "ingress-model-viewer",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "main": "dist/ingress-model-viewer.min.js",
   "ignore": [
     "**/.*",
