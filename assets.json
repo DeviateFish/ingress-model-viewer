@@ -28,7 +28,7 @@
         "OrnamentVolatileTexture": { "path": "scanner/ornaments/volatile.png", "minFilter": "Linear", "magFilter": "Linear", "wrapS": "ClampToEdge", "wrapT": "ClampToEdge" },
         "RegionTexture": { "path": "scanner/region_tiling.png", "minFilter": "MipMapLinearLinear", "magFilter": "Linear", "wrapS": "Repeat", "wrapT": "Repeat" }
     },
-    "model": {
+    "geometry": {
         "PlayerMesh": { "path": "scanner/playerMesh.obj" },
         "PlayerMeshEdge": { "path": "scanner/playerMeshEdge.obj" },
         "PlayerMeshReflection": { "path": "scanner/playerMeshEdgeRefl.obj" },

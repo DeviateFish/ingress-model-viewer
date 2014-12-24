@@ -99,5 +99,5 @@ var FieldGeometry = (function(){
   return fieldgeometry;
 }());
 
-imv.Geometry = imv.Geometry || {};
-imv.Geometry.FieldGeometry = FieldGeometry;
+imv.Geometries = imv.Geometries || {};
+imv.Geometries.Field = FieldGeometry;

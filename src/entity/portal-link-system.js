@@ -21,7 +21,9 @@ var PortalLinkSystemEntity = (function(){
     this.linkSystem.init(this.linkGeometry, linkShaders);
     this.models = [this.linkSystem];
   };
-  inherits(portalLinkSystem, Entity);
+  Entity.extend(portalLinkSystem, Entity);
+  portalLinkSystem._assets.texture.push(LINK_TEXTURE);
+  portalLinkSystem._assets.rawShaders.push(LINK_SHADER);
 
   portalLinkSystem.prototype.addLink = function(srcx, srcy, srcPercent,
     destx, desty, destPercent, color)

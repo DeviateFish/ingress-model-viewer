@@ -149,5 +149,5 @@ var ResonatorLinkGeometry = (function(){
   return linkgeometry;
 }());
 
-imv.Geometry = imv.Geometry || {};
-imv.Geometry.ResonatorLinkGeometry = ResonatorLinkGeometry;
+imv.Geometries = imv.Geometries || {};
+imv.Geometries.ResonatorLink = ResonatorLinkGeometry;

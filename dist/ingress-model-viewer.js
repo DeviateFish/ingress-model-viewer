@@ -10,7 +10,7 @@ if(!JavaDeserializer || !THREE || !libtga)
   throw 'Missing dependencies';
 }
 
-var console = console || {
+var console = window.console || {
   log: function(){},
   warn: function(){},
   info: function(){}
@@ -314,19 +314,19 @@ var constants = {
   },
   artifactColors: {
     Helios: {
-      artifactsRedGlow: new THREE.Vector4(0.92, 0.51, 0.14, 1.0),
-      artifactsPurpleGlow: new THREE.Vector4(1.0, 0.87, 0.55, 1.0),
-      artifactTargetGlow: new THREE.Vector4(1.0, 0.72, 0.0, 1.0)
+      RedGlow: new THREE.Vector4(0.92, 0.51, 0.14, 1.0),
+      PurpleGlow: new THREE.Vector4(1.0, 0.87, 0.55, 1.0),
+      TargetGlow: new THREE.Vector4(1.0, 0.72, 0.0, 1.0)
     },
     Amar: {
-      artifactTargetGlow: new THREE.Vector4(0.62, 0.22, 0.62, 1.0),
-      artifactsRedGlow: new THREE.Vector4(0.79, 0.11, 0.49, 1.0),
-      artifactsPurpleGlow: new THREE.Vector4(0.58, 0.17, 1.0, 1.0)
+      TargetGlow: new THREE.Vector4(0.62, 0.22, 0.62, 1.0),
+      RedGlow: new THREE.Vector4(0.79, 0.11, 0.49, 1.0),
+      PurpleGlow: new THREE.Vector4(0.58, 0.17, 1.0, 1.0)
     },
     Jarvis: {
-      artifactTargetGlow: new THREE.Vector4(0.62, 0.22, 0.62, 1.0),
-      artifactsRedGlow: new THREE.Vector4(0.79, 0.11, 0.49, 1.0),
-      artifactsPurpleGlow: new THREE.Vector4(0.58, 0.17, 1.0, 1.0)
+      TargetGlow: new THREE.Vector4(0.62, 0.22, 0.62, 1.0),
+      RedGlow: new THREE.Vector4(0.79, 0.11, 0.49, 1.0),
+      PurpleGlow: new THREE.Vector4(0.58, 0.17, 1.0, 1.0)
     }
   },
   xmColors: {
@@ -832,8 +832,8 @@ var IngressGeometry = (function(){
   return ingressgeometry;
 }());
 
-imv.Geometry = imv.Geometry || {};
-imv.Geometry.IngressGeometry = IngressGeometry;
+imv.Geometries = imv.Geometries || {};
+imv.Geometries.Ingress = IngressGeometry;
 
 var PortalLinkGeometry = (function(){
 
@@ -988,8 +988,8 @@ var PortalLinkGeometry = (function(){
   return linkgeometry;
 }());
 
-imv.Geometry = imv.Geometry || {};
-imv.Geometry.PortalLinkGeometry = PortalLinkGeometry;
+imv.Geometries = imv.Geometries || {};
+imv.Geometries.PortalLink = PortalLinkGeometry;
 
 var ResonatorLinkGeometry = (function(){
 
@@ -1142,8 +1142,8 @@ var ResonatorLinkGeometry = (function(){
   return linkgeometry;
 }());
 
-imv.Geometry = imv.Geometry || {};
-imv.Geometry.ResonatorLinkGeometry = ResonatorLinkGeometry;
+imv.Geometries = imv.Geometries || {};
+imv.Geometries.ResonatorLink = ResonatorLinkGeometry;
 
 
 var FieldGeometry = (function(){
@@ -1247,8 +1247,8 @@ var FieldGeometry = (function(){
   return fieldgeometry;
 }());
 
-imv.Geometry = imv.Geometry || {};
-imv.Geometry.FieldGeometry = FieldGeometry;
+imv.Geometries = imv.Geometries || {};
+imv.Geometries.Field = FieldGeometry;
 
 var ParametricGeometry = (function(){
 
@@ -1330,8 +1330,8 @@ var ParametricGeometry = (function(){
   return parametric;
 }());
 
-imv.Geometry = imv.Geometry || {};
-imv.Geometry.ParametricGeometry = ParametricGeometry;
+imv.Geometries = imv.Geometries || {};
+imv.Geometries.Parametric = ParametricGeometry;
 
 var ShaderSet = (function(){
 
@@ -1520,6 +1520,8 @@ var ModelDrawable = (function() {
   // signals that the model's mesh has been updated in some way...
   // means we need to recalculate the u_modelViewProject uniform
   modelDrawable.prototype.updateModel = function() {
+    this.mesh.updateMatrix();
+    this.mesh.updateMatrixWorld();
     var modelViewProject = this.projectView.clone().multiply(this.mesh.matrixWorld);
     this.updateUniformM('u_modelViewProject', modelViewProject);
   };
@@ -1670,6 +1672,7 @@ var GlowrampDrawable = (function(){
     var inc = this.elapsed / 5000;
     this.updateUniformF('u_rotation', inc);
     this.updateUniformF('u_rampTarget', Math.sin(Math.PI / 2 * (inc - Math.floor(inc))));
+    this.updateUniformF('u_alpha', Math.sin(inc) * 0.05 + 0.75);
   };
 
   return glowrampDrawable;
@@ -1988,11 +1991,669 @@ var TextureLoader = (function(){
 imv.Loaders = imv.Loaders || {};
 imv.Loaders.TextureLoader = TextureLoader;
 
+var Entity = (function(){
+
+  var entity = function(loader) {
+    this.loader = loader;
+    this.models = [];
+  };
+  entity._assets = {
+    geometry: [],
+    texture: [],
+    shaders: [],
+    rawShaders: []
+  };
+
+  entity.extend = function(child, parent) {
+    inherits(child, parent);
+    child._assets = {
+      geometry: parent._assets.geometry.slice(),
+      texture: parent._assets.texture.slice(),
+      shaders: parent._assets.shaders.slice(),
+      rawShaders: parent._assets.rawShaders.slice()
+    };
+  };
+  // Add functions for translations, rotations, etc
+  // Anything you'd want to manipulate the entire entity at once.
+  var uniq = function(l, c) {
+    if(l.indexOf(c) < 0) {
+      l.push(c);
+    }
+    return l;
+  };
+  entity.getAssets = function(ent) {
+    return {
+      geometry: ent._assets.geometry.reduce(uniq, []),
+      texture: ent._assets.texture.reduce(uniq, []),
+      shaders: ent._assets.shaders.reduce(uniq, []),
+      rawShaders: ent._assets.rawShaders.reduce(uniq, [])
+    };
+  };
+
+  entity.prototype.setPosition = function(v) {
+    for(var i = 0; i < this.models.length; i++)
+    {
+      this.models[i].mesh.position.copy(v);
+      this.models[i].updateModel();
+    }
+    return this;
+  };
+
+  entity.prototype.setScale = function(v) {
+    for(var i = 0; i < this.models.length; i++)
+    {
+      this.models[i].mesh.scale.copy(v);
+      this.models[i].updateModel();
+    }
+    return this;
+  };
+
+  entity.prototype.setRotation = function(v) {
+    for(var i = 0; i < this.models.length; i++)
+    {
+      this.models[i].mesh.rotation.copy(v);
+      this.models[i].updateModel();
+    }
+    return this;
+  };
+
+  entity.prototype.translate = function(direction, distance) {
+    for(var i = 0; i < this.models.length; i++)
+    {
+      this.models[i].mesh.translateOnAxis(direction, distance);
+      this.models[i].updateModel();
+    }
+    return this;
+  };
+
+  entity.prototype.rotate = function(axis, angle) {
+    for(var i = 0; i < this.models.length; i++)
+    {
+      this.models[i].mesh.rotateOnAxis(axis, angle);
+      this.models[i].updateModel();
+    }
+    return this;
+  };
+
+  return entity;
+}());
+
+imv.Entity = Entity;
+
+var LeveledXMItemEntity = function(mesh, xm_mesh, defaultQuality) {
+
+  var DEFAULT_QUALITY = defaultQuality.clone();
+
+  var ITEM_MESH = mesh,
+    ITEM_TEXTURE = 'FlipCardTexture',
+    ITEM_SHADER = 'bicolor_textured',
+    CORE_MESH = xm_mesh,
+    CORE_TEXTURE = 'ObjectXMTexture',
+    CORE_SHADER = 'xm';
+
+  var leveledItem = function(loader, quality) {
+    Entity.call(this, loader);
+    quality = quality || DEFAULT_QUALITY;
+    var itemGeometry = loader.getAsset('geometry', ITEM_MESH);
+    var itemTexture = loader.getAsset('texture', ITEM_TEXTURE);
+    var itemShaders = loader.getAsset('shaders', ITEM_SHADER);
+    if(!itemGeometry)
+    {
+      throw 'Unable to load Geometry ' + ITEM_MESH;
+    }
+    if(!itemTexture)
+    {
+      throw 'Unable to load texture ' + ITEM_TEXTURE;
+    }
+    if(!itemShaders)
+    {
+      throw 'Unable to load shaders: ' + ITEM_SHADER;
+    }
+    this.item = new BicoloredDrawable(itemTexture, this.quality);
+    this.item.init(itemGeometry, itemShaders);
+    var coreGeometry = loader.getAsset('geometry', CORE_MESH);
+    var coreTexture = loader.getAsset('texture', CORE_TEXTURE);
+    var coreShaders = loader.getAsset('shaders', CORE_SHADER);
+    if(!coreGeometry)
+    {
+      throw 'Unable to load Geometry ' + CORE_MESH;
+    }
+    if(!coreTexture)
+    {
+      throw 'Unable to load texture ' + CORE_TEXTURE;
+    }
+    if(!coreShaders)
+    {
+      throw 'Unable to load shaders: ' + CORE_SHADER;
+    }
+    this.core = new XmDrawable(coreTexture);
+    this.core.init(coreGeometry, coreShaders);
+    this.setQuality(quality);
+    this.models = [this.item, this.core];
+  };
+  Entity.extend(leveledItem, Entity);
+  leveledItem._assets.geometry.push(ITEM_MESH);
+  leveledItem._assets.geometry.push(CORE_MESH);
+  leveledItem._assets.texture.push(ITEM_TEXTURE);
+  leveledItem._assets.texture.push(CORE_TEXTURE);
+  leveledItem._assets.shaders.push(ITEM_SHADER);
+  leveledItem._assets.shaders.push(CORE_SHADER);
+
+  leveledItem.prototype.setQuality = function(quality)
+  {
+    if(quality instanceof THREE.Vector4)
+    {
+      this.quality = quality;
+    }
+    else if(!(quality in constants.qualityColors))
+    {
+      throw 'Unknown quality color ' + quality;
+    }
+    else
+    {
+      this.quality = constants.qualityColors[quality].clone();
+    }
+    if(this.item)
+    {
+      this.item.setPrimaryColor(this.quality);
+    }
+    return this;
+  };
+
+  return leveledItem;
+};
+
+imv.Entities = imv.Entities || {};
+imv.Entities.LeveledXMItem = LeveledXMItemEntity;
+
+var FlipCardXMItemEntity = function(mesh, defaultCoreColor) {
+
+  var DEFAULT_CORE_COLOR = defaultCoreColor.clone();
+
+  var ITEM_MESH = mesh,
+    ITEM_TEXTURE = 'FlipCardTexture',
+    ITEM_SHADER = 'bicolor_textured',
+    CORE_MESH = 'FlipCardXmMesh',
+    CORE_TEXTURE = 'ObjectXMTexture',
+    CORE_SHADER = 'xm';
+
+  var flipcardItem = function(loader, coreColor) {
+    Entity.call(this, loader);
+    coreColor = coreColor || DEFAULT_CORE_COLOR;
+    var itemGeometry = loader.getAsset('geometry', ITEM_MESH);
+    var itemTexture = loader.getAsset('texture', ITEM_TEXTURE);
+    var itemShaders = loader.getAsset('shaders', ITEM_SHADER);
+    if(!itemGeometry)
+    {
+      throw 'Unable to load Geometry ' + ITEM_MESH;
+    }
+    if(!itemTexture)
+    {
+      throw 'Unable to load texture ' + ITEM_TEXTURE;
+    }
+    if(!itemShaders)
+    {
+      throw 'Unable to load shaders: ' + ITEM_SHADER;
+    }
+    this.item = new TexturedDrawable(itemTexture);
+    this.item.init(itemGeometry, itemShaders);
+    var coreGeometry = loader.getAsset('geometry', CORE_MESH);
+    var coreTexture = loader.getAsset('texture', CORE_TEXTURE);
+    var coreShaders = loader.getAsset('shaders', CORE_SHADER);
+    if(!coreGeometry)
+    {
+      throw 'Unable to load Geometry ' + CORE_MESH;
+    }
+    if(!coreTexture)
+    {
+      throw 'Unable to load texture ' + CORE_TEXTURE;
+    }
+    if(!coreShaders)
+    {
+      throw 'Unable to load shaders: ' + CORE_SHADER;
+    }
+    this.core = new XmDrawable(coreTexture);
+    this.core.init(coreGeometry, coreShaders);
+    this.core.setTeamColor(coreColor);
+    this.models = [this.item, this.core];
+  };
+  Entity.extend(flipcardItem, Entity);
+  flipcardItem._assets.geometry.push(ITEM_MESH);
+  flipcardItem._assets.geometry.push(CORE_MESH);
+  flipcardItem._assets.texture.push(ITEM_TEXTURE);
+  flipcardItem._assets.texture.push(CORE_TEXTURE);
+  flipcardItem._assets.shaders.push(ITEM_SHADER);
+  flipcardItem._assets.shaders.push(CORE_SHADER);
+
+  return flipcardItem;
+};
+
+imv.Entities = imv.Entities || {};
+imv.Entities.FlipCardXMItem = FlipCardXMItemEntity;
+
+var r;
+
+imv.Entities = imv.Entities || {};
+imv.Entities.Items = imv.Entities.Items || {};
+// capsule
+// Rare because why not.
+var CapsuleItemEntity = LeveledXMItemEntity('CapsuleMesh', 'CapsuleXmMesh', constants.qualityColors.RARE);
+imv.Entities.Items.Capsule = CapsuleItemEntity;
+
+// AXA Shield
+// Very Rare since that's the only quality they drop in.
+var ExtraShieldItemEntity = LeveledXMItemEntity('ExtraShieldMesh', 'ResShieldXMMesh', constants.qualityColors.VERY_RARE);
+imv.Entities.Items.ExtraShield = ExtraShieldItemEntity;
+
+// Force Amp
+// Rare since that's the only quality they drop in.
+var ForceAmpItemEntity = LeveledXMItemEntity('ForceAmpMesh', 'ForceAmpXmMesh', constants.qualityColors.RARE);
+imv.Entities.Items.ForceAmp = ForceAmpItemEntity;
+
+// Heatsink
+// Very Rare because people like that.
+var HeatSinkItemEntity = LeveledXMItemEntity('HeatSinkMesh', 'HeatSinkXmMesh', constants.qualityColors.VERY_RARE);
+imv.Entities.Items.HeatSink = HeatSinkItemEntity;
+
+// Link Amp
+// Rare because yeah, right :P
+var LinkAmpItemEntity = LeveledXMItemEntity('LinkAmpMesh', 'LinkAmpXmMesh', constants.qualityColors.RARE);
+imv.Entities.Items.LinkAmp = LinkAmpItemEntity;
+
+// MultiHack
+// Very Rare because people like that.
+var MultiHackItemEntity = LeveledXMItemEntity('MultiHackMesh', 'MultiHackXmMesh', constants.qualityColors.VERY_RARE);
+imv.Entities.Items.MultiHack = MultiHackItemEntity;
+
+// Resonator
+// Random level because I can:
+r = Math.floor(Math.random() * 8) + 1;
+var ResonatorItemEntity = LeveledXMItemEntity('ResonatorMesh', 'ResonatorXMMesh', constants.qualityColors['L' + r]);
+imv.Entities.Items.Resonator = ResonatorItemEntity;
+
+// Shield
+// Very Rare because people like that.
+var ShieldItemEntity = LeveledXMItemEntity('ResShieldMesh', 'ResShieldXMMesh', constants.qualityColors.VERY_RARE);
+imv.Entities.Items.Shield = ShieldItemEntity;
+
+// Turret
+// Rare because that's the only quality.
+var TurretItemEntity = LeveledXMItemEntity('ResShieldMesh', 'ResShieldXMMesh', constants.qualityColors.RARE);
+imv.Entities.Items.Turret = TurretItemEntity;
+
+// Ultrastrike
+// Random level because I can:
+r = Math.floor(Math.random() * 8) + 1;
+var UltrastrikeItemEntity = LeveledXMItemEntity('UltrastrikeMesh', 'UltrastrikeXMMesh', constants.qualityColors['L' + r]);
+imv.Entities.Items.Ultrastrike = UltrastrikeItemEntity;
+
+// Xmp
+// Random level because I can:
+r = Math.floor(Math.random() * 8) + 1;
+var XmpItemEntity = LeveledXMItemEntity('XmpMesh', 'XmpXMMesh', constants.qualityColors['L' + r]);
+imv.Entities.Items.Xmp = XmpItemEntity;
+
+// Jarvis Virus
+// default core color is enlightened team color
+var JarvisVirusItemEntity = FlipCardXMItemEntity('FlipCardMeshJarvis', constants.teamColors.ENLIGHTENED);
+imv.Entities.Items.JarvisVirus = JarvisVirusItemEntity;
+
+// Ada Refactor
+// default core color is resistance team color
+var AdaRefactorItemEntity = FlipCardXMItemEntity('FlipCardMeshAda', constants.teamColors.RESISTANCE);
+imv.Entities.Items.AdaRefactor = AdaRefactorItemEntity;
+
+
+var ArtifactEntity = function(series, index, frozen) {
+
+  var MESH = series + (frozen ? 'Frozen' : '') + index,
+    TEXTURE = 'Artifact' + series + 'Texture',
+    SHADER = 'textured',
+    PORTAL_SCALE = 6.0;
+
+  var artifact = function(loader) {
+    Entity.call(this, loader);
+    var geometry = loader.getAsset('geometry', MESH);
+    var texture = loader.getAsset('texture', TEXTURE);
+    var shaders = loader.getAsset('shaders', SHADER);
+    if(!geometry)
+    {
+      throw 'Unable to load Geometry ' + MESH;
+    }
+    if(!texture)
+    {
+      throw 'Unable to load texture ' + TEXTURE;
+    }
+    if(!shaders)
+    {
+      throw 'Unable to load shaders: ' + SHADER;
+    }
+    this.entity = new TexturedDrawable(texture);
+    this.entity.init(geometry, shaders);
+    this.entity.mesh.scale.set(PORTAL_SCALE, PORTAL_SCALE, PORTAL_SCALE);
+    this.entity.updateModel();
+    this.models = [this.entity];
+  };
+  Entity.extend(artifact, Entity);
+  artifact._assets.geometry.push(MESH);
+  artifact._assets.texture.push(TEXTURE);
+  artifact._assets.shaders.push(SHADER);
+
+  return artifact;
+};
+
+imv.Entities = imv.Entities || {};
+imv.Entities.Artifact = ArtifactEntity;
+imv.Entities.Artifacts = imv.Entities.Artifacts || {};
+//Jarvis shards:
+var i;
+for(i = 1; i <= 13; i++)
+{
+  imv.Entities.Artifacts['Jarvis' + i] = ArtifactEntity('Jarvis', i, false);
+}
+
+for(i = 1; i <= 17; i++)
+{
+  imv.Entities.Artifacts['Amar' + i] = ArtifactEntity('Amar', i, false);
+  imv.Entities.Artifacts['AmarFrozen' + i] = ArtifactEntity('Amar', i, true);
+}
+
+for(i = 1; i <= 40; i++)
+{
+  imv.Entities.Artifacts['Helios' + i] = ArtifactEntity('Helios', i, false);
+  imv.Entities.Artifacts['HeliosFrozen' + i] = ArtifactEntity('Helios', i, true);
+}
+
+var ArtifactGlowEntity = function(series, type, texture, glowColor) {
+
+  var defaultColor = new THREE.Vector4().copy(glowColor);
+
+  var MESH = 'Artifacts' + type + 'Glow',
+    TEXTURE = texture + 'Texture',
+    SHADER = 'portal_scanner',
+    PORTAL_SCALE = 6.0;
+
+  var artifactGlow = function(loader, color) {
+    Entity.call(this, loader);
+    color = color || defaultColor;
+    var geometry = loader.getAsset('geometry', MESH);
+    var texture = loader.getAsset('texture', TEXTURE);
+    var shaders = loader.getAsset('shaders', SHADER);
+    if(!geometry)
+    {
+      throw 'Unable to load Geometry ' + MESH;
+    }
+    if(!texture)
+    {
+      throw 'Unable to load texture ' + TEXTURE;
+    }
+    if(!shaders)
+    {
+      throw 'Unable to load shaders: ' + SHADER;
+    }
+    this.entity = new GlowrampDrawable(texture, color);
+    this.entity.init(geometry, shaders);
+    this.entity.mesh.scale.set(PORTAL_SCALE, PORTAL_SCALE, PORTAL_SCALE);
+    this.entity.updateModel();
+    this.models = [this.entity];
+  };
+  Entity.extend(artifactGlow, Entity);
+  artifactGlow._assets.geometry.push(MESH);
+  artifactGlow._assets.texture.push(TEXTURE);
+  artifactGlow._assets.shaders.push(SHADER);
+
+  return artifactGlow;
+};
+
+imv.Entities = imv.Entities || {};
+imv.Entities.ArtifactGlow = ArtifactGlowEntity;
+imv.Entities.ArtifactGlows = imv.Entities.ArtifactGlows || {};
+(function() {
+  var _series = ['Jarvis', 'Amar', 'Helios'];
+  for(var i = 0; i < _series.length; i++)
+  {
+    imv.Entities.ArtifactGlows[_series[i]] = {
+      Red: ArtifactGlowEntity(_series[i], 'Red', 'ColorGlow', constants.artifactColors[_series[i]].RedGlow),
+      Purple: ArtifactGlowEntity(_series[i], 'Purple', 'ColorGlow', constants.artifactColors[_series[i]].PurpleGlow),
+      Target: ArtifactGlowEntity(_series[i], 'Target', 'TargetGlow', constants.artifactColors[_series[i]].TargetGlow),
+      Green: ArtifactGlowEntity(_series[i], 'Green', 'ColorGlow', constants.teamColors.NEUTRAL),
+    };
+  }
+}());
+
+
+var PortalLinkSystemEntity = (function(){
+
+  var LINK_TEXTURE = 'PortalLinkTexture',
+    LINK_SHADER = 'LinkShader';
+
+  var portalLinkSystem = function(loader, options) {
+    Entity.call(this, loader);
+    options = options || {};
+    this.linkGeometry = new PortalLinkGeometry();
+    var linkTexture = loader.getAsset('texture', LINK_TEXTURE);
+    var linkShaders = loader.getRawShader(LINK_SHADER);
+    if(!linkTexture)
+    {
+      throw 'Unable to load texture ' + LINK_TEXTURE;
+    }
+    if(!linkShaders)
+    {
+      throw 'Unable to load shaders: ' + LINK_SHADER;
+    }
+    this.linkSystem = new LinkDrawable(linkTexture);
+    this.linkSystem.init(this.linkGeometry, linkShaders);
+    this.models = [this.linkSystem];
+  };
+  Entity.extend(portalLinkSystem, Entity);
+  portalLinkSystem._assets.texture.push(LINK_TEXTURE);
+  portalLinkSystem._assets.rawShaders.push(LINK_SHADER);
+
+  portalLinkSystem.prototype.addLink = function(srcx, srcy, srcPercent,
+    destx, desty, destPercent, color)
+  {
+    if(!(color instanceof THREE.Vector4))
+    {
+      throw 'Color must be a Vector4';
+    }
+    this.linkGeometry.addLink({
+      x: srcx,
+      y: srcy,
+      percent: srcPercent
+    }, {
+      x: destx,
+      y: desty,
+      percent: destPercent
+    }, color);
+    return this;
+  };
+
+  return portalLinkSystem;
+}());
+
+imv.Entities = imv.Entities || {};
+imv.Entities.PortalLinkSystem = PortalLinkSystemEntity;
+
+var ResonatorLinkSystemEntity = (function(){
+
+  var LINK_TEXTURE = 'ResonatorLinkTexture',
+    LINK_SHADER = 'LinkShader';
+
+  var resonatorLinkSystem = function(loader, options) {
+    Entity.call(this, loader);
+    options = options || {};
+    this.linkGeometry = new ResonatorLinkGeometry();
+    var linkTexture = loader.getAsset('texture', LINK_TEXTURE);
+    var linkShaders = loader.getRawShader(LINK_SHADER);
+    if(!linkTexture)
+    {
+      throw 'Unable to load texture ' + LINK_TEXTURE;
+    }
+    if(!linkShaders)
+    {
+      throw 'Unable to load shaders: ' + LINK_SHADER;
+    }
+    this.linkSystem = new LinkDrawable(linkTexture);
+    this.linkSystem.init(this.linkGeometry, linkShaders);
+    this.models = [this.linkSystem];
+  };
+  Entity.extend(resonatorLinkSystem, Entity);
+  resonatorLinkSystem._assets.texture.push(LINK_TEXTURE);
+  resonatorLinkSystem._assets.rawShaders.push(LINK_SHADER);
+
+  resonatorLinkSystem.prototype.addLink = function(srcx, srcy, srcPercent,
+    destx, desty, destPercent, color)
+  {
+    if(!(color instanceof THREE.Vector4))
+    {
+      throw 'Color must be a Vector4';
+    }
+    this.linkGeometry.addLink({
+      x: srcx,
+      y: srcy,
+      percent: srcPercent
+    }, {
+      x: destx,
+      y: desty,
+      percent: destPercent
+    }, color);
+    return this;
+  };
+
+  return resonatorLinkSystem;
+}());
+
+imv.Entities = imv.Entities || {};
+imv.Entities.ResonatorLinkSystem = ResonatorLinkSystemEntity;
+
+var ShieldEffectEntity = (function(){
+
+  var SHIELD_GEOMETRY = 'PortalShieldMesh',
+    SHIELD_TEXTURE = 'PortalShieldTexture',
+    SHIELD_SHADER = 'shield',
+    SHIELD_SCALE = 12.0;
+
+  var shieldEffect = function(loader, color, options) {
+    Entity.call(this, loader);
+    options = options || {};
+    color = color || constants.teamColors.LOKI.clone();
+    this.setColor(color);
+    var geometry = loader.getAsset('geometry', SHIELD_GEOMETRY);
+    var texture = loader.getAsset('texture', SHIELD_TEXTURE);
+    var shaders = loader.getAsset('shaders', SHIELD_SHADER);
+    if(!geometry)
+    {
+      throw 'Unable to load Geometry ' + SHIELD_GEOMETRY;
+    }
+    if(!texture)
+    {
+      throw 'Unable to load texture ' + SHIELD_TEXTURE;
+    }
+    if(!shaders)
+    {
+      throw 'Unable to load shaders: ' + SHIELD_SHADER;
+    }
+    this.effect = new ShieldEffectDrawable(texture, this.color);
+    this.effect.init(geometry, shaders);
+    this.effect.mesh.scale.set(SHIELD_SCALE, SHIELD_SCALE, SHIELD_SCALE);
+    this.effect.updateModel();
+    this.models = [this.effect];
+  };
+  Entity.extend(shieldEffect, Entity);
+  shieldEffect._assets.geometry.push(SHIELD_GEOMETRY);
+  shieldEffect._assets.texture.push(SHIELD_TEXTURE);
+  shieldEffect._assets.shaders.push(SHIELD_SHADER);
+
+  shieldEffect.prototype.setColor = function(color)
+  {
+    if(!(color instanceof THREE.Vector4))
+    {
+      throw 'Color must be a Vector4';
+    }
+    this.color = color;
+    if(this.effect)
+    {
+      this.effect.setColor(this.color);
+    }
+    return this;
+  };
+
+  return shieldEffect;
+}());
+
+imv.Entities = imv.Entities || {};
+imv.Entities.ShieldEffect = ShieldEffectEntity;
+
+var PortalEntity = (function(){
+
+  var PORTAL_GEOMETRY = 'TexturedPortalMesh',
+    PORTAL_TEXTURE = 'GlowrampTexture',
+    PORTAL_SHADER = 'portal_scanner',
+    PORTAL_SCALE = 6.0;
+
+  var portal = function(loader, teamColor, options) {
+    Entity.call(this, loader);
+    options = options || {};
+    teamColor = teamColor || 'NEUTRAL';
+    this.setTeamColor(teamColor);
+    var portalGeometry = loader.getAsset('geometry', PORTAL_GEOMETRY);
+    var portalTexture = loader.getAsset('texture', PORTAL_TEXTURE);
+    var portalShaders = loader.getAsset('shaders', PORTAL_SHADER);
+    if(!portalGeometry)
+    {
+      throw 'Unable to load Geometry ' + PORTAL_GEOMETRY;
+    }
+    if(!portalTexture)
+    {
+      throw 'Unable to load texture ' + PORTAL_TEXTURE;
+    }
+    if(!portalShaders)
+    {
+      throw 'Unable to load shaders: ' + PORTAL_SHADER;
+    }
+    this.portal = new GlowrampDrawable(portalTexture, this.teamColor);
+    this.portal.init(portalGeometry, portalShaders);
+    this.portal.mesh.scale.set(PORTAL_SCALE, PORTAL_SCALE, PORTAL_SCALE);
+    this.portal.updateModel();
+    this.models = [this.portal];
+  };
+  Entity.extend(portal, Entity);
+  portal._assets.geometry.push(PORTAL_GEOMETRY);
+  portal._assets.texture.push(PORTAL_TEXTURE);
+  portal._assets.shaders.push(PORTAL_SHADER);
+
+  portal.prototype.setTeamColor = function(color)
+  {
+    if(color instanceof THREE.Vector4)
+    {
+      this.teamColor = color;
+    }
+    else if(!(color in constants.teamColors))
+    {
+      throw 'Unknown team color ' + color;
+    }
+    else
+    {
+      this.teamColor = constants.teamColors[color].clone();
+    }
+    if(this.portal)
+    {
+      this.portal.setBaseColor(this.teamColor);
+    }
+    return this;
+  };
+
+  return portal;
+}());
+
+imv.Entities = imv.Entities || {};
+imv.Entities.Portal = PortalEntity;
+
 var AssetManager = function(basepath, map) {
 
   var assetMap = map || {};
   var cache = {
-    model: new GeometryLoader(basepath, IngressGeometry),
+    geometry: new GeometryLoader(basepath, IngressGeometry),
     texture: new TextureLoader(basepath),
     shaders: new ShaderLoader(basepath)
   };
@@ -2023,6 +2684,50 @@ var AssetManager = function(basepath, map) {
     if(assetMap && ('rawShaders' in assetMap) && (name in assetMap.rawShaders))
     {
       return new ShaderSet(assetMap.rawShaders[name].vertex, assetMap.rawShaders[name].fragment);
+    }
+  };
+
+  this.preloadEntity = function(entity, onComplete)
+  {
+    if (!('_assets' in entity))
+    {
+      throw 'entity must be an instance of Entity';
+    }
+    var done = 0, count = 0, i, key;
+    var a = entity._assets;
+    for(i = 0; i < keys.length; i++)
+    {
+      count += a[keys[i]].length;
+    }
+    var getList = function(type, names) {
+      var complete = function(err) {
+        done++;
+        if(err)
+        {
+          console.warn('Unable to load asset: ' + err);
+        }
+        if(done === count)
+        {
+          onComplete();
+        }
+      };
+      for(var j = 0; j < names.length; j++)
+      {
+        key = names[j];
+        if(!(key in assetMap[type]))
+        {
+          console.warn('Unknown ' + type + ' asset: ' + key);
+          done++;
+        }
+        else
+        {
+          cache[type].loadAsset(key, assetMap[type][key], complete);
+        }
+      }
+    };
+    for(i = 0; i < keys.length; i++)
+    {
+      getList(keys[i], a[keys[i]]);
     }
   };
 
@@ -2086,513 +2791,6 @@ var AssetManager = function(basepath, map) {
 };
 
 imv.AssetManager = AssetManager;
-
-var Entity = (function(){
-
-  var entity = function(loader) {
-    this.loader = loader;
-    this.models = [];
-  };
-
-  // Add functions for translations, rotations, etc
-  // Anything you'd want to manipulate the entire entity at once.
-
-  // TODO: Centralized resource listing
-  // TODO: Provide "read-only" access to asset lists.
-
-  return entity;
-}());
-
-imv.Entity = Entity;
-
-var LeveledXMItemEntity = (function(){
-
-  var ITEM_TEXTURE = 'FlipCardTexture',
-    ITEM_SHADER = 'bicolor_textured',
-    CORE_TEXTURE = 'ObjectXMTexture',
-    CORE_SHADER = 'xm';
-
-  var leveledItem = function(loader, meshName, coreName, quality) {
-    Entity.call(this, loader);
-    var itemGeometry = loader.getAsset('model', meshName);
-    var itemTexture = loader.getAsset('texture', ITEM_TEXTURE);
-    var itemShaders = loader.getAsset('shaders', ITEM_SHADER);
-    if(!itemGeometry)
-    {
-      throw 'Unable to load Geometry ' + meshName;
-    }
-    if(!itemTexture)
-    {
-      throw 'Unable to load texture ' + ITEM_TEXTURE;
-    }
-    if(!itemShaders)
-    {
-      throw 'Unable to load shaders: ' + ITEM_SHADER;
-    }
-    this.item = new BicoloredDrawable(itemTexture, this.quality);
-    this.item.init(itemGeometry, itemShaders);
-    var coreGeometry = loader.getAsset('model', coreName);
-    var coreTexture = loader.getAsset('texture', CORE_TEXTURE);
-    var coreShaders = loader.getAsset('shaders', CORE_SHADER);
-    if(!coreGeometry)
-    {
-      throw 'Unable to load Geometry ' + coreName;
-    }
-    if(!coreTexture)
-    {
-      throw 'Unable to load texture ' + CORE_TEXTURE;
-    }
-    if(!coreShaders)
-    {
-      throw 'Unable to load shaders: ' + CORE_SHADER;
-    }
-    this.core = new XmDrawable(coreTexture);
-    this.core.init(coreGeometry, coreShaders);
-    this.setQuality(quality);
-    this.models = [this.item, this.core];
-  };
-  inherits(leveledItem, Entity);
-
-  leveledItem.prototype.setQuality = function(quality)
-  {
-    if(quality instanceof THREE.Vector4)
-    {
-      this.quality = quality;
-    }
-    else if(!(quality in constants.qualityColors))
-    {
-      throw 'Unknown quality color ' + quality;
-    }
-    else
-    {
-      this.quality = constants.qualityColors[quality].clone();
-    }
-    if(this.item)
-    {
-      this.item.setPrimaryColor(this.quality);
-    }
-    return this;
-  };
-
-  return leveledItem;
-}());
-
-imv.Entities = imv.Entities || {};
-imv.Entities.LeveledXMItem = LeveledXMItemEntity;
-
-var CapsuleItemEntity = (function(){
-
-  // default quality to Rare, even though
-  // no colors need to be rendered
-  // Could be replaced with texturedDrawable, too
-  var defaultQuality = new THREE.Vector4().copy(constants.qualityColors.RARE);
-
-  var capsule = function(loader, quality) {
-    quality = quality || defaultQuality;
-    LeveledXMItemEntity.call(this, loader, 'CapsuleMesh', 'CapsuleXmMesh', quality);
-  };
-  inherits(capsule, LeveledXMItemEntity);
-
-  return capsule;
-}());
-
-imv.Entities = imv.Entities || {};
-imv.Entities.CapsuleItem = CapsuleItemEntity;
-
-var HeatSinkItemEntity = (function(){
-
-  // Defaulting to VR, because everyone likes VR.
-  var defaultQuality = new THREE.Vector4().copy(constants.qualityColors.VERY_RARE);
-
-  var heatsink = function(loader, quality) {
-    quality = quality || defaultQuality;
-    LeveledXMItemEntity.call(this, loader, 'HeatSinkMesh', 'HeatSinkXmMesh', quality);
-  };
-  inherits(heatsink, LeveledXMItemEntity);
-
-  return heatsink;
-}());
-
-imv.Entities = imv.Entities || {};
-imv.Entities.HeatSinkItem = HeatSinkItemEntity;
-
-var ExtraShieldItemEntity = (function(){
-
-  // Default quality to very rare
-  // They only seem to drop in VR rarieties, anyway.
-  var defaultQuality = new THREE.Vector4().copy(constants.qualityColors.VERY_RARE);
-
-  var extrashield = function(loader, quality) {
-    quality = quality || defaultQuality;
-    LeveledXMItemEntity.call(this, loader, 'ExtraShieldMesh', 'ResShieldXMMesh', quality);
-  };
-  inherits(extrashield, LeveledXMItemEntity);
-
-  return extrashield;
-}());
-
-imv.Entities = imv.Entities || {};
-imv.Entities.ExtraShieldItem = ExtraShieldItemEntity;
-
-var ForceAmpItemEntity = (function(){
-
-  // Defaulting to rare, since they only drop in the one quality
-  var defaultQuality = new THREE.Vector4().copy(constants.qualityColors.RARE);
-
-  var forceamp = function(loader, quality) {
-    quality = quality || defaultQuality;
-    LeveledXMItemEntity.call(this, loader, 'ForceAmpMesh', 'ForceAmpXmMesh', quality);
-  };
-  inherits(forceamp, LeveledXMItemEntity);
-
-  return forceamp;
-}());
-
-imv.Entities = imv.Entities || {};
-imv.Entities.ForceAmpItem = ForceAmpItemEntity;
-
-var LinkAmpItemEntity = (function(){
-
-  // Defaulting to rare, because wouldn't VR be nice?
-  var defaultQuality = new THREE.Vector4().copy(constants.qualityColors.RARE);
-
-  var linkamp = function(loader, quality) {
-    quality = quality || defaultQuality;
-    LeveledXMItemEntity.call(this, loader, 'LinkAmpMesh', 'LinkAmpXmMesh', quality);
-  };
-  inherits(linkamp, LeveledXMItemEntity);
-
-  return linkamp;
-}());
-
-imv.Entities = imv.Entities || {};
-imv.Entities.LinkAmpItem = LinkAmpItemEntity;
-
-var MultiHackItemEntity = (function(){
-
-  // Defaulting to VR, because everyone likes VR.
-  var defaultQuality = new THREE.Vector4().copy(constants.qualityColors.VERY_RARE);
-
-  var multihack = function(loader, quality) {
-    quality = quality || defaultQuality;
-    LeveledXMItemEntity.call(this, loader, 'MultiHackMesh', 'MultiHackXmMesh', quality);
-  };
-  inherits(multihack, LeveledXMItemEntity);
-
-  return multihack;
-}());
-
-imv.Entities = imv.Entities || {};
-imv.Entities.MultiHackItem = MultiHackItemEntity;
-
-var ResonatorItemEntity = (function(){
-
-  // Defaulting to a random level, because hey why not.
-  var r = Math.floor(Math.random() * 8) + 1;
-  var defaultQuality = new THREE.Vector4().copy(constants.qualityColors['L' + r]);
-
-  var resonator = function(loader, quality) {
-    quality = quality || defaultQuality;
-    LeveledXMItemEntity.call(this, loader, 'ResonatorMesh', 'ResonatorXMMesh', quality);
-  };
-  inherits(resonator, LeveledXMItemEntity);
-
-  return resonator;
-}());
-
-imv.Entities = imv.Entities || {};
-imv.Entities.ResonatorItem = ResonatorItemEntity;
-
-var ShieldItem = (function(){
-
-  // Defaulting to VR, because everyone likes VR.
-  var defaultQuality = new THREE.Vector4().copy(constants.qualityColors.VERY_RARE);
-
-  var shield = function(loader, quality) {
-    quality = quality || defaultQuality;
-    LeveledXMItemEntity.call(this, loader, 'ResShieldMesh', 'ResShieldXMMesh', quality);
-  };
-  inherits(shield, LeveledXMItemEntity);
-
-  return shield;
-}());
-
-imv.Entities = imv.Entities || {};
-imv.Entities.ShieldItem = ShieldItem;
-
-var TurretItem = (function(){
-
-  // Defaulting to Rare because that's the only quality they come.
-  var defaultQuality = new THREE.Vector4().copy(constants.qualityColors.RARE);
-
-  var turret = function(loader, quality) {
-    quality = quality || defaultQuality;
-    LeveledXMItemEntity.call(this, loader, 'TurretMesh', 'TurretXmMesh', quality);
-  };
-  inherits(turret, LeveledXMItemEntity);
-
-  return turret;
-}());
-
-imv.Entities = imv.Entities || {};
-imv.Entities.TurretItem = TurretItem;
-
-var UltraStrikeItem = (function(){
-
-  // Defaulting to a random level, because hey why not.
-  var r = Math.floor(Math.random() * 8) + 1;
-  var defaultQuality = new THREE.Vector4().copy(constants.qualityColors['L' + r]);
-
-  var ultrastrike = function(loader, quality) {
-    quality = quality || defaultQuality;
-    LeveledXMItemEntity.call(this, loader, 'UltrastrikeMesh', 'UltrastrikeXMMesh', quality);
-  };
-  inherits(ultrastrike, LeveledXMItemEntity);
-
-  return ultrastrike;
-}());
-
-imv.Entities = imv.Entities || {};
-imv.Entities.UltraStrikeItem = UltraStrikeItem;
-
-var XmpItem = (function(){
-
-  // Defaulting to a random level, because hey why not.
-  var r = Math.floor(Math.random() * 8) + 1;
-  var defaultQuality = new THREE.Vector4().copy(constants.qualityColors['L' + r]);
-
-  var xmp = function(loader, quality) {
-    quality = quality || defaultQuality;
-    LeveledXMItemEntity.call(this, loader, 'XmpMesh', 'XmpXMMesh', quality);
-  };
-  inherits(xmp, LeveledXMItemEntity);
-
-  return xmp;
-}());
-
-imv.Entities = imv.Entities || {};
-imv.Entities.XmpItem = XmpItem;
-
-var PortalLinkSystemEntity = (function(){
-
-  var LINK_TEXTURE = 'PortalLinkTexture',
-    LINK_SHADER = 'LinkShader';
-
-  var portalLinkSystem = function(loader, options) {
-    Entity.call(this, loader);
-    options = options || {};
-    this.linkGeometry = new PortalLinkGeometry();
-    var linkTexture = loader.getAsset('texture', LINK_TEXTURE);
-    var linkShaders = loader.getRawShader(LINK_SHADER);
-    if(!linkTexture)
-    {
-      throw 'Unable to load texture ' + LINK_TEXTURE;
-    }
-    if(!linkShaders)
-    {
-      throw 'Unable to load shaders: ' + LINK_SHADER;
-    }
-    this.linkSystem = new LinkDrawable(linkTexture);
-    this.linkSystem.init(this.linkGeometry, linkShaders);
-    this.models = [this.linkSystem];
-  };
-  inherits(portalLinkSystem, Entity);
-
-  portalLinkSystem.prototype.addLink = function(srcx, srcy, srcPercent,
-    destx, desty, destPercent, color)
-  {
-    if(!(color instanceof THREE.Vector4))
-    {
-      throw 'Color must be a Vector4';
-    }
-    this.linkGeometry.addLink({
-      x: srcx,
-      y: srcy,
-      percent: srcPercent
-    }, {
-      x: destx,
-      y: desty,
-      percent: destPercent
-    }, color);
-    return this;
-  };
-
-  return portalLinkSystem;
-}());
-
-imv.Entities = imv.Entities || {};
-imv.Entities.PortalLinkSystem = PortalLinkSystemEntity;
-
-var ResonatorLinkSystemEntity = (function(){
-
-  var LINK_TEXTURE = 'ResonatorLinkTexture',
-    LINK_SHADER = 'LinkShader';
-
-  var resonatorLinkSystem = function(loader, options) {
-    Entity.call(this, loader);
-    options = options || {};
-    this.linkGeometry = new ResonatorLinkGeometry();
-    var linkTexture = loader.getAsset('texture', LINK_TEXTURE);
-    var linkShaders = loader.getRawShader(LINK_SHADER);
-    if(!linkTexture)
-    {
-      throw 'Unable to load texture ' + LINK_TEXTURE;
-    }
-    if(!linkShaders)
-    {
-      throw 'Unable to load shaders: ' + LINK_SHADER;
-    }
-    this.linkSystem = new LinkDrawable(linkTexture);
-    this.linkSystem.init(this.linkGeometry, linkShaders);
-    this.models = [this.linkSystem];
-  };
-  inherits(resonatorLinkSystem, Entity);
-
-  resonatorLinkSystem.prototype.addLink = function(srcx, srcy, srcPercent,
-    destx, desty, destPercent, color)
-  {
-    if(!(color instanceof THREE.Vector4))
-    {
-      throw 'Color must be a Vector4';
-    }
-    this.linkGeometry.addLink({
-      x: srcx,
-      y: srcy,
-      percent: srcPercent
-    }, {
-      x: destx,
-      y: desty,
-      percent: destPercent
-    }, color);
-    return this;
-  };
-
-  return resonatorLinkSystem;
-}());
-
-imv.Entities = imv.Entities || {};
-imv.Entities.ResonatorLinkSystem = ResonatorLinkSystemEntity;
-
-var ShieldEffectEntity = (function(){
-
-  var SHIELD_GEOMETRY = 'PortalShieldMesh',
-    SHIELD_TEXTURE = 'PortalShieldTexture',
-    SHIELD_SHADER = 'shield',
-    SHIELD_SCALE = 12.0;
-
-  var shieldEffect = function(loader, color, options) {
-    Entity.call(this, loader);
-    options = options || {};
-    color = color || constants.teamColors.LOKI.clone();
-    this.setColor(color);
-    var geometry = loader.getAsset('model', SHIELD_GEOMETRY);
-    var texture = loader.getAsset('texture', SHIELD_TEXTURE);
-    var shaders = loader.getAsset('shaders', SHIELD_SHADER);
-    if(!geometry)
-    {
-      throw 'Unable to load Geometry ' + SHIELD_GEOMETRY;
-    }
-    if(!texture)
-    {
-      throw 'Unable to load texture ' + SHIELD_TEXTURE;
-    }
-    if(!shaders)
-    {
-      throw 'Unable to load shaders: ' + SHIELD_SHADER;
-    }
-    this.effect = new ShieldEffectDrawable(texture, this.color);
-    this.effect.init(geometry, shaders);
-    this.effect.mesh.scale.set(SHIELD_SCALE, SHIELD_SCALE, SHIELD_SCALE);
-    this.effect.mesh.updateMatrix();
-    this.effect.mesh.updateMatrixWorld();
-    this.effect.updateModel();
-    this.models = [this.effect];
-  };
-  inherits(shieldEffect, Entity);
-
-  shieldEffect.prototype.setColor = function(color)
-  {
-    if(!(color instanceof THREE.Vector4))
-    {
-      throw 'Color must be a Vector4';
-    }
-    this.color = color;
-    if(this.effect)
-    {
-      this.effect.setColor(this.color);
-    }
-    return this;
-  };
-
-  return shieldEffect;
-}());
-
-imv.Entities = imv.Entities || {};
-imv.Entities.ShieldEffect = ShieldEffectEntity;
-
-var PortalEntity = (function(){
-
-  var PORTAL_GEOMETRY = 'TexturedPortalMesh',
-    PORTAL_TEXTURE = 'GlowrampTexture',
-    PORTAL_SHADER = 'portal_scanner',
-    PORTAL_SCALE = 6.0;
-
-  var portal = function(loader, teamColor, options) {
-    Entity.call(this, loader);
-    options = options || {};
-    teamColor = teamColor || 'NEUTRAL';
-    this.setTeamColor(teamColor);
-    var portalGeometry = loader.getAsset('model', PORTAL_GEOMETRY);
-    var portalTexture = loader.getAsset('texture', PORTAL_TEXTURE);
-    var portalShaders = loader.getAsset('shaders', PORTAL_SHADER);
-    if(!portalGeometry)
-    {
-      throw 'Unable to load Geometry ' + PORTAL_GEOMETRY;
-    }
-    if(!portalTexture)
-    {
-      throw 'Unable to load texture ' + PORTAL_TEXTURE;
-    }
-    if(!portalShaders)
-    {
-      throw 'Unable to load shaders: ' + PORTAL_SHADER;
-    }
-    this.portal = new GlowrampDrawable(portalTexture, this.teamColor);
-    this.portal.init(portalGeometry, portalShaders);
-    this.portal.mesh.scale.set(PORTAL_SCALE, PORTAL_SCALE, PORTAL_SCALE);
-    this.portal.mesh.updateMatrix();
-    this.portal.mesh.updateMatrixWorld();
-    this.portal.updateModel();
-    this.models = [this.portal];
-  };
-  inherits(portal, Entity);
-
-  portal.prototype.setTeamColor = function(color)
-  {
-    if(color instanceof THREE.Vector4)
-    {
-      this.teamColor = color;
-    }
-    else if(!(color in constants.teamColors))
-    {
-      throw 'Unknown team color ' + color;
-    }
-    else
-    {
-      this.teamColor = constants.teamColors[color].clone();
-    }
-    if(this.portal)
-    {
-      this.portal.setBaseColor(this.teamColor);
-    }
-    return this;
-  };
-
-  return portal;
-}());
-
-imv.Entities = imv.Entities || {};
-imv.Entities.Portal = PortalEntity;
 
 var Engine = function(canvas, options)
 {
@@ -2860,6 +3058,7 @@ var Engine = function(canvas, options)
     if(cleared)
     {
       cleared = false;
+      lastTick = Date.now();
       render();
     }
   };

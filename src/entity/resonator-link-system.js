@@ -21,7 +21,9 @@ var ResonatorLinkSystemEntity = (function(){
     this.linkSystem.init(this.linkGeometry, linkShaders);
     this.models = [this.linkSystem];
   };
-  inherits(resonatorLinkSystem, Entity);
+  Entity.extend(resonatorLinkSystem, Entity);
+  resonatorLinkSystem._assets.texture.push(LINK_TEXTURE);
+  resonatorLinkSystem._assets.rawShaders.push(LINK_SHADER);
 
   resonatorLinkSystem.prototype.addLink = function(srcx, srcy, srcPercent,
     destx, desty, destPercent, color)

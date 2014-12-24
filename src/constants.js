@@ -33,19 +33,19 @@ var constants = {
   },
   artifactColors: {
     Helios: {
-      artifactsRedGlow: new THREE.Vector4(0.92, 0.51, 0.14, 1.0),
-      artifactsPurpleGlow: new THREE.Vector4(1.0, 0.87, 0.55, 1.0),
-      artifactTargetGlow: new THREE.Vector4(1.0, 0.72, 0.0, 1.0)
+      RedGlow: new THREE.Vector4(0.92, 0.51, 0.14, 1.0),
+      PurpleGlow: new THREE.Vector4(1.0, 0.87, 0.55, 1.0),
+      TargetGlow: new THREE.Vector4(1.0, 0.72, 0.0, 1.0)
     },
     Amar: {
-      artifactTargetGlow: new THREE.Vector4(0.62, 0.22, 0.62, 1.0),
-      artifactsRedGlow: new THREE.Vector4(0.79, 0.11, 0.49, 1.0),
-      artifactsPurpleGlow: new THREE.Vector4(0.58, 0.17, 1.0, 1.0)
+      TargetGlow: new THREE.Vector4(0.62, 0.22, 0.62, 1.0),
+      RedGlow: new THREE.Vector4(0.79, 0.11, 0.49, 1.0),
+      PurpleGlow: new THREE.Vector4(0.58, 0.17, 1.0, 1.0)
     },
     Jarvis: {
-      artifactTargetGlow: new THREE.Vector4(0.62, 0.22, 0.62, 1.0),
-      artifactsRedGlow: new THREE.Vector4(0.79, 0.11, 0.49, 1.0),
-      artifactsPurpleGlow: new THREE.Vector4(0.58, 0.17, 1.0, 1.0)
+      TargetGlow: new THREE.Vector4(0.62, 0.22, 0.62, 1.0),
+      RedGlow: new THREE.Vector4(0.79, 0.11, 0.49, 1.0),
+      PurpleGlow: new THREE.Vector4(0.58, 0.17, 1.0, 1.0)
     }
   },
   xmColors: {

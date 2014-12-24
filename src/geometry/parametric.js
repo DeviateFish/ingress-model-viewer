@@ -78,5 +78,5 @@ var ParametricGeometry = (function(){
   return parametric;
 }());
 
-imv.Geometry = imv.Geometry || {};
-imv.Geometry.ParametricGeometry = ParametricGeometry;
+imv.Geometries = imv.Geometries || {};
+imv.Geometries.Parametric = ParametricGeometry;

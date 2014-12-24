@@ -264,6 +264,7 @@ var Engine = function(canvas, options)
     if(cleared)
     {
       cleared = false;
+      lastTick = Date.now();
       render();
     }
   };

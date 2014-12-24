@@ -38,6 +38,7 @@ var GlowrampDrawable = (function(){
     var inc = this.elapsed / 5000;
     this.updateUniformF('u_rotation', inc);
     this.updateUniformF('u_rampTarget', Math.sin(Math.PI / 2 * (inc - Math.floor(inc))));
+    this.updateUniformF('u_alpha', Math.sin(inc) * 0.05 + 0.75);
   };
 
   return glowrampDrawable;

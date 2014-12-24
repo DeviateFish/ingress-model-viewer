@@ -19,6 +19,8 @@ var ModelDrawable = (function() {
   // signals that the model's mesh has been updated in some way...
   // means we need to recalculate the u_modelViewProject uniform
   modelDrawable.prototype.updateModel = function() {
+    this.mesh.updateMatrix();
+    this.mesh.updateMatrixWorld();
     var modelViewProject = this.projectView.clone().multiply(this.mesh.matrixWorld);
     this.updateUniformM('u_modelViewProject', modelViewProject);
   };

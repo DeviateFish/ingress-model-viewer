@@ -108,5 +108,5 @@ var IngressGeometry = (function(){
   return ingressgeometry;
 }());
 
-imv.Geometry = imv.Geometry || {};
-imv.Geometry.IngressGeometry = IngressGeometry;
+imv.Geometries = imv.Geometries || {};
+imv.Geometries.Ingress = IngressGeometry;

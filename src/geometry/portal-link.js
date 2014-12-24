@@ -151,5 +151,5 @@ var PortalLinkGeometry = (function(){
   return linkgeometry;
 }());
 
-imv.Geometry = imv.Geometry || {};
-imv.Geometry.PortalLinkGeometry = PortalLinkGeometry;
+imv.Geometries = imv.Geometries || {};
+imv.Geometries.PortalLink = PortalLinkGeometry;

@@ -10,7 +10,7 @@ var PortalEntity = (function(){
     options = options || {};
     teamColor = teamColor || 'NEUTRAL';
     this.setTeamColor(teamColor);
-    var portalGeometry = loader.getAsset('model', PORTAL_GEOMETRY);
+    var portalGeometry = loader.getAsset('geometry', PORTAL_GEOMETRY);
     var portalTexture = loader.getAsset('texture', PORTAL_TEXTURE);
     var portalShaders = loader.getAsset('shaders', PORTAL_SHADER);
     if(!portalGeometry)
@@ -28,12 +28,13 @@ var PortalEntity = (function(){
     this.portal = new GlowrampDrawable(portalTexture, this.teamColor);
     this.portal.init(portalGeometry, portalShaders);
     this.portal.mesh.scale.set(PORTAL_SCALE, PORTAL_SCALE, PORTAL_SCALE);
-    this.portal.mesh.updateMatrix();
-    this.portal.mesh.updateMatrixWorld();
     this.portal.updateModel();
     this.models = [this.portal];
   };
-  inherits(portal, Entity);
+  Entity.extend(portal, Entity);
+  portal._assets.geometry.push(PORTAL_GEOMETRY);
+  portal._assets.texture.push(PORTAL_TEXTURE);
+  portal._assets.shaders.push(PORTAL_SHADER);
 
   portal.prototype.setTeamColor = function(color)
   {

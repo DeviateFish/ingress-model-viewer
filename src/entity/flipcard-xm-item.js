@@ -1,17 +1,17 @@
-var LeveledXMItemEntity = function(mesh, xm_mesh, defaultQuality) {
+var FlipCardXMItemEntity = function(mesh, defaultCoreColor) {
 
-  var DEFAULT_QUALITY = defaultQuality.clone();
+  var DEFAULT_CORE_COLOR = defaultCoreColor.clone();
 
   var ITEM_MESH = mesh,
     ITEM_TEXTURE = 'FlipCardTexture',
     ITEM_SHADER = 'bicolor_textured',
-    CORE_MESH = xm_mesh,
+    CORE_MESH = 'FlipCardXmMesh',
     CORE_TEXTURE = 'ObjectXMTexture',
     CORE_SHADER = 'xm';
 
-  var leveledItem = function(loader, quality) {
+  var flipcardItem = function(loader, coreColor) {
     Entity.call(this, loader);
-    quality = quality || DEFAULT_QUALITY;
+    coreColor = coreColor || DEFAULT_CORE_COLOR;
     var itemGeometry = loader.getAsset('geometry', ITEM_MESH);
     var itemTexture = loader.getAsset('texture', ITEM_TEXTURE);
     var itemShaders = loader.getAsset('shaders', ITEM_SHADER);
@@ -27,7 +27,7 @@ var LeveledXMItemEntity = function(mesh, xm_mesh, defaultQuality) {
     {
       throw 'Unable to load shaders: ' + ITEM_SHADER;
     }
-    this.item = new BicoloredDrawable(itemTexture, this.quality);
+    this.item = new TexturedDrawable(itemTexture);
     this.item.init(itemGeometry, itemShaders);
     var coreGeometry = loader.getAsset('geometry', CORE_MESH);
     var coreTexture = loader.getAsset('texture', CORE_TEXTURE);
@@ -46,40 +46,19 @@ var LeveledXMItemEntity = function(mesh, xm_mesh, defaultQuality) {
     }
     this.core = new XmDrawable(coreTexture);
     this.core.init(coreGeometry, coreShaders);
-    this.setQuality(quality);
+    this.core.setTeamColor(coreColor);
     this.models = [this.item, this.core];
   };
-  Entity.extend(leveledItem, Entity);
-  leveledItem._assets.geometry.push(ITEM_MESH);
-  leveledItem._assets.geometry.push(CORE_MESH);
-  leveledItem._assets.texture.push(ITEM_TEXTURE);
-  leveledItem._assets.texture.push(CORE_TEXTURE);
-  leveledItem._assets.shaders.push(ITEM_SHADER);
-  leveledItem._assets.shaders.push(CORE_SHADER);
+  Entity.extend(flipcardItem, Entity);
+  flipcardItem._assets.geometry.push(ITEM_MESH);
+  flipcardItem._assets.geometry.push(CORE_MESH);
+  flipcardItem._assets.texture.push(ITEM_TEXTURE);
+  flipcardItem._assets.texture.push(CORE_TEXTURE);
+  flipcardItem._assets.shaders.push(ITEM_SHADER);
+  flipcardItem._assets.shaders.push(CORE_SHADER);
 
-  leveledItem.prototype.setQuality = function(quality)
-  {
-    if(quality instanceof THREE.Vector4)
-    {
-      this.quality = quality;
-    }
-    else if(!(quality in constants.qualityColors))
-    {
-      throw 'Unknown quality color ' + quality;
-    }
-    else
-    {
-      this.quality = constants.qualityColors[quality].clone();
-    }
-    if(this.item)
-    {
-      this.item.setPrimaryColor(this.quality);
-    }
-    return this;
-  };
-
-  return leveledItem;
+  return flipcardItem;
 };
 
 imv.Entities = imv.Entities || {};
-imv.Entities.LeveledXMItem = LeveledXMItemEntity;
+imv.Entities.FlipCardXMItem = FlipCardXMItemEntity;

@@ -2,7 +2,7 @@ var AssetManager = function(basepath, map) {
 
   var assetMap = map || {};
   var cache = {
-    model: new GeometryLoader(basepath, IngressGeometry),
+    geometry: new GeometryLoader(basepath, IngressGeometry),
     texture: new TextureLoader(basepath),
     shaders: new ShaderLoader(basepath)
   };
@@ -33,6 +33,50 @@ var AssetManager = function(basepath, map) {
     if(assetMap && ('rawShaders' in assetMap) && (name in assetMap.rawShaders))
     {
       return new ShaderSet(assetMap.rawShaders[name].vertex, assetMap.rawShaders[name].fragment);
+    }
+  };
+
+  this.preloadEntity = function(entity, onComplete)
+  {
+    if (!('_assets' in entity))
+    {
+      throw 'entity must be an instance of Entity';
+    }
+    var done = 0, count = 0, i, key;
+    var a = entity._assets;
+    for(i = 0; i < keys.length; i++)
+    {
+      count += a[keys[i]].length;
+    }
+    var getList = function(type, names) {
+      var complete = function(err) {
+        done++;
+        if(err)
+        {
+          console.warn('Unable to load asset: ' + err);
+        }
+        if(done === count)
+        {
+          onComplete();
+        }
+      };
+      for(var j = 0; j < names.length; j++)
+      {
+        key = names[j];
+        if(!(key in assetMap[type]))
+        {
+          console.warn('Unknown ' + type + ' asset: ' + key);
+          done++;
+        }
+        else
+        {
+          cache[type].loadAsset(key, assetMap[type][key], complete);
+        }
+      }
+    };
+    for(i = 0; i < keys.length; i++)
+    {
+      getList(keys[i], a[keys[i]]);
     }
   };
 

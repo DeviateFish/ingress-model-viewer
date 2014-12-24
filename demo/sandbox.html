@@ -38,12 +38,9 @@
       Portal: IMV.Entities.Portal,
       ShieldEffect: IMV.Entities.ShieldEffect
     };
-    for(var i in IMV.Entities)
+    for(var i in IMV.Entities.Items)
     {
-      if(/Item$/.test(i) && i != 'LeveledXMItem')
-      {
-        entities[i] = IMV.Entities[i];
-      }
+      entities[i] = IMV.Entities.Items[i];
     }
 
     // create the select for the models:
@@ -73,31 +70,27 @@
     container.appendChild(add);
     controls.appendChild(container);
 
+    var loadEntity = function(name, entity)
+    {
+      loader.preloadEntity(entity, function() {
+        var opt = document.createElement('option');
+        opt.value = name;
+        opt.innerHTML = name;
+        select.appendChild(opt);
+      });
+    }
+
     var handleAssets = function(list)
     {
         assets = list;
         loader.setAssets(list);
-        var loading = true;
-        var prog = loader.preloadAssets(function()
+        for(var i in entities)
         {
-            loading = false;
-            for(var i in entities)
-            {
-              if(entities.hasOwnProperty(i))
-              {
-                var opt = document.createElement('option');
-                opt.value = i;
-                opt.innerHTML = i;
-                select.appendChild(opt);
-              }
-            }
-        });
-        var progress = function()
-        {
-            if(loading) setTimeout(progress, 100);
-            console.info('preloading: ' + Math.round(prog() * 100) + '%');
-        };
-        setTimeout(progress, 100);
+          if(entities.hasOwnProperty(i))
+          {
+            loadEntity(i, entities[i]);
+          }
+        }
     };
 
     var xhr = new XMLHttpRequest();

@@ -3,7 +3,7 @@ if(!JavaDeserializer || !THREE || !libtga)
   throw 'Missing dependencies';
 }
 
-var console = console || {
+var console = window.console || {
   log: function(){},
   warn: function(){},
   info: function(){}
