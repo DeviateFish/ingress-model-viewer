@@ -45,7 +45,7 @@ imv.Entities.Items.Shield = ShieldItemEntity;
 
 // Turret
 // Rare because that's the only quality.
-var TurretItemEntity = LeveledXMItemEntity('ResShieldMesh', 'ResShieldXMMesh', constants.qualityColors.RARE);
+var TurretItemEntity = LeveledXMItemEntity('TurretMesh', 'TurretXmMesh', constants.qualityColors.RARE);
 imv.Entities.Items.Turret = TurretItemEntity;
 
 // Ultrastrike
