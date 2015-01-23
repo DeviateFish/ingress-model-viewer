@@ -3,9 +3,8 @@ var PortalLinkSystemEntity = (function(){
   var LINK_TEXTURE = 'PortalLinkTexture',
     LINK_SHADER = 'LinkShader';
 
-  var portalLinkSystem = function(loader, options) {
+  var portalLinkSystem = function(loader) {
     Entity.call(this, loader);
-    options = options || {};
     this.linkGeometry = new PortalLinkGeometry();
     var linkTexture = loader.getAsset('texture', LINK_TEXTURE);
     var linkShaders = loader.getRawShader(LINK_SHADER);

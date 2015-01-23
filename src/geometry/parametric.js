@@ -28,7 +28,7 @@ var ParametricGeometry = (function(){
       'a_texCoord0': { type: 'v2', values: null }
     };
     var n = this.options.slices, l = this.options.paramSize;
-    // (n + 1) ^ points to define n x n squares in u,v space
+    // (n + 1)^2 points to define n x n squares in u,v space
     var len = (n + 1) * (n + 1);
     var position = new Float32Array(len * 3);
     var a_position = new Float32Array(len * l);

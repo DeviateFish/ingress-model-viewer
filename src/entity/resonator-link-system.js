@@ -3,9 +3,8 @@ var ResonatorLinkSystemEntity = (function(){
   var LINK_TEXTURE = 'ResonatorLinkTexture',
     LINK_SHADER = 'LinkShader';
 
-  var resonatorLinkSystem = function(loader, options) {
+  var resonatorLinkSystem = function(loader) {
     Entity.call(this, loader);
-    options = options || {};
     this.linkGeometry = new ResonatorLinkGeometry();
     var linkTexture = loader.getAsset('texture', LINK_TEXTURE);
     var linkShaders = loader.getRawShader(LINK_SHADER);

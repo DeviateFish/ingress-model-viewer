@@ -1280,7 +1280,7 @@ var ParametricGeometry = (function(){
       'a_texCoord0': { type: 'v2', values: null }
     };
     var n = this.options.slices, l = this.options.paramSize;
-    // (n + 1) ^ points to define n x n squares in u,v space
+    // (n + 1)^2 points to define n x n squares in u,v space
     var len = (n + 1) * (n + 1);
     var position = new Float32Array(len * 3);
     var a_position = new Float32Array(len * l);
@@ -1332,6 +1332,133 @@ var ParametricGeometry = (function(){
 
 imv.Geometries = imv.Geometries || {};
 imv.Geometries.Parametric = ParametricGeometry;
+
+var ParticlePortalsGeometry = (function(){
+
+  var MAX_SYSTEMS = 40,
+    NUM_PARTICLES = 96,
+    NUM_INDICES_PER_PARTICLE = 4,
+    NUM_INDICES_PER_FACE = 6;
+
+  var U = [0.0, 0.0, 1.0, 1.0];
+  var V = [1.0, 0.0, 1.0, 0.0];
+
+  var extendBuffer = function(attribute, count)
+  {
+    var buf = new Float32Array(attribute.length + (count * attribute.itemSize));
+    buf.set(attribute.array);
+    attribute.array = buf;
+    return buf;
+  };
+
+  var particlePortalsGeometry = function() {
+    Geometry.call(this, {transparent: true});
+    this.count = 0;
+    this.attributes = {
+      'a_position': { type: 'v3', values: null },
+      'a_texCoord0': { type: 'v2', values: null },
+      'a_scale': { type: "f", values: null },
+      'a_speed': { type: "f", values: null },
+      'a_portalIndex': { type: "f", values: null },
+      'a_index': { type: "f", values: null}
+    };
+    this.position = new THREE.BufferAttribute(new Float32Array(), 3);
+    this.index = new THREE.BufferAttribute(new Uint16Array(), 1);
+    this.a_position = new THREE.BufferAttribute(new Float32Array(), 3);
+    this.a_texCoord0 = new THREE.BufferAttribute(new Float32Array(), 2);
+    this.a_scale = new THREE.BufferAttribute(new Float32Array(), 1);
+    this.a_speed = new THREE.BufferAttribute(new Float32Array(), 1);
+    this.a_portalIndex = new THREE.BufferAttribute(new Float32Array(), 1);
+    this.a_index = new THREE.BufferAttribute(new Float32Array(), 1);
+    this.seeds = [];
+    for(var i = 0; i < NUM_PARTICLES; i++)
+    {
+      this.seeds.push({
+        x: Math.random() - 0.5,
+        y: 0.4 * Math.random() - 0.2,
+        z: Math.random() - 0.5,
+        a_scale: 10.0 * (0.1 + 0.9 * Math.random()),
+        a_speed: 6.0 * (0.5 + 0.5 * Math.random())
+      });
+    }
+    this.geometry.addAttribute('a_position', this.a_position);
+    this.geometry.addAttribute('a_texCoord0', this.a_texCoord0);
+    this.geometry.addAttribute('a_scale', this.a_scale);
+    this.geometry.addAttribute('a_speed', this.a_speed);
+    this.geometry.addAttribute('a_portalIndex', this.a_portalIndex);
+    this.geometry.addAttribute('a_index', this.a_index);
+    this.geometry.addAttribute('position', this.position);
+    this.geometry.addAttribute('index', this.index);
+  };
+  inherits(particlePortalsGeometry, Geometry);
+
+  particlePortalsGeometry.prototype.addSystem = function() {
+    if(this.count + 1 >= MAX_SYSTEMS)
+    {
+      throw 'This system is full';
+    }
+    var n = NUM_PARTICLES * NUM_INDICES_PER_PARTICLE;
+    var a_position = extendBuffer(this.a_position, n);
+    var a_texCoord0 = extendBuffer(this.a_texCoord0, n);
+    var a_scale = extendBuffer(this.a_scale, n);
+    var a_speed = extendBuffer(this.a_speed, n);
+    var a_portalIndex = extendBuffer(this.a_portalIndex, n);
+    var a_index = extendBuffer(this.a_index, n);
+    var position = extendBuffer(this.position, n);
+    var c = this.count++;
+    var idx = c * n, seed, i, j;
+    for(i = 0; i < NUM_PARTICLES; i++)
+    {
+      seed = this.seeds[i];
+      for(j = 0; j < NUM_INDICES_PER_PARTICLE; j++)
+      {
+        position[idx * 3 + 0] = 0;//seed.x;
+        position[idx * 3 + 1] = 0;//seed.y;
+        position[idx * 3 + 2] = 0;//seed.z;
+        a_position[idx * 3 + 0] = seed.x;
+        a_position[idx * 3 + 1] = seed.y;
+        a_position[idx * 3 + 1] = seed.z;
+        a_texCoord0[idx * 2 + 0] = U[j];
+        a_texCoord0[idx * 2 + 1] = V[j];
+        a_scale[idx] = seed.a_scale;
+        a_speed[idx] = seed.a_speed;
+        a_portalIndex[idx] = c;
+        a_index[idx] = i;
+        idx++;
+      }
+    }
+
+    var index = new Uint16Array((c + 1) * NUM_PARTICLES * NUM_INDICES_PER_FACE);
+    index.set(this.index.array);
+    var indices = [0, 1, 2, 1, 3, 2];
+    idx = c * n;
+    var f = c * NUM_PARTICLES * NUM_INDICES_PER_FACE;
+    for(i = 0; i < NUM_PARTICLES; i++)
+    {
+      for(j = 0; j < NUM_INDICES_PER_FACE; j++)
+      {
+        index[f + j] = idx + indices[j];
+      }
+      f += 6;
+      idx += 4;
+    }
+    this.index.array = index;
+    this.position.needsUpdate = true;
+    this.index.needsUpdate = true;
+    this.a_position.needsUpdate = true;
+    this.a_texCoord0.needsUpdate = true;
+    this.a_scale.needsUpdate = true;
+    this.a_speed.needsUpdate = true;
+    this.a_portalIndex.needsUpdate = true;
+    this.a_index.needsUpdate = true;
+    this.geometry.needsUpdate = true;
+  };
+
+  return particlePortalsGeometry;
+}());
+
+imv.Geometries = imv.Geometries || {};
+imv.Geometries.ParticlePortals = ParticlePortalsGeometry;
 
 var ShaderSet = (function(){
 
@@ -1761,6 +1888,136 @@ var ShieldEffectDrawable = (function(){
 
 imv.Drawables = imv.Drawables || {};
 imv.Drawables.ShieldEffect = ShieldEffectDrawable;
+
+var ParticleDrawable = (function(){
+
+  var particleDrawable = function(texture) {
+    TexturedDrawable.call(this, texture);
+    this.uniforms.u_cameraPos = {
+      type: "v3",
+      value: new THREE.Vector3()
+    };
+    this.options.transparent = true;
+  };
+  inherits(particleDrawable, TexturedDrawable);
+
+  particleDrawable.prototype.updateView = function(camera) {
+    this.projectView.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+    this.updateUniformV('u_cameraPos', camera.position);
+    this.updateUniformM('u_modelViewProject', this.projectView);
+    /*var camVec = this.mesh.position.clone().sub(camera.position);
+    camVec.y = 0;
+    camVec.normalize();
+    var angle = Math.atan2(camVec.z, camVec.x);
+    var quat = new THREE.Quaternion();
+    quat.setFromAxisAngle(new THREE.Vector3(0, 1, 0), angle);
+    this.mesh.quaternion.copy(quat);
+    this.updateModel();*/
+    //ModelDrawable.prototype.updateView.call(this, camera);
+  };
+
+  /*particleDrawable.prototype.updateModel = function() {
+    // do nothing, since we don't want to use the model's internal matrix
+  };*/
+
+  return particleDrawable;
+}());
+
+imv.Drawables = imv.Drawables || {};
+imv.Drawables.Particle = ParticleDrawable;
+
+ var ParticlePortalsDrawable = (function(){
+
+  var MAX_SYSTEMS = 40;
+
+  var system = function(color, position, count, height, distance, spread, id)
+  {
+    this.color = color;
+    this.position = position;
+    this.count = count;
+    this.height = height;
+    this.distance = distance;
+    this.spread = spread;
+    this.id = id;
+  };
+
+  var particlePortalsDrawable = function(texture) {
+    ParticleDrawable.call(this, texture);
+    this.colors = [];
+    this.position = [];
+    this.params = [];
+    this.count = 0;
+    this.id = 0;
+    this.systems = [];
+    for(var i = 0; i < MAX_SYSTEMS; i++)
+    {
+      this.colors.push(new THREE.Vector4());
+      this.position.push(new THREE.Vector4());
+      this.params.push(new THREE.Vector4());
+    }
+    this.uniforms.u_color = {
+      type: "v4v",
+      value: this.colors
+    };
+    this.uniforms.u_position = {
+      type: "v4v",
+      value: this.position
+    };
+    this.uniforms.u_params = {
+      type: "v4v",
+      value: this.params
+    };
+  };
+  inherits(particlePortalsDrawable, ParticleDrawable);
+
+  particlePortalsDrawable.prototype.updateView = function(camera) {
+    ParticleDrawable.prototype.updateView.call(this, camera);
+    var n = this.count, delta = new THREE.Vector3(), cur, scale;
+    for(var i = 0; i < n; i++)
+    {
+      cur = this.systems[i];
+      delta.copy(cur.position).sub(camera.position);
+      scale = Math.pow(delta.length(), 0.2);
+      this.position[i].set(cur.position.x, cur.position.y, cur.position.z, cur.height);
+      this.params[i].w = scale;
+    }
+  };
+
+  particlePortalsDrawable.prototype.addSystem = function(color, position, count,
+    height, spread, distance)
+  {
+    if(this.count + 1 >= MAX_SYSTEMS)
+    {
+      throw 'This system is full';
+    }
+    // position should be relative to the system's position
+    position.sub(this.mesh.position);
+    var n = this.count++;
+    var pos = this.uniforms.u_cameraPos.value;
+    var delta = position.clone().sub(pos);
+    var scale = Math.pow(delta.length(), 0.2);
+    var id = this.id++;
+    this.systems.push(new system(color, position, count, height, spread, distance, id));
+    this.colors[n].set(color.x, color.y, color.z, count);
+    this.position[n].set(position.x, position.y, position.z, height);
+    this.params[n].set(this.elapsed / 100000 * distance, distance, spread, scale);
+    return id;
+  };
+
+  particlePortalsDrawable.prototype.updateTime = function(tick) {
+    Drawable.prototype.updateTime.call(this, tick);
+    var n = this.count;
+    for(var i = 0; i < n; i++)
+    {
+      this.params[i].x = (this.elapsed / 100000) * this.params[i].y;
+    }
+  };
+
+  return particlePortalsDrawable;
+}());
+
+imv.Drawables = imv.Drawables || {};
+imv.Drawables.ParticlePortals = ParticlePortalsDrawable;
 
 var loadResource = function(url, type, callback)
 {
@@ -2427,9 +2684,8 @@ var PortalLinkSystemEntity = (function(){
   var LINK_TEXTURE = 'PortalLinkTexture',
     LINK_SHADER = 'LinkShader';
 
-  var portalLinkSystem = function(loader, options) {
+  var portalLinkSystem = function(loader) {
     Entity.call(this, loader);
-    options = options || {};
     this.linkGeometry = new PortalLinkGeometry();
     var linkTexture = loader.getAsset('texture', LINK_TEXTURE);
     var linkShaders = loader.getRawShader(LINK_SHADER);
@@ -2479,9 +2735,8 @@ var ResonatorLinkSystemEntity = (function(){
   var LINK_TEXTURE = 'ResonatorLinkTexture',
     LINK_SHADER = 'LinkShader';
 
-  var resonatorLinkSystem = function(loader, options) {
+  var resonatorLinkSystem = function(loader) {
     Entity.call(this, loader);
-    options = options || {};
     this.linkGeometry = new ResonatorLinkGeometry();
     var linkTexture = loader.getAsset('texture', LINK_TEXTURE);
     var linkShaders = loader.getRawShader(LINK_SHADER);
@@ -2648,6 +2903,53 @@ var PortalEntity = (function(){
 
 imv.Entities = imv.Entities || {};
 imv.Entities.Portal = PortalEntity;
+
+var ParticlePortalsEntity = (function(){
+
+  var PARTICLE_TEXTURE = 'ParticleTexture',
+    PARTICLE_SHADER = 'particle_portals';
+
+  var particlePortalsEntity = function(loader) {
+    Entity.call(this, loader);
+    this.geometry = new ParticlePortalsGeometry();
+    var texture = loader.getAsset('texture', PARTICLE_TEXTURE);
+    var shaders = loader.getAsset('shaders', PARTICLE_SHADER);
+    this.count = 0;
+    if(!texture)
+    {
+      throw 'Unable to load texture ' + PARTICLE_TEXTURE;
+    }
+    if(!shaders)
+    {
+      throw 'Unable to load shaders: ' + PARTICLE_SHADER;
+    }
+    this.system = new ParticlePortalsDrawable(texture);
+    this.system.init(this.geometry, shaders);
+    this.models = [this.system];
+  };
+  Entity.extend(particlePortalsEntity, Entity);
+  particlePortalsEntity._assets.texture.push(PARTICLE_TEXTURE);
+  particlePortalsEntity._assets.shaders.push(PARTICLE_SHADER);
+
+  particlePortalsEntity.prototype.addSystem = function(color /* v3/v4 */, position /* v3 */,
+    level)
+  {
+    var count = 12 + level * 84.0 / 8.0;
+    var height = 1.35 + 0.65 * level / 8.0;
+    var spread = 7.5 + 12.5 * level / 8.0;
+    var distance = 30.0 + 58.0 * level / 8.0;
+
+    var t_color = new THREE.Vector3(color.x, color.y, color.z);  // discard alpha if present.
+    this.system.addSystem(t_color, position, count, height, spread, distance);
+    this.geometry.addSystem();
+    return this;
+  };
+
+  return particlePortalsEntity;
+}());
+
+imv.Entities = imv.Entities || {};
+imv.Entities.ParticlePortals = ParticlePortalsEntity;
 
 var AssetManager = function(basepath, map) {
 
