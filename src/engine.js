@@ -9,7 +9,7 @@ var Engine = function(canvas, assets)
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   this.gl = gl;
   this.view = mat4.create();
-  mat4.lookAt(this.view, [5.0, 5.0, 2.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
+  mat4.lookAt(this.view, [0.0, 4.0, 10.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
   this.project = mat4.create();
   this.assetManager = new AssetManager(this.gl, assets);
   this.objectRenderer = new ObjectRenderer(this.gl, this.assetManager);
@@ -32,6 +32,37 @@ Engine.prototype.stop = function() {
   this.cleared = false;
   if(this.frame) {
     window.cancelAnimationFrame(this.frame);
+  }
+};
+
+Engine.prototype.start = function() {
+  this.resize(this.canvas.width, this.canvas.height);
+  this.render(0);
+};
+
+Engine.prototype.demo = function() {
+  var x = -5, y = 0, z = 0;
+  var i, j, item;
+  for(i in imv.Primitives) {
+    for(j in imv.Primitives[i])
+    {
+      item = imv.Primitives[i][j].createInstance(this.objectRenderer);
+      if(item) {
+        if(i === 'Artifact') {
+          y = -14;
+        }
+        else {
+          y = 0;
+        }
+        mat4.translate(item.model, item.model, vec3.fromValues(x, y, z));
+        x++;
+        if(x > 5) {
+          x = -5;
+          z--;
+        }
+        this.objectRenderer.addDrawable(item);
+      }
+    }
   }
 };
 
@@ -72,11 +103,11 @@ Engine.prototype.render = function(tick)
   // render passes:
   this.objectRenderer.render();
 
-  // queue up next frame:
-  this.frame = window.requestAnimationFrame(this.render.bind(this));
-
   // run animations
   this.objectRenderer.updateTime(delta);
+
+  // queue up next frame:
+  this.frame = window.requestAnimationFrame(this.render.bind(this));
 };
 
 Engine.prototype.preload = function() {

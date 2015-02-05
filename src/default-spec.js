@@ -3,6 +3,7 @@ imv.Primitives = imv.Primitives || {};
 // inventory items:
 imv.Primitives.Inventory = imv.Primitives.Inventory || {};
 imv.Primitives.Artifact = imv.Primitives.Artifact || {};
+imv.Primitives.Resource = imv.Primitives.Resource || {};
 imv.Entities = imv.Entities || {};
 
 (function() {
@@ -14,11 +15,16 @@ imv.Entities = imv.Entities || {};
     imv.Entities[name] = Entity([item, core]);
   };
 
+  var createResourceUnit = function(name) {
+    imv.Primitives.Resource[name] =
+      new DrawableSpec('FlipCardTexture', 'bicolor_textured', name + 'ResourceUnitMesh', BicoloredDrawable);
+  };
+
   var createArtifact = function(series, index, frozen) {
     var suffix = frozen ? 'Frozen' : '';
     var name = series + suffix + index;
     imv.Primitives.Artifact[name] =
-      new DrawableSpec('Artifact' + series + 'Texture', 'textured', name);
+      new DrawableSpec('Artifact' + series + 'Texture', 'textured', name, TexturedDrawable);
   };
 
   var createSimple = function(name, caps) {
@@ -41,6 +47,20 @@ imv.Entities = imv.Entities || {};
   createInventoryItem('FlipCardAda', 'FlipCardMeshAda', 'FlipCardXmMesh');
   createInventoryItem('FlipCardJarvis', 'FlipCardMeshJarvis', 'FlipCardXmMesh');
 
+  // resource units:
+  createResourceUnit('Xmp');
+  createResourceUnit('Resonator');
+  createResourceUnit('Ultrastrike');
+  createResourceUnit('PortalShield');
+  createResourceUnit('PowerCube');
+  createResourceUnit('LinkAmp');
+  createResourceUnit('HeatSink');
+  createResourceUnit('MultiHack');
+  createResourceUnit('ForceAmp');
+  createResourceUnit('Turret');
+  createResourceUnit('Capsule');
+  createResourceUnit('ExtraShield');
+
   // artifacts:
   var series = {
     'Jarvis': 13,
@@ -52,8 +72,12 @@ imv.Entities = imv.Entities || {};
     for(var j = 0; j < series[i]; j++)
     {
       createArtifact(i, j + 1, false);
-      createArtifact(i, j + 1, true);
+      if(i !== 'Jarvis') {
+        createArtifact(i, j + 1, true);
+      }
     }
   }
+
+
 
 }());

@@ -1299,6 +1299,7 @@ imv.Primitives = imv.Primitives || {};
 // inventory items:
 imv.Primitives.Inventory = imv.Primitives.Inventory || {};
 imv.Primitives.Artifact = imv.Primitives.Artifact || {};
+imv.Primitives.Resource = imv.Primitives.Resource || {};
 imv.Entities = imv.Entities || {};
 
 (function() {
@@ -1310,11 +1311,16 @@ imv.Entities = imv.Entities || {};
     imv.Entities[name] = Entity([item, core]);
   };
 
+  var createResourceUnit = function(name) {
+    imv.Primitives.Resource[name] =
+      new DrawableSpec('FlipCardTexture', 'bicolor_textured', name + 'ResourceUnitMesh', BicoloredDrawable);
+  };
+
   var createArtifact = function(series, index, frozen) {
     var suffix = frozen ? 'Frozen' : '';
     var name = series + suffix + index;
     imv.Primitives.Artifact[name] =
-      new DrawableSpec('Artifact' + series + 'Texture', 'textured', name);
+      new DrawableSpec('Artifact' + series + 'Texture', 'textured', name, TexturedDrawable);
   };
 
   var createSimple = function(name, caps) {
@@ -1337,6 +1343,20 @@ imv.Entities = imv.Entities || {};
   createInventoryItem('FlipCardAda', 'FlipCardMeshAda', 'FlipCardXmMesh');
   createInventoryItem('FlipCardJarvis', 'FlipCardMeshJarvis', 'FlipCardXmMesh');
 
+  // resource units:
+  createResourceUnit('Xmp');
+  createResourceUnit('Resonator');
+  createResourceUnit('Ultrastrike');
+  createResourceUnit('PortalShield');
+  createResourceUnit('PowerCube');
+  createResourceUnit('LinkAmp');
+  createResourceUnit('HeatSink');
+  createResourceUnit('MultiHack');
+  createResourceUnit('ForceAmp');
+  createResourceUnit('Turret');
+  createResourceUnit('Capsule');
+  createResourceUnit('ExtraShield');
+
   // artifacts:
   var series = {
     'Jarvis': 13,
@@ -1348,9 +1368,13 @@ imv.Entities = imv.Entities || {};
     for(var j = 0; j < series[i]; j++)
     {
       createArtifact(i, j + 1, false);
-      createArtifact(i, j + 1, true);
+      if(i !== 'Jarvis') {
+        createArtifact(i, j + 1, true);
+      }
     }
   }
+
+
 
 }());
 
@@ -1365,7 +1389,7 @@ var Engine = function(canvas, assets)
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   this.gl = gl;
   this.view = mat4.create();
-  mat4.lookAt(this.view, [5.0, 5.0, 2.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
+  mat4.lookAt(this.view, [0.0, 4.0, 10.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
   this.project = mat4.create();
   this.assetManager = new AssetManager(this.gl, assets);
   this.objectRenderer = new ObjectRenderer(this.gl, this.assetManager);
@@ -1388,6 +1412,37 @@ Engine.prototype.stop = function() {
   this.cleared = false;
   if(this.frame) {
     window.cancelAnimationFrame(this.frame);
+  }
+};
+
+Engine.prototype.start = function() {
+  this.resize(this.canvas.width, this.canvas.height);
+  this.render(0);
+};
+
+Engine.prototype.demo = function() {
+  var x = -5, y = 0, z = 0;
+  var i, j, item;
+  for(i in imv.Primitives) {
+    for(j in imv.Primitives[i])
+    {
+      item = imv.Primitives[i][j].createInstance(this.objectRenderer);
+      if(item) {
+        if(i === 'Artifact') {
+          y = -14;
+        }
+        else {
+          y = 0;
+        }
+        mat4.translate(item.model, item.model, vec3.fromValues(x, y, z));
+        x++;
+        if(x > 5) {
+          x = -5;
+          z--;
+        }
+        this.objectRenderer.addDrawable(item);
+      }
+    }
   }
 };
 
@@ -1428,11 +1483,11 @@ Engine.prototype.render = function(tick)
   // render passes:
   this.objectRenderer.render();
 
-  // queue up next frame:
-  this.frame = window.requestAnimationFrame(this.render.bind(this));
-
   // run animations
   this.objectRenderer.updateTime(delta);
+
+  // queue up next frame:
+  this.frame = window.requestAnimationFrame(this.render.bind(this));
 };
 
 Engine.prototype.preload = function() {
