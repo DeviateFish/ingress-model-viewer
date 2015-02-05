@@ -17,7 +17,14 @@ var loadResource = function(url, type, callback)
         canvas.height = tga.height;
         canvas.width = tga.width;
         context.putImageData(imageData, 0, 0);
-        callback(null, canvas);
+        var image = new Image();
+        image.onload = function() {
+          callback(null, this);
+        };
+        image.onerror = function(e) {
+          callback(e, null);
+        };
+        image.src = canvas.toDataURL();
       });
     }
     else
@@ -55,15 +62,14 @@ var loadResource = function(url, type, callback)
   }
 };
 
-var AssetLoader = function(type, transform)
+var AssetLoader = function()
 {
-  type = type || 'text';
-  transform = transform || function(v) { return v; };
   var _callbacks = {};
   var _assets = {};
 
-  this.loadAsset = function(name, url, callback, options)
+  this.loadAsset = function(url, type, callback)
   {
+    var name = '_' + encodeURIComponent(url);
     if(_assets[name])
     {
       callback(null, _assets[name]);
@@ -77,7 +83,6 @@ var AssetLoader = function(type, transform)
       loadResource(url, type, function(err, value) {
         if(!err)
         {
-          value = transform(value, options);
           _assets[name] = value;
         }
         var cb;
@@ -86,6 +91,35 @@ var AssetLoader = function(type, transform)
           cb(err, value);
         }
       });
+    }
+  };
+
+  this.loadAssetGroup = function(urls, types, callback)
+  {
+    if(urls.length !== types.length)
+    {
+      throw 'Incompatible types: types.length = ' + types.length + '; urls.length = ' + urls.length;
+    }
+    var len = urls.length, results = new Array(len);
+    var onEach = function(idx, err, value) {
+      if(err) {
+        callback(err, null);
+        return;
+      }
+      results[idx] = value;
+      var i, r = true;
+      for(i = 0; i < len; i++)
+      {
+        r = r && results[i];
+      }
+      if(r)
+      {
+        callback(null, results);
+      }
+    };
+    for(var i = 0; i < urls.length; i++)
+    {
+      this.loadAsset(urls[i], types[i], onEach.bind(undefined, i));
     }
   };
 

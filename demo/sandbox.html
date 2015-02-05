@@ -2,121 +2,102 @@
 <html>
 <head>
     <title>Ingress Model Sandbox</title>
-    <script src="../vendor/three.min.js"></script>
+    <script src="/bower_components/gl-matrix/dist/gl-matrix.js"></script>
     <script src="/bower_components/java-deserializer/dist/java-deserializer.min.js"></script>
     <script src="/bower_components/libtga/dist/libtga.min.js"></script>
     <script src="../dist/ingress-model-viewer.js"></script>
+    <style>
+      html, body {
+        height: 100%;
+        width: 100%;
+        position: relative;
+        margin: 0;
+      }
+    </style>
 </head>
 <body>
 <canvas id="screen" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;"></canvas>
 <div style="width: 100%; text-align: center; color: #ccc; position: fixed; top: 0;height: 50px; line-height: 50px"
      id="controls"></div>
 <script type="text/javascript">
-    var imv = window.IMV;
-    var controls = document.getElementById('controls'), canvas = document.getElementById('screen');
-    var camControls = new imv.Controls.OrbitControls(canvas, 25, {distanceMax: 150, target: new THREE.Vector3(0, 0, 0)});
-    var w = window.innerWidth, h = window.innerHeight;
-    var engine = new imv.Engine(canvas, {cameraOptions: {aspect: w / h, far: 500}});
-    var helper = new THREE.AxisHelper(10);
-
-    var loader = new imv.AssetManager('/assets/');
-
-    window.addEventListener('resize', function()
-    {
-        w = window.innerWidth, h = window.innerHeight;
-        engine.updateViewport(w, h);
-    });
-
-    engine.renderer.setSize(w, h);
-    engine.scene.add(helper);
-    engine.registerPeriodic(function()
-    {
-        camControls.updateCamera(engine.camera);
-    });
-
-    var entities = {
-      Portal: IMV.Entities.Portal,
-      ShieldEffect: IMV.Entities.ShieldEffect
-    };
-    for(var i in IMV.Entities.Items)
-    {
-      entities[i] = IMV.Entities.Items[i];
+  var canvas = document.getElementById('screen'), engine;
+  canvas.width = document.body.offsetWidth;
+  canvas.height = document.body.offsetHeight;
+  var slim = {
+    "texture": {
+      "FlipCardTexture": { "path": "scanner/genericModTexture.png", "minFilter": "Linear", "magFilter": "Linear", "wrapS": "ClampToEdge", "wrapT": "ClampToEdge" },
+      "GlowrampTexture": { "path": "scanner/portalTexture.png", "minFilter": "MipMapLinearNearest", "magFilter": "Linear", "wrapS": "Repeat", "wrapT": "Repeat" },
+      "PortalShieldTexture": { "path": "scanner/portalShieldMod.png", "minFilter": "MipMapLinearLinear", "magFilter": "Linear", "wrapS": "Repeat", "wrapT": "Repeat" },
+      "ObjectXMTexture": { "path": "scanner/objectXMTexture.tga", "minFilter": "MipMapLinearLinear", "magFilter": "Linear", "wrapS": "Repeat", "wrapT": "Repeat" },
+    },
+    "mesh": {
+      "XmpMesh": { "path": "scanner/xmp.obj" },
+      "XmpXMMesh": { "path": "scanner/xmpXM.obj" },
+      "XmpResourceUnitMesh": { "path": "scanner/xmpResourceUnit.obj" },
+      "PortalShieldMesh": { "path": "scanner/shield.obj" },
+      "TexturedPortalMesh": { "path": "scanner/texturedPortal.obj" },
+      "LinkAmpMesh": { "path": "scanner/linkAmpResource.obj" },
+      "LinkAmpXmMesh": { "path": "scanner/linkAmpResourceXM.obj" },
+      "LinkAmpResourceUnitMesh": { "path": "scanner/linkAmpResourceUnit.obj" },
+    },
+    "program": {
+      "textured": { "vertex": "shaders/textured.glsl.vert", "fragment": "shaders/textured.glsl.frag", "program": "Opaque" },
+      "portal_scanner": { "vertex": "shaders/portal_scanner.glsl.vert", "fragment": "shaders/portal_scanner.glsl.frag", "program": "Glowramp" },
+      "shield": { "vertex": "shaders/shield.glsl.vert", "fragment": "shaders/shield.glsl.frag", "program": "Glowramp" },
+      "xm": { "vertex": "shaders/xm.glsl.vert", "fragment": "shaders/xm.glsl.frag", "program": "Opaque" },
+      "bicolor_textured": { "vertex": "shaders/bicolor_textured.glsl.vert", "fragment": "shaders/bicolor_textured.glsl.frag", "program": "Opaque" },
     }
+  };
 
-    // create the select for the models:
-    var container = document.createElement('div');
-    container.style.display = 'inline-block';
-    container.style.padding = '0px 10px';
-    var label = document.createElement('label');
-    label.for = 'models-id';
-    label.innerHTML = 'Models: ';
-    container.appendChild(label);
-    var select = document.createElement('select');
-    select.id = 'models-id';
-    container.appendChild(select);
-    var add = document.createElement('button');
-    add.id = 'model-add-id';
-    add.innerHTML = 'Add';
-    add.onclick = function()
-    {
-        var c = entities[select.value];
-        if(c)
-        {
-            console.log('adding ' + select.value);
-            lastModel = new c(loader);
-            engine.addEntity(lastModel)
-        }
-    };
-    container.appendChild(add);
-    controls.appendChild(container);
+  var init = function(assets) {
+    engine = new IMV.Engine(canvas, assets);
+    engine.assetManager.loadAll();
+  };
 
-    var loadEntity = function(name, entity)
-    {
-      loader.preloadEntity(entity, function() {
-        var opt = document.createElement('option');
-        opt.value = name;
-        opt.innerHTML = name;
-        select.appendChild(opt);
-      });
+  var renderloop = function() {
+    engine && engine.render();
+    requestAnimationFrame(renderloop);
+  };
+
+  var rotate = function(delta) {
+    mat4.rotateY(this.model, this.model, delta / 1000);
+    this.updateMatrix();
+    return true;
+  };
+
+  var addEach = function() {
+    for(var i in IMV.Entities) {
+      var t = new IMV.Entities[i](engine.objectRenderer);
+      t.translate(vec3.fromValues(Math.random() * 10 - 5, 0, Math.random() * 10 - 5));
+      t.add();
+      t.setAnimation(rotate);
     }
+  };
 
-    var handleAssets = function(list)
-    {
-        assets = list;
-        loader.setAssets(list);
-        for(var i in entities)
-        {
-          if(entities.hasOwnProperty(i))
-          {
-            loadEntity(i, entities[i]);
-          }
-        }
-    };
+  var assets = {};
+  IMV.Utilities.loadResource('/assets.json', 'text', function(err, val) {
+    if(err) {
+      throw err;
+    }
+    assets = JSON.parse(val);
+    if(assets) {
+      init(assets);
+      engine.render();
+      addEach();
+    }
+  });
 
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/assets.json');
-    xhr.responseType = 'text';
-    xhr.onload = function(e)
+  var findConstant = function(gl, num)
+  {
+    for(var i in gl)
     {
-        try
-        {
-            var a = JSON.parse(e.target.responseText);
-            if(typeof(a) == 'object')
-            {
-                handleAssets(a);
-            }
-        }
-        catch(e)
-        {
-            console.error('unable to open or parse assets' + e.toString());
-        }
-    };
-    xhr.onerror = function(e)
-    {
-        console.log(e);
-    };
+      if(gl.hasOwnProperty(i) && gl[i] === num)
+      {
+        console.log(i);
+      }
+    }
+  };
 
-    xhr.send();
 </script>
 </body>
 </html>

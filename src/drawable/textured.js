@@ -1,21 +1,15 @@
-var TexturedDrawable = (function(){
+var TexturedDrawable = function(program, mesh, texture) {
+  ModelDrawable.call(this, program, mesh);
+  this.texture = texture;
+};
+inherits(TexturedDrawable, ModelDrawable);
 
-  var texturedDrawable = function(texture) {
-    ModelDrawable.call(this);
-    if(!(texture instanceof THREE.Texture))
-    {
-      throw 'Texture must be a THREE.Texture';
-    }
-    this.uniforms.u_texture = {
-      type: "t",
-      value: texture
-    };
-    texture.needsUpdate = true; // not sure I need this here now.
-  };
-  inherits(texturedDrawable, ModelDrawable);
-
-  return texturedDrawable;
-}());
+TexturedDrawable.prototype.draw = function()
+{
+  this.texture.use(0);
+  this.uniforms.u_texture = 0;
+  ModelDrawable.prototype.draw.call(this);
+};
 
 imv.Drawables = imv.Drawables || {};
 imv.Drawables.Textured = TexturedDrawable;

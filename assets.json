@@ -28,7 +28,7 @@
         "OrnamentVolatileTexture": { "path": "scanner/ornaments/volatile.png", "minFilter": "Linear", "magFilter": "Linear", "wrapS": "ClampToEdge", "wrapT": "ClampToEdge" },
         "RegionTexture": { "path": "scanner/region_tiling.png", "minFilter": "MipMapLinearLinear", "magFilter": "Linear", "wrapS": "Repeat", "wrapT": "Repeat" }
     },
-    "geometry": {
+    "mesh": {
         "PlayerMesh": { "path": "scanner/playerMesh.obj" },
         "PlayerMeshEdge": { "path": "scanner/playerMeshEdge.obj" },
         "PlayerMeshReflection": { "path": "scanner/playerMeshEdgeRefl.obj" },
@@ -223,15 +223,15 @@
         "OrnamentClusterMesh": { "path": "scanner/ornaments/cluster.obj", "transparent": true },
         "OrnamentVolatileMesh": { "path": "scanner/ornaments/volatile.obj", "transparent": true }
     },
-    "rawShaders": {
+    "rawProgram": {
         "SolidShader": { "vertex": "uniform mat4 u_modelViewProject;\nattribute vec3 a_position;\nvoid main() { \n  gl_Position = u_modelViewProject * vec4(a_position, 1.0);\n}", "fragment": "#ifdef GL_ES\nprecision mediump float;\n#endif\nuniform vec4 u_color;\nvoid main() {\n  gl_FragColor = u_color;\n}" },
         "PlayerShader": { "vertex": "uniform mat4 u_modelViewProject;\nattribute vec3 a_position;\nattribute vec2 a_texCoord0;\nvarying vec2 v_texCoord0;\nvoid main() { \n  v_texCoord0 = a_texCoord0;\n  gl_Position = u_modelViewProject * vec4(a_position, 1.0);\n}", "fragment": "#ifdef GL_ES\nprecision mediump float;\n#endif\nuniform float u_flicker;\nuniform vec4 u_color;\nuniform sampler2D u_texture;\nvarying vec2 v_texCoord0;\nvoid main() {\n  vec4 texture = texture2D(u_texture, v_texCoord0);  float flicker = (texture.a < 1.0) ? u_flicker : 0.0;  vec4 u_blendedColor = (u_color + flicker) * texture;\n  gl_FragColor = vec4(u_blendedColor.rgb, texture.a);\n}" },
         "LinkShader": { "vertex": "uniform mat4 u_modelViewProject;\nuniform vec3 u_cameraFwd;\nuniform float u_elapsedTime;\nattribute vec4 a_position;\nattribute vec4 a_texCoord0;\nattribute vec4 a_color;\nvarying vec4 v_texCoord0And1;\nvarying vec4 v_color;\nvoid main() { \n  vec3 normal = normalize(vec3(a_texCoord0.z, .001, a_texCoord0.w));\n  v_texCoord0And1.xy = (a_texCoord0.xy + vec2(0, u_elapsedTime * a_position.w * 0.6));\n  v_texCoord0And1.zw = a_texCoord0.xy + vec2(0, u_elapsedTime * a_position.w);\n  v_color = a_color;\n float alpha = abs(dot(normal, u_cameraFwd));\n  v_color.a *= (3.0 * alpha * alpha) - (2.0 * alpha * alpha * alpha);\n  gl_Position = u_modelViewProject * vec4(a_position.xyz, 1.0);\n}", "fragment": "#ifdef GL_ES\nprecision mediump float;\n#endif\nuniform sampler2D u_texture;\nvarying vec4 v_color;\nvarying vec4 v_texCoord0And1;\nvoid main() {\n  vec4 base = texture2D(u_texture, v_texCoord0And1.xy);\n  vec4 scrolled = texture2D(u_texture, v_texCoord0And1.zw);\n  float dots = scrolled.g;\n  float brighten = mix(1.0, 2.0, base.b + (dots / 4.0));\n  gl_FragColor.rgb = v_color.rgb * mix(0.35, brighten, dots);\n  gl_FragColor.a = v_color.a * base.r;\n}" }
     },
-    "shaders": {
-        "textured": { "vertex": "shaders/textured.glsl.vert", "fragment": "shaders/textured.glsl.frag" },
-        "xm": { "vertex": "shaders/xm.glsl.vert", "fragment": "shaders/xm.glsl.frag" },
-        "bicolor_textured": { "vertex": "shaders/bicolor_textured.glsl.vert", "fragment": "shaders/bicolor_textured.glsl.frag" },
+    "program": {
+        "textured": { "vertex": "shaders/textured.glsl.vert", "fragment": "shaders/textured.glsl.frag", "program": "Opaque" },
+        "xm": { "vertex": "shaders/xm.glsl.vert", "fragment": "shaders/xm.glsl.frag", "program": "Opaque" },
+        "bicolor_textured": { "vertex": "shaders/bicolor_textured.glsl.vert", "fragment": "shaders/bicolor_textured.glsl.frag", "program": "Opaque" },
         "alpha_tinted_textured": { "vertex": "shaders/alpha_tinted_textured.glsl.vert", "fragment": "shaders/alpha_tinted_textured.glsl.frag" },
         "tinted_textured": { "vertex": "shaders/tinted_textured.glsl.vert", "fragment": "shaders/tinted_textured.glsl.frag" },
         "region_textured": { "vertex": "shaders/region_textured.glsl.vert", "fragment": "shaders/region_textured.glsl.frag" },

@@ -13,7 +13,8 @@
   ],
   "dependencies": {
     "java-deserializer": "git://github.com/DeviateFish/java-deserializer.git#~0.1.0",
-    "libtga": "git://github.com/DeviateFish/libtga#>0.2.2"
+    "libtga": "git://github.com/DeviateFish/libtga#>0.2.2",
+    "gl-matrix": "~2.2.1"
   },
   "private": true
 }

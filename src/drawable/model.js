@@ -1,28 +1,26 @@
 var ModelDrawable = (function() {
 
-  var modelDrawable = function() {
-    Drawable.call(this);
-    this.uniforms.u_modelViewProject = {
-      type: "m4",
-      value: new THREE.Matrix4()
-    };
-    this.projectView = new THREE.Matrix4();
+  var modelDrawable = function(program, mesh) {
+    MeshDrawable.call(this, program, mesh);
+    this.viewProject = mat4.create();
+    this.model = mat4.create();
   };
-  inherits(modelDrawable, Drawable);
+  inherits(modelDrawable, MeshDrawable);
 
-  modelDrawable.prototype.updateView = function(camera) {
-    // this most basic is usually a u_modelViewProject update:
-    this.projectView.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
-    this.updateModel();
+  modelDrawable.prototype.updateMatrix = function() {
+    var mvp = mat4.create();
+    mat4.multiply(mvp, this.viewProject, this.model);
+    this.uniforms.u_modelViewProject = mvp;
   };
 
-  // signals that the model's mesh has been updated in some way...
-  // means we need to recalculate the u_modelViewProject uniform
-  modelDrawable.prototype.updateModel = function() {
-    this.mesh.updateMatrix();
-    this.mesh.updateMatrixWorld();
-    var modelViewProject = this.projectView.clone().multiply(this.mesh.matrixWorld);
-    this.updateUniformM('u_modelViewProject', modelViewProject);
+  modelDrawable.prototype.updateView = function(viewProject) {
+    this.viewProject = viewProject;
+    this.updateMatrix();
+  };
+
+  modelDrawable.prototype.setMatrix = function(mat) {
+    this.model = mat;
+    this.updateMatrix();
   };
 
   return modelDrawable;

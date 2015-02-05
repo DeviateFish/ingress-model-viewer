@@ -1,142 +1,164 @@
-var AssetManager = function(basepath, map) {
+var AssetManager = (function() {
 
-  var assetMap = map || {};
-  var cache = {
-    geometry: new GeometryLoader(basepath, IngressGeometry),
-    texture: new TextureLoader(basepath),
-    shaders: new ShaderLoader(basepath)
-  };
-  var keys = Object.keys(cache);
-
-  this.setAssets = function(list)
-  {
-    assetMap = list;
-    return this;
-  };
-
-  this.addAssets = function(list)
-  {
-    assetMap = copyInto(assetMap, list);
-  };
-
-  this.getAsset = function(type, key)
-  {
-    if(type in cache)
-    {
-      return cache[type].getAsset(key);
-    }
-    return null;
-  };
-
-  this.getRawShader = function(name)
-  {
-    if(assetMap && ('rawShaders' in assetMap) && (name in assetMap.rawShaders))
-    {
-      return new ShaderSet(assetMap.rawShaders[name].vertex, assetMap.rawShaders[name].fragment);
-    }
-  };
-
-  this.preloadEntity = function(entity, onComplete)
-  {
-    if (!('_assets' in entity))
-    {
-      throw 'entity must be an instance of Entity';
-    }
-    var done = 0, count = 0, i, key;
-    var a = entity._assets;
-    for(i = 0; i < keys.length; i++)
-    {
-      count += a[keys[i]].length;
-    }
-    var getList = function(type, names) {
-      var complete = function(err) {
-        done++;
-        if(err)
-        {
-          console.warn('Unable to load asset: ' + err);
-        }
-        if(done === count)
-        {
-          onComplete();
-        }
-      };
-      for(var j = 0; j < names.length; j++)
-      {
-        key = names[j];
-        if(!(key in assetMap[type]))
-        {
-          console.warn('Unknown ' + type + ' asset: ' + key);
-          done++;
-        }
-        else
-        {
-          cache[type].loadAsset(key, assetMap[type][key], complete);
-        }
-      }
+  var assetManager = function(gl, manifest) {
+    GLBound.call(this, gl);
+    this.manifest = manifest;
+    this.loader = new AssetLoader();
+    this.textures = {};
+    this.meshes = {};
+    this.programs = {};
+    this.queues = {
+      texture: [],
+      mesh: [],
+      program: []
     };
-    for(i = 0; i < keys.length; i++)
-    {
-      getList(keys[i], a[keys[i]]);
-    }
+    this.path = '/assets/';
   };
+  inherits(assetManager, GLBound);
 
-  this.preloadAssets = function(onComplete)
-  {
-    var queues = {};
-    var end = function()
+  assetManager.prototype.handleTexture = function(idx, name, info, err, value) {
+    if(err)
     {
-      var e = true;
-      for(var i = 0; i < keys.length; i++)
-      {
-        e = e && (queues[keys[i]].i >= queues[keys[i]].n);
-      }
-      if(e)
-      {
-        setTimeout(onComplete, 0);
-      }
-    };
-    var fetch = function(k) {
-      var _keys = Object.keys(assetMap[k]);
-      queues[k] = {
-        i: 0,
-        n: _keys.length
-      };
-      var next = function()
-      {
-        if(queues[k].i >= queues[k].n)
-        {
-          end();
-          return;
-        }
-        var j = queues[k].i++;
-        cache[k].loadAsset(_keys[j], assetMap[k][_keys[j]], function(err){
-          if(err)
-          {
-            console.warn('Unable to load asset: ' + err);
-          }
-          setTimeout(next, 0);
-        });
-      };
-      next();
-    };
-    for(var i = 0; i < keys.length; i++)
-    {
-      fetch(keys[i]);
+      this.queues.texture[idx] = -1;
+      console.error(err);
+      throw 'Could not load ' + name;
     }
 
-    return function () {
-      var k = Object.keys(queues);
-      var l = k.length;
-      var s = 0;
-      for(var i = 0; i < l; i++)
+    this.textures[name] = new Texture(this._gl, info, value);
+    this.queues.texture[idx] = 1;
+    console.info('loaded texture ' + name);
+  };
+
+  assetManager.prototype.handleMesh = function(idx, name, info, err, value) {
+    if(err)
+    {
+      this.queues.mesh[idx] = -1;
+      console.error(err);
+      throw 'Could not load ' + name;
+    }
+
+    this.meshes[name] = new FileMesh(this._gl, value);
+    this.queues.mesh[idx] = 1;
+    console.info('loaded mesh ' + name);
+  };
+
+  assetManager.prototype.handleProgram = function(idx, name, info, err, vals) {
+    if(err)
+    {
+      this.queues.program[idx] = -1;
+      console.error(err);
+      throw 'Could not load ' + name;
+    }
+
+    var klass = Program;
+    if(info.program in imv.Programs)
+    {
+      klass = imv.Programs[info.program];
+    }
+    this.programs[name] = new klass(this._gl, vals[0], vals[1]);
+    this.queues.program[idx] = 1;
+    console.info('loaded program ' + name);
+  };
+
+  assetManager.prototype.getTexture = function(name) {
+    return this.textures[name];
+  };
+
+  assetManager.prototype.getMesh = function(name) {
+    return this.meshes[name];
+  };
+
+  assetManager.prototype.getProgram = function(name) {
+    return this.programs[name];
+  };
+
+  assetManager.prototype.loadAll = function() {
+    var i, asset, manifest = this.manifest;
+    for(i in manifest.texture)
+    {
+      if(manifest.texture.hasOwnProperty(i) && !(i in this.textures))
       {
-        s += (queues[k[i]].i / queues[k[i]].n) / l;
+        this.textures[i] = null;
+        asset = manifest.texture[i];
+        this.loader.loadAsset(
+          this.path + asset.path,
+          'image',
+          this.handleTexture.bind(this, this.queues.texture.length, i, asset)
+        );
+        this.queues.texture.push(0);
       }
-      return s;
+    }
+    for(i in manifest.mesh)
+    {
+      if(manifest.mesh.hasOwnProperty(i) && !(i in this.meshes))
+      {
+        this.meshes[i] = null;
+        asset = manifest.mesh[i];
+        this.loader.loadAsset(
+          this.path + asset.path,
+          'arraybuffer',
+          this.handleMesh.bind(this, this.queues.mesh.length, i, asset)
+        );
+        this.queues.mesh.push(0);
+      }
+    }
+    for(i in manifest.program)
+    {
+      if(manifest.program.hasOwnProperty(i) && !(i in this.programs))
+      {
+        this.programs[i] = null;
+        asset = manifest.program[i];
+        this.loader.loadAssetGroup(
+          [this.path + asset.vertex, this.path + asset.fragment],
+          ['text', 'text'],
+          this.handleProgram.bind(this, this.queues.program.length, i, asset)
+        );
+        this.queues.program.push(0);
+      }
+    }
+
+    return this.getStatus.bind(this);
+  };
+
+  var areLoading = function(n, e) {
+    if(e === 0) {
+      n++;
+    }
+    return n;
+  };
+
+  var areLoaded = function(n, e) {
+    if(e > 0) {
+      n++;
+    }
+    return n;
+  };
+
+  var areError = function(n, e) {
+    if(e < 0) {
+      n++;
+    }
+    return n;
+  };
+
+  var summarize = function(queue) {
+    return {
+      total: queue.length,
+      loading: queue.reduce(areLoading, 0),
+      loaded: queue.reduce(areLoaded, 0),
+      error: queue.reduce(areError, 0)
     };
   };
 
-  return this;
-};
+  assetManager.prototype.getStatus = function() {
+    return {
+      textures: summarize(this.queues.texture),
+      meshes: summarize(this.queues.meshes),
+      programs: summarize(this.queues.programs)
+    };
+  };
+
+  return assetManager;
+}());
 
 imv.AssetManager = AssetManager;

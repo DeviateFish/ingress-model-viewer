@@ -2,29 +2,24 @@ var LinkDrawable = (function(){
 
   // no defaults here.
 
-  var linkDrawable = function(texture) {
-    TexturedDrawable.call(this, texture);
-    this.uniforms.u_cameraFwd = {
-      type: "v3",
-      value: new THREE.Vector3(0, 0, -1)
-    };
-    this.uniforms.u_elapsedTime = {
-      type: "f",
-      value: 0
-    };
-    this.options.transparent = true;
+  var linkDrawable = function(program, mesh, texture) {
+    TexturedDrawable.call(this, program, mesh, texture);
+    this.uniforms.u_cameraFwd = vec3.fromValues([0, 0, -1]);
+    this.uniforms.u_elapsedTime = 0;
   };
   inherits(linkDrawable, TexturedDrawable);
 
+  // TODO: needs a camera class:
   linkDrawable.prototype.updateView = function(camera) {
     var fwd = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
-    this.updateUniformV('u_cameraFwd', fwd);
+    this.uniforms.u_cameraFwd = camera;
     ModelDrawable.prototype.updateView.call(this, camera);
   };
 
   linkDrawable.prototype.updateTime = function(tick) {
-    Drawable.prototype.updateTime.call(this, tick);
-    this.updateUniformF('u_elapsedTime', ((this.elapsed / 1000) % 300.0) * 0.1);
+    var ret = ModelDrawable.prototype.updateTime.call(this, tick);
+    this.uniforms.u_elapsedTime = ((this.elapsed / 1000) % 300.0) * 0.1;
+    return ret;
   };
 
   return linkDrawable;

@@ -1,277 +1,86 @@
-var Engine = function(canvas, options)
+var Engine = function(canvas, assets)
 {
-  options = options || {};
-  var params = {
-    cameraOptions: {
-      fov: 75,
-      aspect: 1.0,
-      near: 0.01,
-      far: 50
-    },
-    shaderPrecision: 'mediump',
-    premultipliedAlpha: true,
-    alpha: false,
-    preserveDrawingBuffer: false,
-  };
-  this.options = setParams(params, options, true);
-
-  var created = Date.now();
-  var models = {};
-  var id = 0;
-  this.addDrawable = function(model, soft)
+  this.canvas = canvas;
+  var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  if(!gl)
   {
-    if(!(model instanceof Drawable))
-    {
-      throw 'Object must be of type Drawable';
-    }
-    if(!model.id)
-    {
-      var n = id++;
-      models[n] = model;
-      model.id = n;
-    }
-    else
-    {
-      models[model.id] = model;
-    }
-    model.updateView(this.camera);
-    if(!soft)
-    {
-      this.scene.add(model.mesh);
-    }
-  };
+    throw 'Could not initialize webgl';
+  }
+  gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  this.gl = gl;
+  this.view = mat4.create();
+  mat4.lookAt(this.view, [5.0, 5.0, 2.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
+  this.project = mat4.create();
+  this.assetManager = new AssetManager(this.gl, assets);
+  this.objectRenderer = new ObjectRenderer(this.gl, this.assetManager);
+  this.resize(canvas.width, canvas.height);
+  this.start = this.last = null;
+  this.paused = false;
+  this.cleared = false;
+  this.frame = null;
+};
 
-  this.removeDrawable = function(model)
+Engine.prototype.resize = function(width, height)
+{
+  this.gl.viewport(0, 0, width, height);
+  mat4.perspective(this.project, 45, width / height, 0.1, 100);
+  this.objectRenderer.updateView(this.view, this.project);
+};
+
+Engine.prototype.stop = function() {
+  this.paused = true;
+  this.cleared = false;
+  if(this.frame) {
+    window.cancelAnimationFrame(this.frame);
+  }
+};
+
+Engine.prototype.render = function(tick)
+{
+  if(this.paused) {
+    this.cleared = true;
+    this.paused = false;
+    return;
+  }
+  var delta = 0;
+  if(!this.start)
   {
-    if(!(model instanceof Drawable))
-    {
-      return false;
-    }
-    var i = model.id;
-    if(i in models)
-    {
-      this.scene.remove(models[i].mesh);
-      delete models[i];
-    }
-    return true;
-  };
-
-  this.addEntity = function(entity, soft)
+    this.start = tick;
+    this.last = tick;
+  }
+  else
   {
-    if(!(entity instanceof Entity))
-    {
-      throw 'Must pass an instance of IMV.Entity';
-    }
-    for(var i = 0; i < entity.models.length; i++)
-    {
-      this.addDrawable(entity.models[i], soft);
-    }
-  };
+    delta = tick - this.last;
+    this.last = tick;
+  }
+  var gl = this.gl;
+  // default setup stuff:
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  gl.lineWidth(1.0);
+  gl.enable(gl.CULL_FACE);
+  gl.frontFace(gl.CCW);
+  gl.cullFace(gl.BACK);
+  gl.enable(gl.DEPTH_TEST);
+  gl.blendEquation(gl.FUNC_ADD);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+  //gl.enable(gl.BLEND);
+  //gl.depthMask(false);
 
-  this.removeEntity = function(entity)
-  {
-    if(!(entity instanceof Entity))
-    {
-      return false;
-    }
-    var t = true;
-    for(var i = 0; i < entity.models.length; i++)
-    {
-      t = this.removeDrawable(entity.models[i]) && t;
-    }
-    return t;
-  };
+  gl.disable(gl.BLEND);
+  gl.depthMask(true);
 
-  this.hideModel = function(model)
-  {
-    var i = model.id;
-    if(i in models)
-    {
-      this.scene.remove(models[i].mesh);
-    }
-    return this;
-  };
+  // render passes:
+  this.objectRenderer.render();
 
-  this.showModel = function(model)
-  {
-    var i = model.id;
-    if(i in models)
-    {
-      this.scene.add(models[i].mesh);
-    }
-    return this;
-  };
+  // queue up next frame:
+  this.frame = window.requestAnimationFrame(this.render.bind(this));
 
-  this.clearScene = function()
-  {
-    var keys = Object.keys(models);
-    for(var i = 0; i < keys.length; i++)
-    {
-      this.scene.remove(models[keys[i]].mesh);
-      delete models[keys[i]];
-    }
-    return this;
-  };
+  // run animations
+  this.objectRenderer.updateTime(delta);
+};
 
-  this.scene = new THREE.Scene();
-  this.camera = new THREE.PerspectiveCamera(
-    this.options.cameraOptions.fov,
-    this.options.cameraOptions.aspect,
-    this.options.cameraOptions.near,
-    this.options.cameraOptions.far
-  );
-  this.renderer = new THREE.WebGLRenderer({
-    canvas: canvas,
-    precision: this.options.shaderPrecision,
-    premultipliedAlpha: this.options.premultipliedAlpha,
-    alpha: this.options.alpha,
-    preserveDrawingBuffer: this.options.preserveDrawingBuffer,
-    antialias: true
-  });
-  //this.renderer.sortObjects = false;
-
-  var _this = this;
-  var _periodics = [];
-  this.getElapsed = function() { return Date.now() - created; };
-
-  this.registerPeriodic = function(fn)
-  {
-    _periodics.push(fn);
-    return this;
-  };
-
-  this.unregisterPeriodic = function(fn)
-  {
-    for(var i = 0; i < _periodics.length; i++)
-    {
-      if(_periodics[i] === fn)
-      {
-        _periodics.splice(i, 1);
-      }
-    }
-    return this;
-  };
-
-  var lastTick = created;
-  var updatePeriodics = function()
-  {
-    var i;
-    var n = Date.now(), d = n - lastTick;
-    lastTick = n;
-    for(i in models)
-    {
-      if(models.hasOwnProperty(i) && models[i] instanceof Drawable)
-      {
-        models[i].updateTime(d);
-      }
-    }
-    var l = _periodics.length;
-    for(i = 0; i < l; i++)
-    {
-      _periodics[i](d);
-    }
-  };
-
-  var updateViewUniforms = function(camera)
-  {
-    var i;
-    for(i in models)
-    {
-      if(models.hasOwnProperty(i))
-      {
-        if(models[i] instanceof Drawable)
-        {
-          models[i].updateView(camera);
-        }
-      }
-    }
-  };
-
-  var _ovr = false;
-  var _effect = null;
-  this.enableOVR = function() {
-    if(!_effect)
-    {
-      _effect = new THREE.OculusRiftEffect(this.renderer);
-      _effect.preLeftRender = updateViewUniforms;
-      _effect.preRightRender = updateViewUniforms;
-    }
-    _ovr = true;
-  };
-
-  var width, height;
-  var updateViewport = function()
-  {
-    _this.camera.aspect = width / height;
-    _this.camera.updateProjectionMatrix();
-    updateViewUniforms(_this.camera);
-    _this.renderer.setSize(width, height);
-    if(_effect)
-    {
-      _effect.setSize(width, height);
-    }
-  };
-
-  this.updateViewport = function(w, h)
-  {
-    width = w;
-    height = h;
-    updateViewport();
-  };
-
-  this.disableOVR = function() {
-    _ovr = false;
-    updateViewport();
-  };
-
-  var suspended = false;
-  var cleared = false;
-  var render = function() {
-    if(suspended)
-    {
-        cleared = true;
-        return;
-    }
-    // update the default worldview.
-    window.requestAnimationFrame(render);
-    updatePeriodics();
-    if(_ovr)
-    {
-      _effect.render(_this.scene, _this.camera);
-    }
-    else
-    {
-      if(_this.camera.matrixWorldNeedsUpdate)
-      {
-        updateViewUniforms(_this.camera);
-      }
-      _this.renderer.render(_this.scene, _this.camera);
-    }
-  };
-
-  this.suspend = function()
-  {
-    if(!suspended)
-    {
-      suspended = true;
-      cleared = false;
-    }
-  };
-
-  this.resume = function()
-  {
-    suspended = false;
-    if(cleared)
-    {
-      cleared = false;
-      lastTick = Date.now();
-      render();
-    }
-  };
-
-  render();
-
-  return this;
+Engine.prototype.preload = function() {
+  this.assetManager.load();
 };
 
 imv.Engine = Engine;

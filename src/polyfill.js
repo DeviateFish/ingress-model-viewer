@@ -1,4 +1,4 @@
-if(!JavaDeserializer || !THREE || !libtga)
+if(!JavaDeserializer || !glMatrix || !libtga)
 {
   throw 'Missing dependencies';
 }
