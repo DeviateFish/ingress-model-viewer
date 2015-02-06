@@ -34,8 +34,9 @@ module.exports = function(grunt) {
           'src/drawable/shield-effect.js',
           'src/asset-manager.js',
           'src/renderer/object.js',
-          'src/entity.js',
           'src/drawable-spec.js',
+          'src/entity.js',
+          'src/entity/inventory-item.js',
           'src/default-spec.js',
           'src/engine.js',
           'src/_outro.js'

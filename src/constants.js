@@ -50,7 +50,9 @@ var constants = {
   },
   xmColors: {
     coreGlow: vec4.fromValues(0.92, 0.7, 0.89, 1.0),
-    coreGlowAlt: vec4.fromValues(0.6, 0.4, 0.6, 0.8)
+    coreGlowAlt: vec4.fromValues(0.6, 0.4, 0.6, 0.8),
+    coreGlowAda: vec4.fromValues(0, 0.7607843137254902, 1, 1.0),
+    coreGlowJarvis: vec4.fromValues(0.1568627450980392, 0.9568627450980393, 0.1568627450980392, 1.0)
   }
 };
 
