@@ -25,6 +25,7 @@ module.exports = function(grunt) {
           'src/program.js',
           'src/program/opaque.js',
           'src/program/glowramp.js',
+          'src/drawable.js',
           'src/drawable/mesh.js',
           'src/drawable/model.js',
           'src/drawable/textured.js',
