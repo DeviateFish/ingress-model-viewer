@@ -1,5 +1,7 @@
 var ShieldEffectDrawable = (function(){
 
+  var PROGRAM = imv.Constants.Program.ShieldEffect;
+
   // these defaults are whack.  Need to find the real
   // functions used to update these, too
   // As of 1.62.0, that was in ...ingress.common.scanner.b.a.d
@@ -8,17 +10,13 @@ var ShieldEffectDrawable = (function(){
     defaultRampTargetInv = vec2.fromValues(0.5, 1.3),
     defaultContributions = vec3.fromValues(0.5, 0.5, 0.5);
 
-  var shieldEffectDrawable = function(program, mesh, texture, color, rampTargetInvWidth, contributions) {
-    TexturedDrawable.call(this, program, mesh, texture);
-    this.uniforms.u_color = color || vec4.clone(defaultColor);
-    this.uniforms.u_rampTargetInvWidth = rampTargetInvWidth || vec2.clone(defaultRampTargetInv);
-    this.uniforms.u_contributionsAndAlpha = contributions || vec3.clone(defaultContributions);
+  var shieldEffectDrawable = function(meshName, textureName) {
+    TexturedDrawable.call(this, PROGRAM, meshName, textureName);
+    this.uniforms.u_color = vec4.clone(defaultColor);
+    this.uniforms.u_rampTargetInvWidth = vec2.clone(defaultRampTargetInv);
+    this.uniforms.u_contributionsAndAlpha = vec3.clone(defaultContributions);
   };
   inherits(shieldEffectDrawable, TexturedDrawable);
-
-  shieldEffectDrawable.prototype.setColor = function(color) {
-    this.uniforms.u_color = color;
-  };
 
   shieldEffectDrawable.prototype.updateTime = function(delta) {
     var ret = ModelDrawable.prototype.updateTime.call(this, delta);

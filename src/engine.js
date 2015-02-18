@@ -40,20 +40,73 @@ Engine.prototype.start = function() {
   this.render(0);
 };
 
+Engine.prototype.demoEntities = function() {
+  var x = -5, y = 0, z = 4;
+  var i, item;
+  for(i in imv.Entities.Inventory) {
+    item = new imv.Entities.Inventory[i]();
+    if(item) {
+      item.translate(vec3.fromValues(x, y, z));
+      x++;
+      if(x > 5) {
+        x = -5;
+        z--;
+      }
+      this.objectRenderer.addEntity(item);
+      console.log('added ' + i);
+    }
+  }
+};
+
 Engine.prototype.demo = function() {
-  var x = -5, y = 0, z = 0;
+  var x = -5, y = 0, z = 4;
   var i, j, item;
-  for(i in imv.Primitives) {
-    for(j in imv.Primitives[i])
-    {
-      item = imv.Primitives[i][j].createInstance(this.objectRenderer);
+  for(i in imv.Drawables.Inventory) {
+    item = new imv.Drawables.Inventory[i]();
+    if(item) {
+      mat4.translate(item.model, item.model, vec3.fromValues(x, y, z));
+      x++;
+      if(x > 5) {
+        x = -5;
+        z--;
+      }
+      this.objectRenderer.addDrawable(item);
+      console.log('added ' + i);
+    }
+  }
+
+  for(i in imv.Drawables.Resource) {
+    item = new imv.Drawables.Resource[i]();
+    if(item) {
+      mat4.translate(item.model, item.model, vec3.fromValues(x, y, z));
+      x++;
+      if(x > 5) {
+        x = -5;
+        z--;
+      }
+      this.objectRenderer.addDrawable(item);
+      console.log('added ' + i);
+    }
+  }
+
+  for(i in imv.Drawables.World) {
+    item = new imv.Drawables.World[i]();
+    if(item) {
+      mat4.translate(item.model, item.model, vec3.fromValues(x, y, z));
+      x++;
+      if(x > 5) {
+        x = -5;
+        z--;
+      }
+      this.objectRenderer.addDrawable(item);
+      console.log('added ' + i);
+    }
+  }
+
+  for(i in imv.Drawables.Artifact) {
+    for(j in imv.Drawables.Artifact[i]) {
+      item = new imv.Drawables.Artifact[i][j]();
       if(item) {
-        if(i === 'Artifact') {
-          y = -14;
-        }
-        else {
-          y = 0;
-        }
         mat4.translate(item.model, item.model, vec3.fromValues(x, y, z));
         x++;
         if(x > 5) {
@@ -61,6 +114,7 @@ Engine.prototype.demo = function() {
           z--;
         }
         this.objectRenderer.addDrawable(item);
+        console.log('added ' + i + ': ' + j);
       }
     }
   }

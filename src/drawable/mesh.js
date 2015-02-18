@@ -13,16 +13,39 @@ var MeshDrawable = (function() {
     this.mesh.draw(locations);
   };
 
-  var meshDrawable = function(program, mesh)
+  var meshDrawable = function(programName, meshName)
   {
-    this.program = program;
-    this.mesh = mesh;
+    this.programName = programName;
+    this.meshName = meshName;
+    this.program = null;
+    this.mesh = null;
     this.uniforms = {};
     this.elapsed = 0;
+    this.ready = false;
+  };
+
+  meshDrawable.prototype.init = function(manager)
+  {
+    this.program = manager.getProgram(this.programName);
+    if(!this.program) {
+      console.warn('missing program ' + this.programName);
+      return false;
+    }
+    this.mesh = manager.getMesh(this.meshName);
+    if(!this.mesh) {
+      console.warn('missing mesh ' + this.meshName);
+      return false;
+    }
+    this.ready = true;
+    return true;
   };
 
   meshDrawable.prototype.draw = function()
   {
+    if(!this.ready) {
+      console.warn('drawable is not initialized');
+      return false;
+    }
     this.program.use(_draw.bind(this));
   };
 

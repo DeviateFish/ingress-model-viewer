@@ -1,51 +1,68 @@
-imv.Primitives = imv.Primitives || {};
+
+var presets = {};
+presets.Primitives = {};
 
 // inventory items:
-imv.Primitives.Inventory = imv.Primitives.Inventory || {};
-imv.Primitives.Artifact = imv.Primitives.Artifact || {};
-imv.Primitives.Resource = imv.Primitives.Resource || {};
-imv.Entities = imv.Entities || {};
+presets.Primitives.Artifact = presets.Primitives.Artifact || {};
+presets.Primitives.Resource = presets.Primitives.Resource || {};
+presets.Primitives.Inventory = presets.Primitives.Inventory || {};
+presets.Primitives.World = presets.Primitives.World || {};
+presets.Entities = presets.Entities || {};
+presets.Entities.Inventory = {};
+presets.Entities.Resource = {};
+presets.Entities.Artifact = {};
+presets.Entities.World = {};
 
 (function() {
-  var createInventoryItem = function(name, itemMesh, coreMesh) {
+  var defaultCoreColor = imv.Constants.xmColors.coreGlow,
+    defaultQualityColor = imv.Constants.qualityColors.RARE;
+  var createInventoryItem = function(name, itemMesh, coreMesh, defaultQuality, defaultCore) {
     var item = new DrawableSpec('FlipCardTexture', 'bicolor_textured', itemMesh, BicoloredDrawable);
     var core = new DrawableSpec('ObjectXMTexture', 'xm', coreMesh, XmDrawable);
-    imv.Primitives.Inventory[name] = item;
-    imv.Primitives.Inventory[name + 'Core'] = core;
-    imv.Entities[name] = Entity([item, core]);
+    presets.Primitives.Inventory[name] = item;
+    presets.Primitives.Inventory[name + 'Core'] = core;
+    defaultQuality = defaultQuality || defaultQualityColor;
+    defaultCore = defaultCore || defaultCoreColor;
+    presets.Entities.Inventory[name] = InventoryItemEntity(item, core, defaultQuality, defaultCore);
   };
 
   var createResourceUnit = function(name) {
-    imv.Primitives.Resource[name] =
-      new DrawableSpec('FlipCardTexture', 'bicolor_textured', name + 'ResourceUnitMesh', BicoloredDrawable);
+    var spec = new DrawableSpec('FlipCardTexture', 'bicolor_textured', name + 'ResourceUnitMesh', BicoloredDrawable);
+    presets.Primitives.Resource[name] = spec;
+    presets.Entities.Resource[name] = Entity([spec]);
   };
 
   var createArtifact = function(series, index, frozen) {
     var suffix = frozen ? 'Frozen' : '';
     var name = series + suffix + index;
-    imv.Primitives.Artifact[name] =
-      new DrawableSpec('Artifact' + series + 'Texture', 'textured', name, TexturedDrawable);
+    var spec = new DrawableSpec('Artifact' + series + 'Texture', 'textured', name, TexturedDrawable);
+    presets.Primitives.Artifact[name] = spec;
+    presets.Entities.Artifact[name] = Entity([spec]);
   };
 
-  var createSimple = function(name, caps) {
-    createInventoryItem(name, name + 'Mesh', name + 'X' + (caps ? 'M' : 'm') + 'Mesh');
+  var createSimple = function(name, caps, defaultColor) {
+    createInventoryItem(name, name + 'Mesh', name + 'X' + (caps ? 'M' : 'm') + 'Mesh', defaultColor);
   };
 
   // inventory items:
-  createSimple('Xmp', true);
-  createSimple('Resonator', true);
-  createSimple('Ultrastrike', true);
-  createSimple('ResShield', true);
-  createSimple('PowerCube', false);
-  createSimple('LinkAmp', false);
-  createSimple('HeatSink', false);
-  createSimple('MultiHack', false);
-  createSimple('ForceAmp', false);
-  createSimple('Turret', false);
+  createSimple('Xmp', true, imv.Constants.qualityColors.L8);
+  createSimple('Resonator', true, imv.Constants.qualityColors.L8);
+  createSimple('Ultrastrike', true, imv.Constants.qualityColors.L8);
+  createSimple('ResShield', true, imv.Constants.qualityColors.VERY_RARE);
+  createSimple('PowerCube', false, imv.Constants.qualityColors.L8);
+  createSimple('LinkAmp', false, imv.Constants.qualityColors.EXTREMELY_RARE);
+  createSimple('HeatSink', false, imv.Constants.qualityColors.VERY_RARE);
+  createSimple('MultiHack', false, imv.Constants.qualityColors.VERY_RARE);
+  createSimple('ForceAmp', false, imv.Constants.qualityColors.RARE);
+  createSimple('Turret', false, imv.Constants.qualityColors.RARE);
   createSimple('Capsule', false);
-  createSimple('ExtraShield', true);
-  createInventoryItem('FlipCardAda', 'FlipCardMeshAda', 'FlipCardXmMesh');
-  createInventoryItem('FlipCardJarvis', 'FlipCardMeshJarvis', 'FlipCardXmMesh');
+  createSimple('ExtraShield', true, imv.Constants.qualityColors.VERY_RARE);
+  createInventoryItem(
+    'FlipCardAda', 'FlipCardMeshAda', 'FlipCardXmMesh',
+    imv.Constants.qualityColors.VERY_RARE, imv.Constants.xmColors.coreGlowAda);
+  createInventoryItem(
+    'FlipCardJarvis', 'FlipCardMeshJarvis', 'FlipCardXmMesh',
+    imv.Constants.qualityColors.VERY_RARE, imv.Constants.xmColors.coreGlowJarvis);
 
   // resource units:
   createResourceUnit('Xmp');
@@ -78,6 +95,12 @@ imv.Entities = imv.Entities || {};
     }
   }
 
-
+  var shield = new DrawableSpec('PortalShieldTexture', 'shield', 'PortalShieldMesh', ShieldEffectDrawable);
+  var portal = new DrawableSpec('GlowrampTexture', 'portal_scanner', 'TexturedPortalMesh', GlowrampDrawable);
+  presets.Primitives.World.Portal = portal;
+  presets.Primitives.World.ShieldEffect = shield;
+  presets.Entities.World.Portal = PortalEntity(portal, shield);
 
 }());
+
+imv.Presets = presets;

@@ -1,24 +1,20 @@
 var GlowrampDrawable = (function(){
 
+  // is this correct?  Might want to doublecheck
+  // what program the waypoint uses.
+  var PROGRAM = imv.Constants.Program.Glowramp;
+
   // default base color: neutral portal color
   var defaultBaseColor = vec4.clone(imv.Constants.teamColors.NEUTRAL);
 
-  var glowrampDrawable = function(program, mesh, texture, baseColor, rotation, rampTarget, alpha) {
-    TexturedDrawable.call(this, program, mesh, texture);
+  var glowrampDrawable = function(meshName, textureName) {
+    TexturedDrawable.call(this, PROGRAM, meshName, textureName);
     this.uniforms.u_baseColor = vec4.clone(defaultBaseColor);
-    this.uniforms.u_rotation = rotation || 0;
-    this.uniforms.u_rampTarget = rampTarget || 0;
-    this.uniforms.u_alpha = alpha || 0.6;
+    this.uniforms.u_rotation = 0;
+    this.uniforms.u_rampTarget = 0;
+    this.uniforms.u_alpha = 0.6;
   };
   inherits(glowrampDrawable, TexturedDrawable);
-
-  glowrampDrawable.prototype.setBaseColor = function(color) {
-    this.uniforms.u_baseColor = color;
-  };
-
-  glowrampDrawable.prototype.setAlpha = function(alpha) {
-    this.uniforms.u_alpha = alpha;
-  };
 
   glowrampDrawable.prototype.updateTime = function(tick) {
     var ret = ModelDrawable.prototype.updateTime.call(this, tick);

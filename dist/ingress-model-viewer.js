@@ -104,6 +104,239 @@ var constants = {
     coreGlowAlt: vec4.fromValues(0.6, 0.4, 0.6, 0.8),
     coreGlowAda: vec4.fromValues(0, 0.7607843137254902, 1, 1.0),
     coreGlowJarvis: vec4.fromValues(0.1568627450980392, 0.9568627450980393, 0.1568627450980392, 1.0)
+  },
+  Mesh: {
+    Inventory: {
+      Xmp: 'XmpMesh',
+      XmpXm: 'XmpXMMesh',
+      Ultrastrike: 'UltrastrikeMesh',
+      UltrastrikeXm: 'UltrastrikeXMMesh',
+      ResShield: 'ResShieldMesh',
+      ResShieldXm: 'ResShieldXMMesh',
+      PowerCube: 'PowerCubeMesh',
+      PowerCubeXm: 'PowerCubeXmMesh',
+      LinkAmp: 'LinkAmpMesh',
+      LinkAmpXm: 'LinkAmpXmMesh',
+      HeatSink: 'HeatSinkMesh',
+      HeatSinkXm: 'HeatSinkXmMesh',
+      MultiHack: 'MultiHackMesh',
+      MultiHackXm: 'MultiHackXmMesh',
+      ForceAmp: 'ForceAmpMesh',
+      ForceAmpXm: 'ForceAmpXmMesh',
+      Turret: 'TurretMesh',
+      TurretXm: 'TurretXmMesh',
+      FlipCardAda: 'FlipCardMeshAda',
+      FlipCardJarvis: 'FlipCardMeshJarvis',
+      FlipCardXm: 'FlipCardXmMesh',
+      Resonator: 'ResonatorMesh',
+      ResonatorXm: 'ResonatorXMMesh',
+      Capsule: 'CapsuleMesh',
+      CapsuleXm: 'CapsuleXmMesh',
+      ExtraShield: 'ExtraShieldMesh',
+      MediaCube: 'MediaCubeMesh',
+      MediaPlaneMesh: 'MediaPlaneMesh'
+    },
+    Resource: {
+      Xmp: 'XmpResourceUnitMesh',
+      PortalKeyResourceUnit: 'PortalKeyResourceUnit',
+      Ultrastrike: 'UltrastrikeResourceUnitMesh',
+      PowerCube: 'PowerCubeResourceUnitMesh',
+      LinkAmp: 'LinkAmpResourceUnitMesh',
+      HeatSink: 'HeatSinkResourceUnitMesh',
+      MultiHack: 'MultiHackResourceUnitMesh',
+      ForceAmp: 'ForceAmpResourceUnitMesh',
+      Turret: 'TurretResourceUnitMesh',
+      FlipCardAda: 'FlipCardResourceUnitMeshAda',
+      FlipCardJarvis: 'FlipCardResourceUnitMeshJarvis',
+      Resonator: 'ResonatorResourceUnitMesh',
+      PortalShield: 'PortalShieldResourceUnitMesh',
+      Capsule: 'CapsuleResourceUnitMesh',
+      ExtraShield: 'ExtraShieldResourceUnitMesh',
+    },
+    Player: {
+      Player: 'PlayerMesh',
+      PlayerEdge: 'PlayerMeshEdge',
+      PlayerReflection: 'PlayerMeshReflection',
+      PlayerGlow: 'PlayerMeshGlow',
+      BreadCrumb: 'BreadCrumbMesh',
+      Compass: 'CompassMesh'
+    },
+    Ornament: {
+      MeetupPoint: 'OrnamentMeetupPointMesh',
+      FinishPoint: 'OrnamentFinishPointMesh',
+      Cluster: 'OrnamentClusterMesh',
+      Volatile: 'OrnamentVolatileMesh'
+    },
+    Artifact: {
+      Helios: {
+        Helios1: 'Helios1',
+        HeliosFrozen1: 'HeliosFrozen1',
+        Helios2: 'Helios2',
+        HeliosFrozen2: 'HeliosFrozen2',
+        Helios3: 'Helios3',
+        HeliosFrozen3: 'HeliosFrozen3',
+        Helios4: 'Helios4',
+        HeliosFrozen4: 'HeliosFrozen4',
+        Helios5: 'Helios5',
+        HeliosFrozen5: 'HeliosFrozen5',
+        Helios6: 'Helios6',
+        HeliosFrozen6: 'HeliosFrozen6',
+        Helios7: 'Helios7',
+        HeliosFrozen7: 'HeliosFrozen7',
+        Helios8: 'Helios8',
+        HeliosFrozen8: 'HeliosFrozen8',
+        Helios9: 'Helios9',
+        HeliosFrozen9: 'HeliosFrozen9',
+        Helios10: 'Helios10',
+        HeliosFrozen10: 'HeliosFrozen10',
+        Helios11: 'Helios11',
+        HeliosFrozen11: 'HeliosFrozen11',
+        Helios12: 'Helios12',
+        HeliosFrozen12: 'HeliosFrozen12',
+        Helios13: 'Helios13',
+        HeliosFrozen13: 'HeliosFrozen13',
+        Helios14: 'Helios14',
+        HeliosFrozen14: 'HeliosFrozen14',
+        Helios15: 'Helios15',
+        HeliosFrozen15: 'HeliosFrozen15',
+        Helios16: 'Helios16',
+        HeliosFrozen16: 'HeliosFrozen16',
+        Helios17: 'Helios17',
+        HeliosFrozen17: 'HeliosFrozen17',
+        Helios18: 'Helios18',
+        HeliosFrozen18: 'HeliosFrozen18',
+        Helios19: 'Helios19',
+        HeliosFrozen19: 'HeliosFrozen19',
+        Helios20: 'Helios20',
+        HeliosFrozen20: 'HeliosFrozen20',
+        Helios21: 'Helios21',
+        HeliosFrozen21: 'HeliosFrozen21',
+        Helios22: 'Helios22',
+        HeliosFrozen22: 'HeliosFrozen22',
+        Helios23: 'Helios23',
+        HeliosFrozen23: 'HeliosFrozen23',
+        Helios24: 'Helios24',
+        HeliosFrozen24: 'HeliosFrozen24',
+        Helios25: 'Helios25',
+        HeliosFrozen25: 'HeliosFrozen25',
+        Helios26: 'Helios26',
+        HeliosFrozen26: 'HeliosFrozen26',
+        Helios27: 'Helios27',
+        HeliosFrozen27: 'HeliosFrozen27',
+        Helios28: 'Helios28',
+        HeliosFrozen28: 'HeliosFrozen28',
+        Helios29: 'Helios29',
+        HeliosFrozen29: 'HeliosFrozen29',
+        Helios30: 'Helios30',
+        HeliosFrozen30: 'HeliosFrozen30',
+        Helios31: 'Helios31',
+        HeliosFrozen31: 'HeliosFrozen31',
+        Helios32: 'Helios32',
+        HeliosFrozen32: 'HeliosFrozen32',
+        Helios33: 'Helios33',
+        HeliosFrozen33: 'HeliosFrozen33',
+        Helios34: 'Helios34',
+        HeliosFrozen34: 'HeliosFrozen34',
+        Helios35: 'Helios35',
+        HeliosFrozen35: 'HeliosFrozen35',
+        Helios36: 'Helios36',
+        HeliosFrozen36: 'HeliosFrozen36',
+        Helios37: 'Helios37',
+        HeliosFrozen37: 'HeliosFrozen37',
+        Helios38: 'Helios38',
+        HeliosFrozen38: 'HeliosFrozen38',
+        Helios39: 'Helios39',
+        HeliosFrozen39: 'HeliosFrozen39',
+        Helios40: 'Helios40',
+        HeliosFrozen40: 'HeliosFrozen40'
+      },
+      Amar: {
+        Amar1: 'Amar1',
+        AmarFrozen1: 'AmarFrozen1',
+        Amar2: 'Amar2',
+        AmarFrozen2: 'AmarFrozen2',
+        Amar3: 'Amar3',
+        AmarFrozen3: 'AmarFrozen3',
+        Amar4: 'Amar4',
+        AmarFrozen4: 'AmarFrozen4',
+        Amar5: 'Amar5',
+        AmarFrozen5: 'AmarFrozen5',
+        Amar6: 'Amar6',
+        AmarFrozen6: 'AmarFrozen6',
+        Amar7: 'Amar7',
+        AmarFrozen7: 'AmarFrozen7',
+        Amar8: 'Amar8',
+        AmarFrozen8: 'AmarFrozen8',
+        Amar9: 'Amar9',
+        AmarFrozen9: 'AmarFrozen9',
+        Amar10: 'Amar10',
+        AmarFrozen10: 'AmarFrozen10',
+        Amar11: 'Amar11',
+        AmarFrozen11: 'AmarFrozen11',
+        Amar12: 'Amar12',
+        AmarFrozen12: 'AmarFrozen12',
+        Amar13: 'Amar13',
+        AmarFrozen13: 'AmarFrozen13',
+        Amar14: 'Amar14',
+        AmarFrozen14: 'AmarFrozen14',
+        Amar15: 'Amar15',
+        AmarFrozen15: 'AmarFrozen15',
+        Amar16: 'Amar16',
+        AmarFrozen16: 'AmarFrozen16',
+        Amar17: 'Amar17',
+        AmarFrozen17: 'AmarFrozen17'
+      },
+      Jarvis: {
+        Jarvis1: 'Jarvis1',
+        Jarvis2: 'Jarvis2',
+        Jarvis3: 'Jarvis3',
+        Jarvis4: 'Jarvis4',
+        Jarvis5: 'Jarvis5',
+        Jarvis6: 'Jarvis6',
+        Jarvis7: 'Jarvis7',
+        Jarvis8: 'Jarvis8',
+        Jarvis9: 'Jarvis9',
+        Jarvis10: 'Jarvis10',
+        Jarvis11: 'Jarvis11',
+        Jarvis12: 'Jarvis12',
+        Jarvis13: 'Jarvis13'
+      }
+    },
+    World: {
+      Shield: 'PortalShieldMesh',
+      Portal: 'TexturedPortalMesh',
+      Waypoint: 'TexturedScannerFTMesh',
+      Resonator: 'ResonatorUnitLowResMesh',
+      XmpRing: 'XmpRingMesh',
+      UltraStrikeRing: 'UltraStrikeRingMesh',
+      UltraStrikeColumn: 'UltraStrikeColumnMesh',
+      ArtifactsRedGlow: 'ArtifactsRedGlow',
+      ArtifactsGreenGlow: 'ArtifactsGreenGlow',
+      ArtifactsPurpleGlow: 'ArtifactsPurpleGlow',
+      ArtifactsTargetGlow: 'ArtifactsTargetGlow',
+      SingleResonator: 'SingleResonatorMesh'
+    }
+  },
+  Program: {
+    Bicolored: 'bicolor_textured',
+    Textured: 'textured',
+    Glowramp: 'portal_scanner',
+    Xm: 'xm',
+    ShieldEffect: 'shield'
+  },
+  Texture: {
+    FlipCard: 'FlipCardTexture',
+    Xm: 'ObjectXMTexture',
+    Glowramp: 'GlowrampTexture',
+    Media: 'MediaCubeTexture',
+    Waypoint: 'FtWaypointTexture',
+    ShieldEffect: 'PortalShieldTexture',
+    MediaCube: 'MediaCubeTexture',
+    ColorGlow: 'ColorGlowTexture',
+    TargetGlow: 'TargetGlowTexture',
+    ArtifactHelios: 'ArtifactHeliosTexture',
+    ArtifactAmar: 'ArtifactAmarTexture',
+    ArtifactJarvis: 'ArtifactJarvisTexture'
   }
 };
 
@@ -748,16 +981,39 @@ var MeshDrawable = (function() {
     this.mesh.draw(locations);
   };
 
-  var meshDrawable = function(program, mesh)
+  var meshDrawable = function(programName, meshName)
   {
-    this.program = program;
-    this.mesh = mesh;
+    this.programName = programName;
+    this.meshName = meshName;
+    this.program = null;
+    this.mesh = null;
     this.uniforms = {};
     this.elapsed = 0;
+    this.ready = false;
+  };
+
+  meshDrawable.prototype.init = function(manager)
+  {
+    this.program = manager.getProgram(this.programName);
+    if(!this.program) {
+      console.warn('missing program ' + this.programName);
+      return false;
+    }
+    this.mesh = manager.getMesh(this.meshName);
+    if(!this.mesh) {
+      console.warn('missing mesh ' + this.meshName);
+      return false;
+    }
+    this.ready = true;
+    return true;
   };
 
   meshDrawable.prototype.draw = function()
   {
+    if(!this.ready) {
+      console.warn('drawable is not initialized');
+      return false;
+    }
     this.program.use(_draw.bind(this));
   };
 
@@ -782,8 +1038,8 @@ imv.MeshDrawable = MeshDrawable;
 
 var ModelDrawable = (function() {
 
-  var modelDrawable = function(program, mesh) {
-    MeshDrawable.call(this, program, mesh);
+  var modelDrawable = function(programName, meshName) {
+    MeshDrawable.call(this, programName, meshName);
     this.viewProject = mat4.create();
     this.model = mat4.create();
   };
@@ -811,9 +1067,10 @@ var ModelDrawable = (function() {
 imv.Drawables = imv.Drawables || {};
 imv.Drawables.Model = ModelDrawable;
 
-var TexturedDrawable = function(program, mesh, texture) {
-  ModelDrawable.call(this, program, mesh);
-  this.texture = texture;
+var TexturedDrawable = function(programName, meshName, textureName) {
+  ModelDrawable.call(this, programName, meshName);
+  this.textureName = textureName;
+  this.texture = null;
 };
 inherits(TexturedDrawable, ModelDrawable);
 
@@ -824,10 +1081,24 @@ TexturedDrawable.prototype.draw = function()
   ModelDrawable.prototype.draw.call(this);
 };
 
+TexturedDrawable.prototype.init = function(manager)
+{
+  this.texture = manager.getTexture(this.textureName);
+  if(!this.texture) {
+    console.warn('missing texture ' + this.textureName);
+    return false;
+  }
+  return ModelDrawable.prototype.init.call(this, manager);
+};
+
 imv.Drawables = imv.Drawables || {};
 imv.Drawables.Textured = TexturedDrawable;
 
 var BicoloredDrawable = (function(){
+
+  // TODO: make constants for these,
+  // similar to how mesh names are now handled.
+  var PROGRAM = imv.Constants.Program.Bicolored;
 
   // default quality color: very rare
   var defaultColor0 = vec4.clone(constants.qualityColors.VERY_RARE);
@@ -835,22 +1106,12 @@ var BicoloredDrawable = (function(){
   // default glow color: xm color
   var defaultColor1 = vec4.clone(constants.xmColors.coreGlow);
 
-  var bicolorDrawable = function(program, mesh, texture, u_color0, u_color1) {
-    TexturedDrawable.call(this, program, mesh, texture);
-    this.uniforms.u_color0 = u_color0 || (vec4.clone(defaultColor0));
-    this.uniforms.u_color1 = u_color1 || (vec4.clone(defaultColor1));
+  var bicolorDrawable = function(meshName, textureName) {
+    TexturedDrawable.call(this, PROGRAM, meshName, textureName);
+    this.uniforms.u_color0 = vec4.clone(defaultColor0);
+    this.uniforms.u_color1 = vec4.clone(defaultColor1);
   };
   inherits(bicolorDrawable, TexturedDrawable);
-
-  bicolorDrawable.prototype.setPrimaryColor = function(color)
-  {
-    this.uniforms.u_color0 = color;
-  };
-
-  bicolorDrawable.prototype.setSecondaryColor = function(color)
-  {
-    this.uniforms.u_color1 = color;
-  };
 
   return bicolorDrawable;
 }());
@@ -860,25 +1121,21 @@ imv.Drawables.Bicolored = BicoloredDrawable;
 
 var GlowrampDrawable = (function(){
 
+  // is this correct?  Might want to doublecheck
+  // what program the waypoint uses.
+  var PROGRAM = imv.Constants.Program.Glowramp;
+
   // default base color: neutral portal color
   var defaultBaseColor = vec4.clone(imv.Constants.teamColors.NEUTRAL);
 
-  var glowrampDrawable = function(program, mesh, texture, baseColor, rotation, rampTarget, alpha) {
-    TexturedDrawable.call(this, program, mesh, texture);
+  var glowrampDrawable = function(meshName, textureName) {
+    TexturedDrawable.call(this, PROGRAM, meshName, textureName);
     this.uniforms.u_baseColor = vec4.clone(defaultBaseColor);
-    this.uniforms.u_rotation = rotation || 0;
-    this.uniforms.u_rampTarget = rampTarget || 0;
-    this.uniforms.u_alpha = alpha || 0.6;
+    this.uniforms.u_rotation = 0;
+    this.uniforms.u_rampTarget = 0;
+    this.uniforms.u_alpha = 0.6;
   };
   inherits(glowrampDrawable, TexturedDrawable);
-
-  glowrampDrawable.prototype.setBaseColor = function(color) {
-    this.uniforms.u_baseColor = color;
-  };
-
-  glowrampDrawable.prototype.setAlpha = function(alpha) {
-    this.uniforms.u_alpha = alpha;
-  };
 
   glowrampDrawable.prototype.updateTime = function(tick) {
     var ret = ModelDrawable.prototype.updateTime.call(this, tick);
@@ -897,24 +1154,18 @@ imv.Drawables.Glowramp = GlowrampDrawable;
 
 var XmDrawable = (function(){
 
+  var PROGRAM = imv.Constants.Program.Xm;
+
   var defaultTeamColor = vec4.clone(constants.xmColors.coreGlow);
   var defaultAltColor = vec4.clone(constants.xmColors.coreGlowAlt);
 
-  var xmDrawable = function(program, mesh, texture, teamColor, altColor, elapsed) {
-    TexturedDrawable.call(this, program, mesh, texture);
-    this.uniforms.u_elapsedTime = elapsed || 0;
-    this.uniforms.u_teamColor = teamColor || vec4.clone(defaultTeamColor);
-    this.uniforms.u_altColor = altColor || vec4.clone(defaultAltColor);
+  var xmDrawable = function(meshName, textureName, teamColor) {
+    TexturedDrawable.call(this, PROGRAM, meshName, textureName);
+    this.uniforms.u_elapsedTime = 0;
+    this.uniforms.u_teamColor = vec4.clone(teamColor || defaultTeamColor);
+    this.uniforms.u_altColor = vec4.clone(defaultAltColor);
   };
   inherits(xmDrawable, TexturedDrawable);
-
-  xmDrawable.prototype.setTeamColor = function(color) {
-    this.uniforms.u_teamColor = color;
-  };
-
-  xmDrawable.prototype.setAltColor = function(color) {
-    this.uniforms.u_altColor = color;
-  };
 
   xmDrawable.prototype.updateTime = function(delta) {
     var ret = MeshDrawable.prototype.updateTime.call(this, delta);
@@ -930,6 +1181,8 @@ imv.Drawables.Xm = XmDrawable;
 
 var ShieldEffectDrawable = (function(){
 
+  var PROGRAM = imv.Constants.Program.ShieldEffect;
+
   // these defaults are whack.  Need to find the real
   // functions used to update these, too
   // As of 1.62.0, that was in ...ingress.common.scanner.b.a.d
@@ -938,17 +1191,13 @@ var ShieldEffectDrawable = (function(){
     defaultRampTargetInv = vec2.fromValues(0.5, 1.3),
     defaultContributions = vec3.fromValues(0.5, 0.5, 0.5);
 
-  var shieldEffectDrawable = function(program, mesh, texture, color, rampTargetInvWidth, contributions) {
-    TexturedDrawable.call(this, program, mesh, texture);
-    this.uniforms.u_color = color || vec4.clone(defaultColor);
-    this.uniforms.u_rampTargetInvWidth = rampTargetInvWidth || vec2.clone(defaultRampTargetInv);
-    this.uniforms.u_contributionsAndAlpha = contributions || vec3.clone(defaultContributions);
+  var shieldEffectDrawable = function(meshName, textureName) {
+    TexturedDrawable.call(this, PROGRAM, meshName, textureName);
+    this.uniforms.u_color = vec4.clone(defaultColor);
+    this.uniforms.u_rampTargetInvWidth = vec2.clone(defaultRampTargetInv);
+    this.uniforms.u_contributionsAndAlpha = vec3.clone(defaultContributions);
   };
   inherits(shieldEffectDrawable, TexturedDrawable);
-
-  shieldEffectDrawable.prototype.setColor = function(color) {
-    this.uniforms.u_color = color;
-  };
 
   shieldEffectDrawable.prototype.updateTime = function(delta) {
     var ret = ModelDrawable.prototype.updateTime.call(this, delta);
@@ -963,6 +1212,170 @@ var ShieldEffectDrawable = (function(){
 
 imv.Drawables = imv.Drawables || {};
 imv.Drawables.ShieldEffect = ShieldEffectDrawable;
+
+(function() {
+  var inventory = imv.Constants.Mesh.Inventory;
+  var textures = imv.Constants.Texture;
+
+  imv.Drawables = imv.Drawables || {};
+  imv.Drawables.Inventory = imv.Drawables.Inventory || {};
+
+  var createShell = function(name) {
+    var itembase = function() {
+      BicoloredDrawable.call(this, inventory[name], textures.FlipCard);
+    };
+    inherits(itembase, BicoloredDrawable);
+    return itembase;
+  };
+
+  var createCore = function(name) {
+    var xmbase = function() {
+      XmDrawable.call(this, inventory[name], textures.Xm);
+    };
+    inherits(xmbase, XmDrawable);
+    return xmbase;
+  };
+
+  var createMedia = function(name) {
+    var media = function() {
+      TexturedDrawable.call(this,
+        imv.Constants.Program.Textured,
+        inventory[name],
+        imv.Constants.Texture.MediaCube
+      );
+    };
+    inherits(media, TexturedDrawable);
+    return media;
+  };
+
+  for(var i in inventory) {
+    if(/^Media/.test(i)) {
+      if(i === 'MediaPlane') {
+        continue;
+      }
+      imv.Drawables.Inventory[i] = createMedia(i);
+    }
+    else {
+      if(/Xm$/.test(i)) {
+        imv.Drawables.Inventory[i] = createCore(i);
+      }
+      else {
+        imv.Drawables.Inventory[i] = createShell(i);
+      }
+    }
+  }
+}());
+
+(function() {
+  var resource = imv.Constants.Mesh.Resource;
+
+  imv.Drawables = imv.Drawables || {};
+  imv.Drawables.Resource = imv.Drawables.Resource || {};
+
+  var createResource = function(name) {
+    var itembase = function() {
+      BicoloredDrawable.call(this, resource[name], imv.Constants.Texture.FlipCard);
+    };
+    inherits(itembase, BicoloredDrawable);
+    imv.Drawables.Resource[name] = itembase;
+  };
+
+  for(var i in resource) {
+    createResource(i);
+  }
+
+}());
+
+(function() {
+  var meshes = imv.Constants.Mesh.World;
+  var textures = imv.Constants.Texture;
+
+  imv.Drawables = imv.Drawables || {};
+  imv.Drawables.World = imv.Drawables.World || {};
+
+  var portal = function() {
+    GlowrampDrawable.call(this, meshes.Portal, textures.Glowramp);
+  };
+  inherits(portal, GlowrampDrawable);
+
+  imv.Drawables.World.Portal = portal;
+
+  var shieldEffect = function() {
+    ShieldEffectDrawable.call(this, meshes.Shield, textures.ShieldEffect);
+  };
+  inherits(shieldEffect, ShieldEffectDrawable);
+
+  imv.Drawables.World.Shield = shieldEffect;
+
+  var waypoint = function() {
+    GlowrampDrawable.call(this, meshes.Waypoint, textures.Waypoint);
+  };
+  inherits(waypoint, GlowrampDrawable);
+
+  imv.Drawables.World.Waypoint = waypoint;
+
+  var resonator = function() {
+    BicoloredDrawable.call(this, meshes.Resonator, textures.FlipCard);
+  };
+  inherits(resonator, BicoloredDrawable);
+
+  imv.Drawables.World.Resonator = resonator;
+
+  var artifactsRedGlow = function() {
+    GlowrampDrawable.call(this, meshes.ArtifactsRedGlow, textures.ColorGlow);
+  };
+  inherits(artifactsRedGlow, GlowrampDrawable);
+
+  imv.Drawables.World.ArtifactsRedGlow = artifactsRedGlow;
+
+  var artifactsGreenGlow = function() {
+    GlowrampDrawable.call(this, meshes.ArtifactsGreenGlow, textures.ColorGlow);
+  };
+  inherits(artifactsGreenGlow, GlowrampDrawable);
+
+  imv.Drawables.World.ArtifactsGreenGlow = artifactsGreenGlow;
+
+  var artifactsPurpleGlow = function() {
+    GlowrampDrawable.call(this, meshes.ArtifactsPurpleGlow, textures.ColorGlow);
+  };
+  inherits(artifactsPurpleGlow, GlowrampDrawable);
+
+  imv.Drawables.World.ArtifactsPurpleGlow = artifactsPurpleGlow;
+
+  var artifactsTargetGlow = function() {
+    GlowrampDrawable.call(this, meshes.ArtifactsTargetGlow, textures.TargetGlow);
+  };
+  inherits(artifactsTargetGlow, GlowrampDrawable);
+
+  imv.Drawables.World.ArtifactsTargetGlow = artifactsTargetGlow;
+}());
+
+(function(){
+  var meshes = imv.Constants.Mesh.Artifact;
+  var textures = imv.Constants.Texture;
+  var i, j;
+
+  imv.Drawables = imv.Drawables || {};
+  imv.Drawables.Artifact = imv.Drawables.Artifact || {};
+
+  var makeArtifact = function(series, name) {
+    var artifact = function() {
+      TexturedDrawable.call(this, imv.Constants.Program.Textured, name, textures['Artifact' + series]);
+    };
+    inherits(artifact, TexturedDrawable);
+
+    return artifact;
+  };
+
+  for(i in meshes) {
+    var series = meshes[i];
+    imv.Drawables.Artifact[i] = imv.Drawables.Artifact[i] || {};
+    for(j in series) {
+      imv.Drawables.Artifact[i][j] = makeArtifact(i, j);
+    }
+  }
+
+}());
 
 var AssetManager = (function() {
 
@@ -1134,91 +1547,69 @@ var ObjectRenderer = (function(){
   var objectRenderer = function(gl, manager) {
     GLBound.call(this, gl);
     this.manager = manager;
-    this.entities = [];
+    this.drawables = [];
     this.viewProject = mat4.create();
   };
   inherits(objectRenderer, GLBound);
 
-  objectRenderer.prototype.createDrawable = function(textureName, programName, meshName, proto) {
-    var texture = this.manager.getTexture(textureName),
-      program = this.manager.getProgram(programName),
-      mesh = this.manager.getMesh(meshName);
-    if(!texture) {
-      console.warn('missing texture ' + textureName);
-      return false;
-    }
-    if(!program) {
-      console.warn('missing program ' + programName);
-      return false;
-    }
-    if(!mesh) {
-      console.warn('missing mesh ' + meshName);
-      return false;
-    }
-
-    return new proto(program, mesh, texture);
-  };
-
   objectRenderer.prototype.addDrawable = function(drawable) {
-    if(drawable)
+    if(!drawable.init(this.manager))
     {
-      if(drawable.updateView)
+      console.warn('could not initialize drawable: ', drawable);
+      return false;
+    }
+    if(drawable.updateView)
+    {
+      drawable.updateView(this.viewProject);
+    }
+    this.drawables.push(drawable);
+  };
+
+  objectRenderer.prototype.removeDrawable = function(drawable) {
+    for(var i = 0; i < this.drawables.length; i++)
+    {
+      if(this.drawables[i] === drawable)
       {
-        drawable.updateView(this.viewProject);
+        this.drawables.splice(i, 1);
+        // TODO: should dispose of drawable here.
+        return;
       }
-      this.entities.push(drawable);
     }
   };
 
-  objectRenderer.prototype.loadDrawable = function(textureName, programName, meshName, drawable) {
-    var item = this.createDrawable(textureName, programName, meshName, drawable);
-    this.addDrawable(item);
-    return item;
-  };
-
-  objectRenderer.prototype.addBicoloredDrawable = function(textureName, programName, meshName) {
-    return this.loadDrawable(textureName, programName, meshName, BicoloredDrawable);
-  };
-
-  objectRenderer.prototype.addXmDrawable = function(textureName, programName, meshName) {
-    return this.loadDrawable(textureName, programName, meshName, XmDrawable);
-  };
-
-  objectRenderer.prototype.addGlowrampDrawable = function(textureName, programName, meshName) {
-    return this.loadDrawable(textureName, programName, meshName, GlowrampDrawable);
-  };
-
-  objectRenderer.prototype.addShieldEffectDrawable = function(textureName, programName, meshName) {
-    return this.loadDrawable(textureName, programName, meshName, ShieldEffectDrawable);
+  objectRenderer.prototype.addEntity = function(entity) {
+    for(var i in entity.drawables) {
+      this.addDrawable(entity.drawables[i]);
+    }
   };
 
   objectRenderer.prototype.updateView = function(view, project) {
-    var i, len = this.entities.length;
+    var i, len = this.drawables.length;
     mat4.multiply(this.viewProject, project, view);
     for(i = 0; i < len; i++)
     {
-      if(this.entities[i].updateView) {
-        this.entities[i].updateView(this.viewProject, view, project);
+      if(this.drawables[i].updateView) {
+        this.drawables[i].updateView(this.viewProject, view, project);
       }
     }
   };
 
   objectRenderer.prototype.render = function() {
-    var i, len = this.entities.length;
+    var i, len = this.drawables.length;
     for(i = 0; i < len; i++)
     {
-      this.entities[i].draw();
+      this.drawables[i].draw();
     }
   };
 
   objectRenderer.prototype.updateTime = function(delta) {
-    var i, len = this.entities.length;
+    var i, len = this.drawables.length;
     for(i = 0; i < len; i++)
     {
       // if these return false, remove them from the render loop:
-      if(!this.entities[i].updateTime(delta))
+      if(!this.drawables[i].updateTime(delta))
       {
-        this.entities.splice(i, 1);
+        this.drawables.splice(i, 1);
         i--;
         len--;
       }
@@ -1231,223 +1622,82 @@ var ObjectRenderer = (function(){
 imv.Renderers = imv.Renderers || {};
 imv.Renderers.Object = ObjectRenderer;
 
-var DrawableSpec = function(texture, program, mesh, baseClass) {
-  this.texture = texture;
-  this.program = program;
-  this.mesh = mesh;
-  this.baseClass = baseClass;
+var Entity = function() {
+  this.drawables = {};
+  this.transform = mat4.create();
 };
 
-DrawableSpec.prototype.createInstance = function(renderer) {
-  return renderer.createDrawable(this.texture, this.program, this.mesh, this.baseClass);
+Entity.prototype.addDrawable = function(name, drawable) {
+  // add dispose if this already exists.
+  this.drawables[name] = drawable;
 };
 
-imv.DrawableSpec = DrawableSpec;
+Entity.prototype.removeDrawable = function(/*name*/) {
+  // dispose stuffs.
+};
 
-var Entity = function(drawables) {
+Entity.prototype.applyTransform = function() {
+  for(var i in this.drawables)
+  {
+    this.drawables[i].setMatrix(this.transform);
+  }
+};
 
-  var _specs = drawables;
+Entity.prototype.translate = function(vec) {
+  mat4.translate(this.transform, this.transform, vec);
+  this.applyTransform();
+};
 
-  var entity = function(renderer) {
-    this.drawables = [];
-    this.renderer = renderer;
-    for(var i = 0; i < _specs.length; i++)
-    {
-      this.drawables.push(_specs[i].createInstance(renderer));
-    }
-    this.transform = mat4.create();
-  };
+Entity.prototype.rotate = function(quat) {
+  var rotate = mat4.create();
+  mat4.fromQuat(rotate, quat);
+  mat4.multiply(this.transform, this.transform, rotate);
+  this.applyTransform();
+};
 
-  entity.prototype.add = function() {
-    for(var i = 0; i < this.drawables.length; i++)
-    {
-      this.renderer.addDrawable(this.drawables[i]);
-    }
-  };
-
-  entity.prototype.applyTransform = function() {
-    for(var i = 0; i < this.drawables.length; i++)
-    {
-      this.drawables[i].setMatrix(this.transform);
-    }
-  };
-
-  entity.prototype.translate = function(vec) {
-    mat4.translate(this.transform, this.transform, vec);
-    this.applyTransform();
-  };
-
-  entity.prototype.rotate = function(quat) {
-    var rotate = mat4.create();
-    mat4.fromQuat(rotate, quat);
-    mat4.multiply(this.transform, this.transform, rotate);
-    this.applyTransform();
-  };
-
-  entity.prototype.setAnimation = function(animate) {
-    for(var i = 0; i < this.drawables.length; i++)
-    {
-      this.drawables[i].onUpdate = animate;
-    }
-  };
-
-  return entity;
+Entity.prototype.setAnimation = function(animate) {
+  for(var i in this.drawables)
+  {
+    this.drawables[i].onUpdate = animate;
+  }
 };
 
 imv.Entity = Entity;
 
-var InventoryItemEntity = function(itemSpec, coreSpec, defaultQualityColor, defaultCoreColor) {
+(function(){
 
-  //let's predictably order these, so we can access them
-  // by index, for part-specific tasks (setting xm core
-  // color, etc, etc.
-  var drawables = [
-    itemSpec,
-    coreSpec
-  ];
-  var DEFAULT_QUALITY_COLOR = vec4.clone(defaultQualityColor);
-  var DEFAULT_GLOW_COLOR = vec4.clone(defaultCoreColor);
-  var DEFAULT_ALT_COLOR = vec4.clone(imv.Constants.xmColors.coreGlow);
+  imv.Entities = imv.Entities || {};
+  imv.Entities.Inventory = imv.Entities.Inventory || {};
 
-  var base = Entity(drawables);
-
-  var leveledItem = function(renderer, qualityColor, glowColor) {
-    base.call(this, renderer);
-    this.drawables[0].uniforms.u_color0 = qualityColor || DEFAULT_QUALITY_COLOR;
-    this.drawables[0].uniforms.u_color1 =
-      this.drawables[1].uniforms.u_teamColor = glowColor || DEFAULT_GLOW_COLOR;
-    this.drawables[1].uniforms.u_altColor = DEFAULT_ALT_COLOR;
-  };
-  inherits(leveledItem, base);
-
-  leveledItem.prototype.setQualityColor = function(color) {
-    this.drawables[0].uniforms.u_color0 = color;
+  var simple = {
+    Xmp: 'L8',
+    Ultrastrike: 'L8',
+    ResShield: 'VERY_RARE',
+    PowerCube: 'L8',
+    LinkAmp: 'EXTREMELY_RARE',
+    HeatSink: 'VERY_RARE',
+    MultiHack: 'VERY_RARE',
+    ForceAmp: 'RARE',
+    Turret: 'RARE',
+    Resonator: 'L8',
+    Capsule: 'RARE'
   };
 
-  leveledItem.prototype.setCoreColor = function(color) {
-    this.drawables[0].u_color0 = color;
-    this.drawables[1].u_teamColor = color;
+  var createItem = function(name, color) {
+    var item = function() {
+      Entity.call(this);
+      this.addDrawable(name, new imv.Drawables.Inventory[name]());
+      this.addDrawable(name + 'Xm', new imv.Drawables.Inventory[name + 'Xm']());
+      this.drawables[name].uniforms.u_color0 = vec4.clone(color);
+    };
+    inherits(item, Entity);
+
+    return item;
   };
 
-  leveledItem.prototype.setQuality = function(quality) {
-    var color;
-    if(!(quality in imv.Constants.qualityColors))
-    {
-      console.warn("quality should be one of:\n" + Object.keys(imv.Constants.qualityColors).join("\n"));
-      console.warn('use setQualityColor to set arbitrary colors');
-      color = vec4.clone(DEFAULT_QUALITY_COLOR);
-    }
-    else
-    {
-      color = vec4.clone(imv.Constants.qualityColors[quality]);
-    }
-    this.setQualityColor(color);
-  };
-
-  // shortcut for ADA Refactor:
-  leveledItem.prototype.setAdaCore = function() {
-    var color = vec4.clone(imv.Constants.xmColors.coreGlowAda);
-    this.setCoreColor(color);
-  };
-
-  leveledItem.prototype.setJarvisCore = function() {
-    var color = vec4.clone(imv.Constants.xmColors.coreGlowJarvis);
-    this.setCoreColor(color);
-  };
-
-  // shortcut (if necessary) for default core colors:
-  leveledItem.prototype.setDefaultCore = function() {
-    var color = vec4.clone(imv.Constants.xmColors.coreGlow);
-    this.setCoreColor(color);
-  };
-
-  return leveledItem;
-};
-
-imv.Entities = imv.Entities || {};
-imv.Entities.InventoryItem = InventoryItemEntity;
-
-imv.Primitives = imv.Primitives || {};
-
-// inventory items:
-imv.Primitives.Inventory = imv.Primitives.Inventory || {};
-imv.Primitives.Artifact = imv.Primitives.Artifact || {};
-imv.Primitives.Resource = imv.Primitives.Resource || {};
-imv.Entities = imv.Entities || {};
-
-(function() {
-  var createInventoryItem = function(name, itemMesh, coreMesh) {
-    var item = new DrawableSpec('FlipCardTexture', 'bicolor_textured', itemMesh, BicoloredDrawable);
-    var core = new DrawableSpec('ObjectXMTexture', 'xm', coreMesh, XmDrawable);
-    imv.Primitives.Inventory[name] = item;
-    imv.Primitives.Inventory[name + 'Core'] = core;
-    imv.Entities[name] = Entity([item, core]);
-  };
-
-  var createResourceUnit = function(name) {
-    imv.Primitives.Resource[name] =
-      new DrawableSpec('FlipCardTexture', 'bicolor_textured', name + 'ResourceUnitMesh', BicoloredDrawable);
-  };
-
-  var createArtifact = function(series, index, frozen) {
-    var suffix = frozen ? 'Frozen' : '';
-    var name = series + suffix + index;
-    imv.Primitives.Artifact[name] =
-      new DrawableSpec('Artifact' + series + 'Texture', 'textured', name, TexturedDrawable);
-  };
-
-  var createSimple = function(name, caps) {
-    createInventoryItem(name, name + 'Mesh', name + 'X' + (caps ? 'M' : 'm') + 'Mesh');
-  };
-
-  // inventory items:
-  createSimple('Xmp', true);
-  createSimple('Resonator', true);
-  createSimple('Ultrastrike', true);
-  createSimple('ResShield', true);
-  createSimple('PowerCube', false);
-  createSimple('LinkAmp', false);
-  createSimple('HeatSink', false);
-  createSimple('MultiHack', false);
-  createSimple('ForceAmp', false);
-  createSimple('Turret', false);
-  createSimple('Capsule', false);
-  createSimple('ExtraShield', true);
-  createInventoryItem('FlipCardAda', 'FlipCardMeshAda', 'FlipCardXmMesh');
-  createInventoryItem('FlipCardJarvis', 'FlipCardMeshJarvis', 'FlipCardXmMesh');
-
-  // resource units:
-  createResourceUnit('Xmp');
-  createResourceUnit('Resonator');
-  createResourceUnit('Ultrastrike');
-  createResourceUnit('PortalShield');
-  createResourceUnit('PowerCube');
-  createResourceUnit('LinkAmp');
-  createResourceUnit('HeatSink');
-  createResourceUnit('MultiHack');
-  createResourceUnit('ForceAmp');
-  createResourceUnit('Turret');
-  createResourceUnit('Capsule');
-  createResourceUnit('ExtraShield');
-
-  // artifacts:
-  var series = {
-    'Jarvis': 13,
-    'Amar': 17,
-    'Helios': 40
-  };
-  for(var i in series)
-  {
-    for(var j = 0; j < series[i]; j++)
-    {
-      createArtifact(i, j + 1, false);
-      if(i !== 'Jarvis') {
-        createArtifact(i, j + 1, true);
-      }
-    }
+  for(var i in simple) {
+    imv.Entities.Inventory[i] = createItem(i, imv.Constants.qualityColors[simple[i]]);
   }
-
-
 
 }());
 
@@ -1493,20 +1743,73 @@ Engine.prototype.start = function() {
   this.render(0);
 };
 
+Engine.prototype.demoEntities = function() {
+  var x = -5, y = 0, z = 4;
+  var i, item;
+  for(i in imv.Entities.Inventory) {
+    item = new imv.Entities.Inventory[i]();
+    if(item) {
+      item.translate(vec3.fromValues(x, y, z));
+      x++;
+      if(x > 5) {
+        x = -5;
+        z--;
+      }
+      this.objectRenderer.addEntity(item);
+      console.log('added ' + i);
+    }
+  }
+};
+
 Engine.prototype.demo = function() {
-  var x = -5, y = 0, z = 0;
+  var x = -5, y = 0, z = 4;
   var i, j, item;
-  for(i in imv.Primitives) {
-    for(j in imv.Primitives[i])
-    {
-      item = imv.Primitives[i][j].createInstance(this.objectRenderer);
+  for(i in imv.Drawables.Inventory) {
+    item = new imv.Drawables.Inventory[i]();
+    if(item) {
+      mat4.translate(item.model, item.model, vec3.fromValues(x, y, z));
+      x++;
+      if(x > 5) {
+        x = -5;
+        z--;
+      }
+      this.objectRenderer.addDrawable(item);
+      console.log('added ' + i);
+    }
+  }
+
+  for(i in imv.Drawables.Resource) {
+    item = new imv.Drawables.Resource[i]();
+    if(item) {
+      mat4.translate(item.model, item.model, vec3.fromValues(x, y, z));
+      x++;
+      if(x > 5) {
+        x = -5;
+        z--;
+      }
+      this.objectRenderer.addDrawable(item);
+      console.log('added ' + i);
+    }
+  }
+
+  for(i in imv.Drawables.World) {
+    item = new imv.Drawables.World[i]();
+    if(item) {
+      mat4.translate(item.model, item.model, vec3.fromValues(x, y, z));
+      x++;
+      if(x > 5) {
+        x = -5;
+        z--;
+      }
+      this.objectRenderer.addDrawable(item);
+      console.log('added ' + i);
+    }
+  }
+
+  for(i in imv.Drawables.Artifact) {
+    for(j in imv.Drawables.Artifact[i]) {
+      item = new imv.Drawables.Artifact[i][j]();
       if(item) {
-        if(i === 'Artifact') {
-          y = -14;
-        }
-        else {
-          y = 0;
-        }
         mat4.translate(item.model, item.model, vec3.fromValues(x, y, z));
         x++;
         if(x > 5) {
@@ -1514,6 +1817,7 @@ Engine.prototype.demo = function() {
           z--;
         }
         this.objectRenderer.addDrawable(item);
+        console.log('added ' + i + ': ' + j);
       }
     }
   }

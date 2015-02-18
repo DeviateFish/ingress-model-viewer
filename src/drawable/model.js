@@ -1,7 +1,7 @@
 var ModelDrawable = (function() {
 
-  var modelDrawable = function(program, mesh) {
-    MeshDrawable.call(this, program, mesh);
+  var modelDrawable = function(programName, meshName) {
+    MeshDrawable.call(this, programName, meshName);
     this.viewProject = mat4.create();
     this.model = mat4.create();
   };

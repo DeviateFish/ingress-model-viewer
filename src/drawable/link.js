@@ -2,8 +2,8 @@ var LinkDrawable = (function(){
 
   // no defaults here.
 
-  var linkDrawable = function(program, mesh, texture) {
-    TexturedDrawable.call(this, program, mesh, texture);
+  var linkDrawable = function(programName, meshName, textureName) {
+    TexturedDrawable.call(this, programName, meshName, textureName);
     this.uniforms.u_cameraFwd = vec3.fromValues([0, 0, -1]);
     this.uniforms.u_elapsedTime = 0;
   };
