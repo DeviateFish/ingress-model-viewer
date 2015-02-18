@@ -1561,85 +1561,148 @@ var AssetManager = (function() {
 
 imv.AssetManager = AssetManager;
 
-var ObjectRenderer = (function(){
+var Renderer = function(gl, manager) {
+  GLBound.call(this, gl);
+  this.manager = manager;
+  this.viewProject = mat4.create();
+  this.elapsed = 0;
+};
+inherits(Renderer, GLBound);
 
-  var objectRenderer = function(gl, manager) {
-    GLBound.call(this, gl);
-    this.manager = manager;
-    this.drawables = [];
-    this.viewProject = mat4.create();
-  };
-  inherits(objectRenderer, GLBound);
+Renderer.prototype.updateView = function(view, project) {
+  mat4.multiply(this.viewProject, project, view);
+};
 
-  objectRenderer.prototype.addDrawable = function(drawable) {
-    if(!drawable.init(this.manager))
+Renderer.prototype.render = function() {
+  console.warn("base class renders nothing.");
+};
+
+Renderer.prototype.updateTime = function(delta) {
+  this.elapsed += delta;
+};
+
+imv.Renderer = Renderer;
+
+var ObjectRenderer = function(gl, manager) {
+  Renderer.call(this, gl, manager);
+  this.drawables = [];
+};
+inherits(ObjectRenderer, Renderer);
+
+ObjectRenderer.prototype.addDrawable = function(drawable) {
+  if(!drawable instanceof Drawable)
+  {
+    throw 'Drawables must always inherit from the base Drawable';
+  }
+  if(!drawable.init(this.manager))
+  {
+    console.warn('could not initialize drawable: ', drawable);
+    return false;
+  }
+  if(drawable.updateView)
+  {
+    drawable.updateView(this.viewProject);
+  }
+  this.drawables.push(drawable);
+};
+
+ObjectRenderer.prototype.removeDrawable = function(drawable) {
+  for(var i = 0; i < this.drawables.length; i++)
+  {
+    if(this.drawables[i] === drawable)
     {
-      console.warn('could not initialize drawable: ', drawable);
-      return false;
+      this.drawables.splice(i, 1);
+      // TODO: should dispose of drawable here.
+      return;
     }
-    if(drawable.updateView)
+  }
+};
+
+ObjectRenderer.prototype.addEntity = function(entity) {
+  for(var i in entity.drawables) {
+    this.addDrawable(entity.drawables[i]);
+  }
+};
+
+ObjectRenderer.prototype.updateView = function(view, project) {
+  Renderer.prototype.updateView.call(this, view, project);
+  var i, len = this.drawables.length;
+  for(i = 0; i < len; i++)
+  {
+    if(this.drawables[i].updateView) {
+      this.drawables[i].updateView(this.viewProject, view, project);
+    }
+  }
+};
+
+ObjectRenderer.prototype.render = function() {
+  var i, len = this.drawables.length;
+  for(i = 0; i < len; i++)
+  {
+    this.drawables[i].draw();
+  }
+};
+
+ObjectRenderer.prototype.updateTime = function(delta) {
+  Renderer.prototype.updateTime.call(this, delta);
+  var i, len = this.drawables.length;
+  for(i = 0; i < len; i++)
+  {
+    // if these return false, remove them from the render loop:
+    if(!this.drawables[i].updateTime(delta))
     {
-      drawable.updateView(this.viewProject);
+      this.drawables.splice(i, 1);
+      i--;
+      len--;
     }
-    this.drawables.push(drawable);
-  };
-
-  objectRenderer.prototype.removeDrawable = function(drawable) {
-    for(var i = 0; i < this.drawables.length; i++)
-    {
-      if(this.drawables[i] === drawable)
-      {
-        this.drawables.splice(i, 1);
-        // TODO: should dispose of drawable here.
-        return;
-      }
-    }
-  };
-
-  objectRenderer.prototype.addEntity = function(entity) {
-    for(var i in entity.drawables) {
-      this.addDrawable(entity.drawables[i]);
-    }
-  };
-
-  objectRenderer.prototype.updateView = function(view, project) {
-    var i, len = this.drawables.length;
-    mat4.multiply(this.viewProject, project, view);
-    for(i = 0; i < len; i++)
-    {
-      if(this.drawables[i].updateView) {
-        this.drawables[i].updateView(this.viewProject, view, project);
-      }
-    }
-  };
-
-  objectRenderer.prototype.render = function() {
-    var i, len = this.drawables.length;
-    for(i = 0; i < len; i++)
-    {
-      this.drawables[i].draw();
-    }
-  };
-
-  objectRenderer.prototype.updateTime = function(delta) {
-    var i, len = this.drawables.length;
-    for(i = 0; i < len; i++)
-    {
-      // if these return false, remove them from the render loop:
-      if(!this.drawables[i].updateTime(delta))
-      {
-        this.drawables.splice(i, 1);
-        i--;
-        len--;
-      }
-    }
-  };
-
-  return objectRenderer;
-}());
+  }
+};
 
 imv.Renderers = imv.Renderers || {};
 imv.Renderers.Object = ObjectRenderer;
+
+var PortalRenderer = function(gl, manager) {
+  Renderer.call(this, gl, manager);
+  this.portals = [];
+  this.links = null;
+  this.particles = null;
+};
+inherits(PortalRenderer, Renderer);
+
+PortalRenderer.prototype.updateView = function(view, project) {
+  Renderer.prototype.updateView.call(this, view, project);
+  var i, len = this.portals.length;
+  for(i = 0; i < len; i++)
+  {
+    this.portals[i].updateView(this.viewProject, view, project);
+  }
+};
+
+PortalRenderer.prototype.render = function() {
+  var i, len = this.portals.length;
+  for(i = 0; i < len; i++)
+  {
+    this.portals[i].draw();
+  }
+};
+
+PortalRenderer.prototype.updateTime = function(delta) {
+  Renderer.prototype.updateTime.call(this, delta);
+  var i, len = this.portals.length;
+  for(i = 0; i < len; i++)
+  {
+    // if these return false, remove them from the render loop:
+    if(!this.portals[i].updateTime(delta))
+    {
+      this.portals.splice(i, 1);
+      i--;
+      len--;
+    }
+  }
+};
+
+imv.Renderers = imv.Renderers || {};
+imv.Renderers.Portal = PortalRenderer;
 
 var Entity = function() {
   this.drawables = {};
@@ -1718,6 +1781,39 @@ imv.Entity = Entity;
     imv.Entities.Inventory[i] = createItem(i, imv.Constants.qualityColors[simple[i]]);
   }
 
+  var Ada = function() {
+    Entity.call(this);
+    this.addDrawable('FlipCardAda', new imv.Drawables.Inventory.FlipCardAda());
+    this.addDrawable('FlipCardXm', new imv.Drawables.Inventory.FlipCardXm());
+    this.drawables.FlipCardXm.uniforms.u_teamColor = vec4.clone(imv.Constants.teamColors.RESISTANCE);
+    this.drawables.FlipCardAda.uniforms.u_color1 = vec4.clone(imv.Constants.teamColors.RESISTANCE);
+    this.drawables.FlipCardAda.uniforms.u_color0 = vec4.clone(imv.Constants.qualityColors.VERY_RARE);
+  };
+  inherits(Ada, Entity);
+
+  imv.Entities.Inventory.FlipCardAda = Ada;
+
+  var Jarvis = function() {
+    Entity.call(this);
+    this.addDrawable('FlipCardJarvis', new imv.Drawables.Inventory.FlipCardJarvis());
+    this.addDrawable('FlipCardXm', new imv.Drawables.Inventory.FlipCardXm());
+    this.drawables.FlipCardXm.uniforms.u_teamColor = vec4.clone(imv.Constants.teamColors.ENLIGHTENED);
+    this.drawables.FlipCardJarvis.uniforms.u_color1 = vec4.clone(imv.Constants.teamColors.ENLIGHTENED);
+    this.drawables.FlipCardJarvis.uniforms.u_color0 = vec4.clone(imv.Constants.qualityColors.VERY_RARE);
+  };
+  inherits(Jarvis, Entity);
+
+  imv.Entities.Inventory.FlipCardJarvis = Jarvis;
+
+  var ExtraShield = function() {
+    Entity.call(this);
+    this.addDrawable('ExtraShield', new imv.Drawables.Inventory.ExtraShield());
+    this.addDrawable('ResShieldXm', new imv.Drawables.Inventory.ResShieldXm());
+    this.drawables.ExtraShield.uniforms.u_color0 = vec4.clone(imv.Constants.qualityColors.VERY_RARE);
+  };
+  inherits(ExtraShield, Entity);
+
+  imv.Entities.Inventory.ExtraShield = ExtraShield;
 }());
 
 var Engine = function(canvas, assets)
