@@ -57,3 +57,9 @@ for(i = 1; i <= 40; i++)
   imv.Entities.Artifacts['Helios' + i] = ArtifactEntity('Helios', i, false);
   imv.Entities.Artifacts['HeliosFrozen' + i] = ArtifactEntity('Helios', i, true);
 }
+
+for(i = 1; i <= 31; i++)
+{
+  imv.Entities.Artifacts['Shonin' + i] = ArtifactEntity('Shonin', i, false);
+  imv.Entities.Artifacts['ShoninFrozen' + i] = ArtifactEntity('Shonin', i, true);
+}

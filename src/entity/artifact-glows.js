@@ -43,7 +43,7 @@ imv.Entities = imv.Entities || {};
 imv.Entities.ArtifactGlow = ArtifactGlowEntity;
 imv.Entities.ArtifactGlows = imv.Entities.ArtifactGlows || {};
 (function() {
-  var _series = ['Jarvis', 'Amar', 'Helios'];
+  var _series = ['Jarvis', 'Amar', 'Helios', 'Shonin'];
   for(var i = 0; i < _series.length; i++)
   {
     imv.Entities.ArtifactGlows[_series[i]] = {
