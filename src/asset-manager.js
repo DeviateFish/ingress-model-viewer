@@ -1,5 +1,35 @@
 var AssetManager = (function() {
 
+  var areLoading = function(n, e) {
+    if(e === 0) {
+      n++;
+    }
+    return n;
+  };
+
+  var areLoaded = function(n, e) {
+    if(e > 0) {
+      n++;
+    }
+    return n;
+  };
+
+  var areError = function(n, e) {
+    if(e < 0) {
+      n++;
+    }
+    return n;
+  };
+
+  var summarize = function(queue) {
+    return {
+      total: queue.length,
+      loading: queue.reduce(areLoading, 0),
+      loaded: queue.reduce(areLoaded, 0),
+      error: queue.reduce(areError, 0)
+    };
+  };
+
   var assetManager = function(gl, manifest) {
     GLBound.call(this, gl);
     this.manifest = manifest;
@@ -12,9 +42,19 @@ var AssetManager = (function() {
       mesh: [],
       program: []
     };
+    this.complete = null;
     this.path = '/assets/';
   };
   inherits(assetManager, GLBound);
+
+  var _isComplete = function() {
+    var status = this.getStatus();
+    if(this.complete && status.texture.loading === 0 &&
+       status.mesh.loading === 0 && status.program.loading === 0)
+    {
+      this.complete();
+    }
+  };
 
   assetManager.prototype.handleTexture = function(idx, name, info, err, value) {
     if(err)
@@ -27,6 +67,7 @@ var AssetManager = (function() {
     this.textures[name] = new Texture(this._gl, info, value);
     this.queues.texture[idx] = 1;
     console.info('loaded texture ' + name);
+    _isComplete.call(this);
   };
 
   assetManager.prototype.handleMesh = function(idx, name, info, err, value) {
@@ -40,6 +81,7 @@ var AssetManager = (function() {
     this.meshes[name] = new FileMesh(this._gl, value);
     this.queues.mesh[idx] = 1;
     console.info('loaded mesh ' + name);
+    _isComplete.call(this);
   };
 
   assetManager.prototype.handleProgram = function(idx, name, info, err, vals) {
@@ -58,6 +100,7 @@ var AssetManager = (function() {
     this.programs[name] = new klass(this._gl, vals[0], vals[1]);
     this.queues.program[idx] = 1;
     console.info('loaded program ' + name);
+    _isComplete.call(this);
   };
 
   assetManager.prototype.getTexture = function(name) {
@@ -72,8 +115,9 @@ var AssetManager = (function() {
     return this.programs[name];
   };
 
-  assetManager.prototype.loadAll = function() {
+  assetManager.prototype.loadAll = function(callback) {
     var i, asset, manifest = this.manifest;
+    this.complete = callback;
     for(i in manifest.texture)
     {
       if(manifest.texture.hasOwnProperty(i) && !(i in this.textures))
@@ -120,41 +164,11 @@ var AssetManager = (function() {
     return this.getStatus.bind(this);
   };
 
-  var areLoading = function(n, e) {
-    if(e === 0) {
-      n++;
-    }
-    return n;
-  };
-
-  var areLoaded = function(n, e) {
-    if(e > 0) {
-      n++;
-    }
-    return n;
-  };
-
-  var areError = function(n, e) {
-    if(e < 0) {
-      n++;
-    }
-    return n;
-  };
-
-  var summarize = function(queue) {
-    return {
-      total: queue.length,
-      loading: queue.reduce(areLoading, 0),
-      loaded: queue.reduce(areLoaded, 0),
-      error: queue.reduce(areError, 0)
-    };
-  };
-
   assetManager.prototype.getStatus = function() {
     return {
-      textures: summarize(this.queues.texture),
-      meshes: summarize(this.queues.meshes),
-      programs: summarize(this.queues.programs)
+      texture: summarize(this.queues.texture),
+      mesh: summarize(this.queues.mesh),
+      program: summarize(this.queues.program)
     };
   };
 

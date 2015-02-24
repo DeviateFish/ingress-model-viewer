@@ -31,21 +31,21 @@ var constants = {
     6: vec4.fromValues(0.6509803921568628, 1.0, 0.9019607843137255, 1.0),
     7: vec4.fromValues(0.5725490196078431, 0.5803921568627451, 0.592156862745098, 1.0)
   },
-  artifactColors: {
+  artifactGlowColors: {
     Helios: {
-      RedGlow: vec4.fromValues(0.92, 0.51, 0.14, 1.0),
-      PurpleGlow: vec4.fromValues(1.0, 0.87, 0.55, 1.0),
-      TargetGlow: vec4.fromValues(1.0, 0.72, 0.0, 1.0)
+      Red: vec4.fromValues(0.92, 0.51, 0.14, 1.0),
+      Purple: vec4.fromValues(1.0, 0.87, 0.55, 1.0),
+      Target: vec4.fromValues(1.0, 0.72, 0.0, 1.0)
     },
     Amar: {
-      TargetGlow: vec4.fromValues(0.62, 0.22, 0.62, 1.0),
-      RedGlow: vec4.fromValues(0.79, 0.11, 0.49, 1.0),
-      PurpleGlow: vec4.fromValues(0.58, 0.17, 1.0, 1.0)
+      Target: vec4.fromValues(0.62, 0.22, 0.62, 1.0),
+      Red: vec4.fromValues(0.79, 0.11, 0.49, 1.0),
+      Purple: vec4.fromValues(0.58, 0.17, 1.0, 1.0)
     },
     Jarvis: {
-      TargetGlow: vec4.fromValues(0.62, 0.22, 0.62, 1.0),
-      RedGlow: vec4.fromValues(0.79, 0.11, 0.49, 1.0),
-      PurpleGlow: vec4.fromValues(0.58, 0.17, 1.0, 1.0)
+      Target: vec4.fromValues(0.62, 0.22, 0.62, 1.0),
+      Red: vec4.fromValues(0.79, 0.11, 0.49, 1.0),
+      Purple: vec4.fromValues(0.58, 0.17, 1.0, 1.0)
     }
   },
   xmColors: {
@@ -249,6 +249,70 @@ var constants = {
         Jarvis11: 'Jarvis11',
         Jarvis12: 'Jarvis12',
         Jarvis13: 'Jarvis13'
+      },
+      Shonin: {
+        Shonin1: "Shonin1",
+        ShoninFrozen1: "ShoninFrozen1",
+        Shonin2: "Shonin2",
+        ShoninFrozen2: "ShoninFrozen2",
+        Shonin3: "Shonin3",
+        ShoninFrozen3: "ShoninFrozen3",
+        Shonin4: "Shonin4",
+        ShoninFrozen4: "ShoninFrozen4",
+        Shonin5: "Shonin5",
+        ShoninFrozen5: "ShoninFrozen5",
+        Shonin6: "Shonin6",
+        ShoninFrozen6: "ShoninFrozen6",
+        Shonin7: "Shonin7",
+        ShoninFrozen7: "ShoninFrozen7",
+        Shonin8: "Shonin8",
+        ShoninFrozen8: "ShoninFrozen8",
+        Shonin9: "Shonin9",
+        ShoninFrozen9: "ShoninFrozen9",
+        Shonin10: "Shonin10",
+        ShoninFrozen10: "ShoninFrozen10",
+        Shonin11: "Shonin11",
+        ShoninFrozen11: "ShoninFrozen11",
+        Shonin12: "Shonin12",
+        ShoninFrozen12: "ShoninFrozen12",
+        Shonin13: "Shonin13",
+        ShoninFrozen13: "ShoninFrozen13",
+        Shonin14: "Shonin14",
+        ShoninFrozen14: "ShoninFrozen14",
+        Shonin15: "Shonin15",
+        ShoninFrozen15: "ShoninFrozen15",
+        Shonin16: "Shonin16",
+        ShoninFrozen16: "ShoninFrozen16",
+        Shonin17: "Shonin17",
+        ShoninFrozen17: "ShoninFrozen17",
+        Shonin18: "Shonin18",
+        ShoninFrozen18: "ShoninFrozen18",
+        Shonin19: "Shonin19",
+        ShoninFrozen19: "ShoninFrozen19",
+        Shonin20: "Shonin20",
+        ShoninFrozen20: "ShoninFrozen20",
+        Shonin21: "Shonin21",
+        ShoninFrozen21: "ShoninFrozen21",
+        Shonin22: "Shonin22",
+        ShoninFrozen22: "ShoninFrozen22",
+        Shonin23: "Shonin23",
+        ShoninFrozen23: "ShoninFrozen23",
+        Shonin24: "Shonin24",
+        ShoninFrozen24: "ShoninFrozen24",
+        Shonin25: "Shonin25",
+        ShoninFrozen25: "ShoninFrozen25",
+        Shonin26: "Shonin26",
+        ShoninFrozen26: "ShoninFrozen26",
+        Shonin27: "Shonin27",
+        ShoninFrozen27: "ShoninFrozen27",
+        Shonin28: "Shonin28",
+        ShoninFrozen28: "ShoninFrozen28",
+        Shonin29: "Shonin29",
+        ShoninFrozen29: "ShoninFrozen29",
+        Shonin30: "Shonin30",
+        ShoninFrozen30: "ShoninFrozen30",
+        Shonin31: "Shonin31",
+        ShoninFrozen31: "ShoninFrozen31"
       }
     },
     World: {
@@ -285,7 +349,8 @@ var constants = {
     TargetGlow: 'TargetGlowTexture',
     ArtifactHelios: 'ArtifactHeliosTexture',
     ArtifactAmar: 'ArtifactAmarTexture',
-    ArtifactJarvis: 'ArtifactJarvisTexture'
+    ArtifactJarvis: 'ArtifactJarvisTexture',
+    ArtifactShonin: 'ArtifactShoninTexture'
   }
 };
 

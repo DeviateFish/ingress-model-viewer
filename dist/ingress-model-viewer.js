@@ -82,21 +82,21 @@ var constants = {
     6: vec4.fromValues(0.6509803921568628, 1.0, 0.9019607843137255, 1.0),
     7: vec4.fromValues(0.5725490196078431, 0.5803921568627451, 0.592156862745098, 1.0)
   },
-  artifactColors: {
+  artifactGlowColors: {
     Helios: {
-      RedGlow: vec4.fromValues(0.92, 0.51, 0.14, 1.0),
-      PurpleGlow: vec4.fromValues(1.0, 0.87, 0.55, 1.0),
-      TargetGlow: vec4.fromValues(1.0, 0.72, 0.0, 1.0)
+      Red: vec4.fromValues(0.92, 0.51, 0.14, 1.0),
+      Purple: vec4.fromValues(1.0, 0.87, 0.55, 1.0),
+      Target: vec4.fromValues(1.0, 0.72, 0.0, 1.0)
     },
     Amar: {
-      TargetGlow: vec4.fromValues(0.62, 0.22, 0.62, 1.0),
-      RedGlow: vec4.fromValues(0.79, 0.11, 0.49, 1.0),
-      PurpleGlow: vec4.fromValues(0.58, 0.17, 1.0, 1.0)
+      Target: vec4.fromValues(0.62, 0.22, 0.62, 1.0),
+      Red: vec4.fromValues(0.79, 0.11, 0.49, 1.0),
+      Purple: vec4.fromValues(0.58, 0.17, 1.0, 1.0)
     },
     Jarvis: {
-      TargetGlow: vec4.fromValues(0.62, 0.22, 0.62, 1.0),
-      RedGlow: vec4.fromValues(0.79, 0.11, 0.49, 1.0),
-      PurpleGlow: vec4.fromValues(0.58, 0.17, 1.0, 1.0)
+      Target: vec4.fromValues(0.62, 0.22, 0.62, 1.0),
+      Red: vec4.fromValues(0.79, 0.11, 0.49, 1.0),
+      Purple: vec4.fromValues(0.58, 0.17, 1.0, 1.0)
     }
   },
   xmColors: {
@@ -300,6 +300,70 @@ var constants = {
         Jarvis11: 'Jarvis11',
         Jarvis12: 'Jarvis12',
         Jarvis13: 'Jarvis13'
+      },
+      Shonin: {
+        Shonin1: "Shonin1",
+        ShoninFrozen1: "ShoninFrozen1",
+        Shonin2: "Shonin2",
+        ShoninFrozen2: "ShoninFrozen2",
+        Shonin3: "Shonin3",
+        ShoninFrozen3: "ShoninFrozen3",
+        Shonin4: "Shonin4",
+        ShoninFrozen4: "ShoninFrozen4",
+        Shonin5: "Shonin5",
+        ShoninFrozen5: "ShoninFrozen5",
+        Shonin6: "Shonin6",
+        ShoninFrozen6: "ShoninFrozen6",
+        Shonin7: "Shonin7",
+        ShoninFrozen7: "ShoninFrozen7",
+        Shonin8: "Shonin8",
+        ShoninFrozen8: "ShoninFrozen8",
+        Shonin9: "Shonin9",
+        ShoninFrozen9: "ShoninFrozen9",
+        Shonin10: "Shonin10",
+        ShoninFrozen10: "ShoninFrozen10",
+        Shonin11: "Shonin11",
+        ShoninFrozen11: "ShoninFrozen11",
+        Shonin12: "Shonin12",
+        ShoninFrozen12: "ShoninFrozen12",
+        Shonin13: "Shonin13",
+        ShoninFrozen13: "ShoninFrozen13",
+        Shonin14: "Shonin14",
+        ShoninFrozen14: "ShoninFrozen14",
+        Shonin15: "Shonin15",
+        ShoninFrozen15: "ShoninFrozen15",
+        Shonin16: "Shonin16",
+        ShoninFrozen16: "ShoninFrozen16",
+        Shonin17: "Shonin17",
+        ShoninFrozen17: "ShoninFrozen17",
+        Shonin18: "Shonin18",
+        ShoninFrozen18: "ShoninFrozen18",
+        Shonin19: "Shonin19",
+        ShoninFrozen19: "ShoninFrozen19",
+        Shonin20: "Shonin20",
+        ShoninFrozen20: "ShoninFrozen20",
+        Shonin21: "Shonin21",
+        ShoninFrozen21: "ShoninFrozen21",
+        Shonin22: "Shonin22",
+        ShoninFrozen22: "ShoninFrozen22",
+        Shonin23: "Shonin23",
+        ShoninFrozen23: "ShoninFrozen23",
+        Shonin24: "Shonin24",
+        ShoninFrozen24: "ShoninFrozen24",
+        Shonin25: "Shonin25",
+        ShoninFrozen25: "ShoninFrozen25",
+        Shonin26: "Shonin26",
+        ShoninFrozen26: "ShoninFrozen26",
+        Shonin27: "Shonin27",
+        ShoninFrozen27: "ShoninFrozen27",
+        Shonin28: "Shonin28",
+        ShoninFrozen28: "ShoninFrozen28",
+        Shonin29: "Shonin29",
+        ShoninFrozen29: "ShoninFrozen29",
+        Shonin30: "Shonin30",
+        ShoninFrozen30: "ShoninFrozen30",
+        Shonin31: "Shonin31",
+        ShoninFrozen31: "ShoninFrozen31"
       }
     },
     World: {
@@ -336,7 +400,8 @@ var constants = {
     TargetGlow: 'TargetGlowTexture',
     ArtifactHelios: 'ArtifactHeliosTexture',
     ArtifactAmar: 'ArtifactAmarTexture',
-    ArtifactJarvis: 'ArtifactJarvisTexture'
+    ArtifactJarvis: 'ArtifactJarvisTexture',
+    ArtifactShonin: 'ArtifactShoninTexture'
   }
 };
 
@@ -1053,7 +1118,8 @@ var MeshDrawable = (function() {
   return meshDrawable;
 }());
 
-imv.MeshDrawable = MeshDrawable;
+imv.Drawables = imv.Drawables || {};
+imv.Drawables.Mesh = MeshDrawable;
 
 var ModelDrawable = (function() {
 
@@ -1396,7 +1462,213 @@ imv.Drawables.ShieldEffect = ShieldEffectDrawable;
 
 }());
 
+var Entity = function() {
+  this.drawables = {};
+  this.transform = mat4.create();
+};
+
+Entity.prototype.addDrawable = function(name, drawable) {
+  // add dispose if this already exists.
+  this.drawables[name] = drawable;
+};
+
+Entity.prototype.removeDrawable = function(/*name*/) {
+  // dispose stuffs.
+};
+
+Entity.prototype.applyTransform = function() {
+  for(var i in this.drawables)
+  {
+    this.drawables[i].setMatrix(this.transform);
+  }
+};
+
+Entity.prototype.translate = function(vec) {
+  mat4.translate(this.transform, this.transform, vec);
+  this.applyTransform();
+};
+
+Entity.prototype.rotate = function(quat) {
+  var rotate = mat4.create();
+  mat4.fromQuat(rotate, quat);
+  mat4.multiply(this.transform, this.transform, rotate);
+  this.applyTransform();
+};
+
+Entity.prototype.setAnimation = function(animate) {
+  for(var i in this.drawables)
+  {
+    this.drawables[i].onUpdate = animate;
+  }
+};
+
+imv.Entity = Entity;
+
+(function(){
+
+  imv.Entities = imv.Entities || {};
+  imv.Entities.Inventory = imv.Entities.Inventory || {};
+
+  var simple = {
+    Xmp: 'L8',
+    Ultrastrike: 'L8',
+    ResShield: 'VERY_RARE',
+    PowerCube: 'L8',
+    LinkAmp: 'EXTREMELY_RARE',
+    HeatSink: 'VERY_RARE',
+    MultiHack: 'VERY_RARE',
+    ForceAmp: 'RARE',
+    Turret: 'RARE',
+    Resonator: 'L8',
+    Capsule: 'RARE'
+  };
+
+  var createItem = function(name, color) {
+    var item = function() {
+      Entity.call(this);
+      this.addDrawable(name, new imv.Drawables.Inventory[name]());
+      this.addDrawable(name + 'Xm', new imv.Drawables.Inventory[name + 'Xm']());
+      this.drawables[name].uniforms.u_color0 = vec4.clone(color);
+    };
+    inherits(item, Entity);
+
+    return item;
+  };
+
+  for(var i in simple) {
+    imv.Entities.Inventory[i] = createItem(i, imv.Constants.qualityColors[simple[i]]);
+  }
+
+  var Ada = function() {
+    Entity.call(this);
+    this.addDrawable('FlipCardAda', new imv.Drawables.Inventory.FlipCardAda());
+    this.addDrawable('FlipCardXm', new imv.Drawables.Inventory.FlipCardXm());
+    this.drawables.FlipCardXm.uniforms.u_teamColor = vec4.clone(imv.Constants.teamColors.RESISTANCE);
+    this.drawables.FlipCardAda.uniforms.u_color1 = vec4.clone(imv.Constants.teamColors.RESISTANCE);
+    this.drawables.FlipCardAda.uniforms.u_color0 = vec4.clone(imv.Constants.qualityColors.VERY_RARE);
+  };
+  inherits(Ada, Entity);
+
+  imv.Entities.Inventory.FlipCardAda = Ada;
+
+  var Jarvis = function() {
+    Entity.call(this);
+    this.addDrawable('FlipCardJarvis', new imv.Drawables.Inventory.FlipCardJarvis());
+    this.addDrawable('FlipCardXm', new imv.Drawables.Inventory.FlipCardXm());
+    this.drawables.FlipCardXm.uniforms.u_teamColor = vec4.clone(imv.Constants.teamColors.ENLIGHTENED);
+    this.drawables.FlipCardJarvis.uniforms.u_color1 = vec4.clone(imv.Constants.teamColors.ENLIGHTENED);
+    this.drawables.FlipCardJarvis.uniforms.u_color0 = vec4.clone(imv.Constants.qualityColors.VERY_RARE);
+  };
+  inherits(Jarvis, Entity);
+
+  imv.Entities.Inventory.FlipCardJarvis = Jarvis;
+
+  var ExtraShield = function() {
+    Entity.call(this);
+    this.addDrawable('ExtraShield', new imv.Drawables.Inventory.ExtraShield());
+    this.addDrawable('ResShieldXm', new imv.Drawables.Inventory.ResShieldXm());
+    this.drawables.ExtraShield.uniforms.u_color0 = vec4.clone(imv.Constants.qualityColors.VERY_RARE);
+  };
+  inherits(ExtraShield, Entity);
+
+  imv.Entities.Inventory.ExtraShield = ExtraShield;
+}());
+
+var PortalEntity = function() {
+  Entity.call(this);
+  this.color = vec4.clone(imv.Constants.teamColors.LOKI);
+  this.addDrawable('Portal', new imv.Drawables.World.Portal());
+  this.drawables.Portal.onUpdate = function(delta, elapsed) {
+    var inc = elapsed / 1000;
+    this.uniforms.u_baseColor[0] = Math.sin(inc);
+    this.uniforms.u_baseColor[1] = Math.sin(inc + (2 * Math.PI / 3));
+    this.uniforms.u_baseColor[2] = Math.sin(inc + (4 * Math.PI / 3));
+    return true;
+  };
+};
+inherits(PortalEntity, Entity);
+
+PortalEntity.prototype.setColor = function(color) {
+  this.color = vec4.clone(color);
+  if(this.drawables.Portal) {
+    this.drawables.Portal.onUpdate = undefined;
+    this.drawables.Portal.uniforms.u_baseColor = this.color;
+  }
+  if(this.drawables.Shield) {
+    this.drawables.Shield.uniforms.u_color = this.color;
+  }
+  if(this.drawables.ArtifactsGreenGlow) {
+    this.drawables.ArtifactsGreenGlow.u_baseColor = this.color;
+  }
+};
+
+PortalEntity.prototype.addShield = function() {
+  if(!('Shield' in this.drawables)) {
+    this.addDrawable('Shield', new imv.Drawables.World.Shield());
+  }
+  this.drawables.Shield.uniforms.u_color = this.color;
+  this.applyTransform();
+};
+
+PortalEntity.prototype.addArtifact = function(series, num, frozen) {
+  var rotate = function(delta/*, elapsed*/) {
+    mat4.rotateY(this.model, this.model, delta / 1000);
+    this.updateMatrix();
+    return true;
+  };
+  var name = series + (frozen ? 'Frozen' : '') + num;
+  if(!(name in this.drawables)) {
+    this.addDrawable(name, new imv.Drawables.Artifact[series][name]());
+  }
+  this.drawables[name].onUpdate = rotate;
+  this.applyTransform();
+};
+
+PortalEntity.prototype.addGlowMarker = function(name, color) {
+  var n = 'Artifacts' + name + 'Glow';
+  if(!(n in this.drawables)) {
+    this.addDrawable(n, new imv.Drawables.World[n]());
+  }
+  this.drawables[n].uniforms.u_baseColor = vec4.clone(color);
+};
+
+imv.Entities = imv.Entities || {};
+imv.Entities.World = imv.Entities.World || {};
+imv.Entities.World.Portal = PortalEntity;
+
+
+
 var AssetManager = (function() {
+
+  var areLoading = function(n, e) {
+    if(e === 0) {
+      n++;
+    }
+    return n;
+  };
+
+  var areLoaded = function(n, e) {
+    if(e > 0) {
+      n++;
+    }
+    return n;
+  };
+
+  var areError = function(n, e) {
+    if(e < 0) {
+      n++;
+    }
+    return n;
+  };
+
+  var summarize = function(queue) {
+    return {
+      total: queue.length,
+      loading: queue.reduce(areLoading, 0),
+      loaded: queue.reduce(areLoaded, 0),
+      error: queue.reduce(areError, 0)
+    };
+  };
 
   var assetManager = function(gl, manifest) {
     GLBound.call(this, gl);
@@ -1410,9 +1682,19 @@ var AssetManager = (function() {
       mesh: [],
       program: []
     };
+    this.complete = null;
     this.path = '/assets/';
   };
   inherits(assetManager, GLBound);
+
+  var _isComplete = function() {
+    var status = this.getStatus();
+    if(this.complete && status.texture.loading === 0 &&
+       status.mesh.loading === 0 && status.program.loading === 0)
+    {
+      this.complete();
+    }
+  };
 
   assetManager.prototype.handleTexture = function(idx, name, info, err, value) {
     if(err)
@@ -1425,6 +1707,7 @@ var AssetManager = (function() {
     this.textures[name] = new Texture(this._gl, info, value);
     this.queues.texture[idx] = 1;
     console.info('loaded texture ' + name);
+    _isComplete.call(this);
   };
 
   assetManager.prototype.handleMesh = function(idx, name, info, err, value) {
@@ -1438,6 +1721,7 @@ var AssetManager = (function() {
     this.meshes[name] = new FileMesh(this._gl, value);
     this.queues.mesh[idx] = 1;
     console.info('loaded mesh ' + name);
+    _isComplete.call(this);
   };
 
   assetManager.prototype.handleProgram = function(idx, name, info, err, vals) {
@@ -1456,6 +1740,7 @@ var AssetManager = (function() {
     this.programs[name] = new klass(this._gl, vals[0], vals[1]);
     this.queues.program[idx] = 1;
     console.info('loaded program ' + name);
+    _isComplete.call(this);
   };
 
   assetManager.prototype.getTexture = function(name) {
@@ -1470,8 +1755,9 @@ var AssetManager = (function() {
     return this.programs[name];
   };
 
-  assetManager.prototype.loadAll = function() {
+  assetManager.prototype.loadAll = function(callback) {
     var i, asset, manifest = this.manifest;
+    this.complete = callback;
     for(i in manifest.texture)
     {
       if(manifest.texture.hasOwnProperty(i) && !(i in this.textures))
@@ -1518,41 +1804,11 @@ var AssetManager = (function() {
     return this.getStatus.bind(this);
   };
 
-  var areLoading = function(n, e) {
-    if(e === 0) {
-      n++;
-    }
-    return n;
-  };
-
-  var areLoaded = function(n, e) {
-    if(e > 0) {
-      n++;
-    }
-    return n;
-  };
-
-  var areError = function(n, e) {
-    if(e < 0) {
-      n++;
-    }
-    return n;
-  };
-
-  var summarize = function(queue) {
-    return {
-      total: queue.length,
-      loading: queue.reduce(areLoading, 0),
-      loaded: queue.reduce(areLoaded, 0),
-      error: queue.reduce(areError, 0)
-    };
-  };
-
   assetManager.prototype.getStatus = function() {
     return {
-      textures: summarize(this.queues.texture),
-      meshes: summarize(this.queues.meshes),
-      programs: summarize(this.queues.programs)
+      texture: summarize(this.queues.texture),
+      mesh: summarize(this.queues.mesh),
+      program: summarize(this.queues.program)
     };
   };
 
@@ -1704,122 +1960,14 @@ PortalRenderer.prototype.updateTime = function(delta) {
 imv.Renderers = imv.Renderers || {};
 imv.Renderers.Portal = PortalRenderer;
 
-var Entity = function() {
-  this.drawables = {};
-  this.transform = mat4.create();
-};
-
-Entity.prototype.addDrawable = function(name, drawable) {
-  // add dispose if this already exists.
-  this.drawables[name] = drawable;
-};
-
-Entity.prototype.removeDrawable = function(/*name*/) {
-  // dispose stuffs.
-};
-
-Entity.prototype.applyTransform = function() {
-  for(var i in this.drawables)
-  {
-    this.drawables[i].setMatrix(this.transform);
-  }
-};
-
-Entity.prototype.translate = function(vec) {
-  mat4.translate(this.transform, this.transform, vec);
-  this.applyTransform();
-};
-
-Entity.prototype.rotate = function(quat) {
-  var rotate = mat4.create();
-  mat4.fromQuat(rotate, quat);
-  mat4.multiply(this.transform, this.transform, rotate);
-  this.applyTransform();
-};
-
-Entity.prototype.setAnimation = function(animate) {
-  for(var i in this.drawables)
-  {
-    this.drawables[i].onUpdate = animate;
-  }
-};
-
-imv.Entity = Entity;
-
-(function(){
-
-  imv.Entities = imv.Entities || {};
-  imv.Entities.Inventory = imv.Entities.Inventory || {};
-
-  var simple = {
-    Xmp: 'L8',
-    Ultrastrike: 'L8',
-    ResShield: 'VERY_RARE',
-    PowerCube: 'L8',
-    LinkAmp: 'EXTREMELY_RARE',
-    HeatSink: 'VERY_RARE',
-    MultiHack: 'VERY_RARE',
-    ForceAmp: 'RARE',
-    Turret: 'RARE',
-    Resonator: 'L8',
-    Capsule: 'RARE'
-  };
-
-  var createItem = function(name, color) {
-    var item = function() {
-      Entity.call(this);
-      this.addDrawable(name, new imv.Drawables.Inventory[name]());
-      this.addDrawable(name + 'Xm', new imv.Drawables.Inventory[name + 'Xm']());
-      this.drawables[name].uniforms.u_color0 = vec4.clone(color);
-    };
-    inherits(item, Entity);
-
-    return item;
-  };
-
-  for(var i in simple) {
-    imv.Entities.Inventory[i] = createItem(i, imv.Constants.qualityColors[simple[i]]);
-  }
-
-  var Ada = function() {
-    Entity.call(this);
-    this.addDrawable('FlipCardAda', new imv.Drawables.Inventory.FlipCardAda());
-    this.addDrawable('FlipCardXm', new imv.Drawables.Inventory.FlipCardXm());
-    this.drawables.FlipCardXm.uniforms.u_teamColor = vec4.clone(imv.Constants.teamColors.RESISTANCE);
-    this.drawables.FlipCardAda.uniforms.u_color1 = vec4.clone(imv.Constants.teamColors.RESISTANCE);
-    this.drawables.FlipCardAda.uniforms.u_color0 = vec4.clone(imv.Constants.qualityColors.VERY_RARE);
-  };
-  inherits(Ada, Entity);
-
-  imv.Entities.Inventory.FlipCardAda = Ada;
-
-  var Jarvis = function() {
-    Entity.call(this);
-    this.addDrawable('FlipCardJarvis', new imv.Drawables.Inventory.FlipCardJarvis());
-    this.addDrawable('FlipCardXm', new imv.Drawables.Inventory.FlipCardXm());
-    this.drawables.FlipCardXm.uniforms.u_teamColor = vec4.clone(imv.Constants.teamColors.ENLIGHTENED);
-    this.drawables.FlipCardJarvis.uniforms.u_color1 = vec4.clone(imv.Constants.teamColors.ENLIGHTENED);
-    this.drawables.FlipCardJarvis.uniforms.u_color0 = vec4.clone(imv.Constants.qualityColors.VERY_RARE);
-  };
-  inherits(Jarvis, Entity);
-
-  imv.Entities.Inventory.FlipCardJarvis = Jarvis;
-
-  var ExtraShield = function() {
-    Entity.call(this);
-    this.addDrawable('ExtraShield', new imv.Drawables.Inventory.ExtraShield());
-    this.addDrawable('ResShieldXm', new imv.Drawables.Inventory.ResShieldXm());
-    this.drawables.ExtraShield.uniforms.u_color0 = vec4.clone(imv.Constants.qualityColors.VERY_RARE);
-  };
-  inherits(ExtraShield, Entity);
-
-  imv.Entities.Inventory.ExtraShield = ExtraShield;
-}());
-
-var Engine = function(canvas, assets)
+var Engine = function(canvas, assets, enableSnapshots)
 {
   this.canvas = canvas;
-  var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  var opt = {};
+  if(enableSnapshots) {
+    opt.preserveDrawingBuffer = true;
+  }
+  var gl = canvas.getContext('webgl', opt) || canvas.getContext('experimental-webgl', opt);
   if(!gl)
   {
     throw 'Could not initialize webgl';
@@ -1827,7 +1975,7 @@ var Engine = function(canvas, assets)
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   this.gl = gl;
   this.view = mat4.create();
-  mat4.lookAt(this.view, [0.0, 4.0, 10.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
+    mat4.lookAt(this.view, [0.0, 2.0, 5.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
   this.project = mat4.create();
   this.assetManager = new AssetManager(this.gl, assets);
   this.objectRenderer = new ObjectRenderer(this.gl, this.assetManager);
@@ -1840,8 +1988,14 @@ var Engine = function(canvas, assets)
 
 Engine.prototype.resize = function(width, height)
 {
+  this.canvas.width = width;
+  this.canvas.height = height;
   this.gl.viewport(0, 0, width, height);
   mat4.perspective(this.project, 45, width / height, 0.1, 100);
+  this.objectRenderer.updateView(this.view, this.project);
+};
+
+Engine.prototype.updateView = function() {
   this.objectRenderer.updateView(this.view, this.project);
 };
 
@@ -1874,6 +2028,9 @@ Engine.prototype.demoEntities = function() {
       console.log('added ' + i);
     }
   }
+  var portal = new imv.Entities.World.Portal();
+  portal.translate(vec3.fromValues(x, y, z));
+  this.objectRenderer.addEntity(portal);
 };
 
 Engine.prototype.demo = function() {
@@ -1982,8 +2139,8 @@ Engine.prototype.render = function(tick)
   this.frame = window.requestAnimationFrame(this.render.bind(this));
 };
 
-Engine.prototype.preload = function() {
-  this.assetManager.load();
+Engine.prototype.preload = function(callback) {
+  this.assetManager.loadAll(callback);
 };
 
 imv.Engine = Engine;

@@ -51,7 +51,18 @@
 
   var init = function(assets) {
     engine = new IMV.Engine(canvas, assets);
-    engine.assetManager.loadAll();
+    engine.preload(function() {
+      mat4.lookAt(engine.view, [0.0, 25.0, 40.0], [0.0, 5.0, 0.0], [0.0, 1.0, 0.0]);
+      engine.objectRenderer.updateView(engine.view, engine.project);
+      //var la = new IMV.Entities.Inventory.LinkAmp();
+      //la.setAnimation(rotate);
+      //engine.objectRenderer.addEntity(la);
+      for(var i in IMV.Drawables.Artifact.Shonin) {
+        var n = new IMV.Drawables.Artifact.Shonin[i]();
+        //n.onUpdate = rotate;
+        engine.objectRenderer.addDrawable(n);
+      }
+    });
   };
 
   var renderloop = function() {

@@ -1,7 +1,11 @@
-var Engine = function(canvas, assets)
+var Engine = function(canvas, assets, enableSnapshots)
 {
   this.canvas = canvas;
-  var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  var opt = {};
+  if(enableSnapshots) {
+    opt.preserveDrawingBuffer = true;
+  }
+  var gl = canvas.getContext('webgl', opt) || canvas.getContext('experimental-webgl', opt);
   if(!gl)
   {
     throw 'Could not initialize webgl';
@@ -9,7 +13,7 @@ var Engine = function(canvas, assets)
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   this.gl = gl;
   this.view = mat4.create();
-  mat4.lookAt(this.view, [0.0, 4.0, 10.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
+    mat4.lookAt(this.view, [0.0, 2.0, 5.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
   this.project = mat4.create();
   this.assetManager = new AssetManager(this.gl, assets);
   this.objectRenderer = new ObjectRenderer(this.gl, this.assetManager);
@@ -22,8 +26,14 @@ var Engine = function(canvas, assets)
 
 Engine.prototype.resize = function(width, height)
 {
+  this.canvas.width = width;
+  this.canvas.height = height;
   this.gl.viewport(0, 0, width, height);
   mat4.perspective(this.project, 45, width / height, 0.1, 100);
+  this.objectRenderer.updateView(this.view, this.project);
+};
+
+Engine.prototype.updateView = function() {
   this.objectRenderer.updateView(this.view, this.project);
 };
 
@@ -56,6 +66,9 @@ Engine.prototype.demoEntities = function() {
       console.log('added ' + i);
     }
   }
+  var portal = new imv.Entities.World.Portal();
+  portal.translate(vec3.fromValues(x, y, z));
+  this.objectRenderer.addEntity(portal);
 };
 
 Engine.prototype.demo = function() {
@@ -164,8 +177,8 @@ Engine.prototype.render = function(tick)
   this.frame = window.requestAnimationFrame(this.render.bind(this));
 };
 
-Engine.prototype.preload = function() {
-  this.assetManager.load();
+Engine.prototype.preload = function(callback) {
+  this.assetManager.loadAll(callback);
 };
 
 imv.Engine = Engine;

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ingress Model Sandbox</title>
+    <script src="/bower_components/gl-matrix/dist/gl-matrix.js"></script>
+    <script src="/bower_components/java-deserializer/dist/java-deserializer.min.js"></script>
+    <script src="/bower_components/libtga/dist/libtga.min.js"></script>
+    <script src="../dist/ingress-model-viewer.js"></script>
+    <script src="https://rawgit.com/eligrey/FileSaver.js/master/FileSaver.min.js"></script>
+    <style>
+      html, body {
+        height: 100%;
+        width: 100%;
+        position: relative;
+        margin: 0;
+      }
+    </style>
+</head>
+<body>
+<canvas id="screen" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;"></canvas>
+<script type="text/javascript">
+  var canvas = document.getElementById('screen'), engine, assets = {};
+  canvas.width = document.body.offsetWidth;
+  canvas.height = document.body.offsetHeight;
+
+  var init = function(assets) {
+    engine = new IMV.Engine(canvas, assets, true);
+    engine.preload(function() {
+      console.log('ready');
+    });
+  };
+
+  var rotate = function(delta) {
+    mat4.rotateY(this.model, this.model, delta / 1000);
+    this.updateMatrix();
+    return true;
+  };
+
+  IMV.Utilities.loadResource('/assets.json', 'text', function(err, val) {
+    if(err) {
+      throw err;
+    }
+    assets = JSON.parse(val);
+    if(assets) {
+      init(assets);
+      engine.render();
+    }
+  });
+</script>
+</body>
+</html>

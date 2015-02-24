@@ -35,4 +35,5 @@ var MeshDrawable = (function() {
   return meshDrawable;
 }());
 
-imv.MeshDrawable = MeshDrawable;
+imv.Drawables = imv.Drawables || {};
+imv.Drawables.Mesh = MeshDrawable;
