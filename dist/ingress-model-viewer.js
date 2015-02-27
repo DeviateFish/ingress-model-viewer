@@ -97,6 +97,11 @@ var constants = {
       Target: vec4.fromValues(0.62, 0.22, 0.62, 1.0),
       Red: vec4.fromValues(0.79, 0.11, 0.49, 1.0),
       Purple: vec4.fromValues(0.58, 0.17, 1.0, 1.0)
+    },
+    Shonin: {
+      Red: vec4.fromValues(0.78, 0.84, 1.0, 1.0),
+      Purple: vec4.fromValues(0.25, 0.81, 1.0, 1.0),
+      Target: vec4.fromValues(0.70, 0.70, 0.70, 1.0)
     }
   },
   xmColors: {
