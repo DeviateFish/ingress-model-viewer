@@ -133,6 +133,21 @@ Engine.prototype.demo = function() {
   }
 };
 
+Engine.prototype.draw = function(delta) {
+  var gl = this.gl;
+  // default setup stuff:
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  resetGL(gl);
+  //gl.enable(gl.BLEND);
+  //gl.depthMask(false);
+
+  // render passes:
+  this.objectRenderer.render();
+
+  // run animations
+  this.objectRenderer.updateTime(delta);
+};
+
 Engine.prototype.render = function(tick)
 {
   if(this.paused) {
@@ -151,28 +166,7 @@ Engine.prototype.render = function(tick)
     delta = tick - this.last;
     this.last = tick;
   }
-  var gl = this.gl;
-  // default setup stuff:
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  gl.lineWidth(1.0);
-  gl.enable(gl.CULL_FACE);
-  gl.frontFace(gl.CCW);
-  gl.cullFace(gl.BACK);
-  gl.enable(gl.DEPTH_TEST);
-  gl.blendEquation(gl.FUNC_ADD);
-  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-  //gl.enable(gl.BLEND);
-  //gl.depthMask(false);
-
-  gl.disable(gl.BLEND);
-  gl.depthMask(true);
-
-  // render passes:
-  this.objectRenderer.render();
-
-  // run animations
-  this.objectRenderer.updateTime(delta);
-
+  this.draw(delta);
   // queue up next frame:
   this.frame = window.requestAnimationFrame(this.render.bind(this));
 };

@@ -21,6 +21,8 @@ var OpaqueProgram = (function(){
     gl.depthMask(true);
 
     fn(this.attributes, this.uniforms);
+
+    resetGL(gl);
     //gl.useProgram(0);
   };
 

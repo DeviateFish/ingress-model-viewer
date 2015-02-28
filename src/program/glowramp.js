@@ -18,9 +18,12 @@ var GlowrampProgram = (function(){
     gl.enable(gl.BLEND);
     gl.depthMask(false);
     gl.blendEquation(gl.FUNC_ADD);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+    //gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
     fn(this.attributes, this.uniforms);
+
+    resetGL(gl);
     //gl.useProgram(0);
   };
 
