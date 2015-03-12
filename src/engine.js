@@ -13,7 +13,12 @@ var Engine = function(canvas, assets, enableSnapshots)
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   this.gl = gl;
   this.view = mat4.create();
-    mat4.lookAt(this.view, [0.0, 2.0, 5.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
+  mat4.lookAt(this.view, [0.0, 2.0, 5.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
+
+  // this should be in radians, not degrees.
+  this.hFoV = Math.PI / 4;
+
+  this.far = 100;
   this.project = mat4.create();
   this.assetManager = new AssetManager(this.gl, assets);
   this.objectRenderer = new ObjectRenderer(this.gl, this.assetManager);
@@ -29,11 +34,12 @@ Engine.prototype.resize = function(width, height)
   this.canvas.width = width;
   this.canvas.height = height;
   this.gl.viewport(0, 0, width, height);
-  mat4.perspective(this.project, 45, width / height, 0.1, 100);
-  this.objectRenderer.updateView(this.view, this.project);
+  this.updateView();
 };
 
 Engine.prototype.updateView = function() {
+  this.project = mat4.create();
+  mat4.perspective(this.project, this.hFoV, this.canvas.width / this.canvas.height, 0.1, this.far);
   this.objectRenderer.updateView(this.view, this.project);
 };
 
@@ -43,11 +49,6 @@ Engine.prototype.stop = function() {
   if(this.frame) {
     window.cancelAnimationFrame(this.frame);
   }
-};
-
-Engine.prototype.start = function() {
-  this.resize(this.canvas.width, this.canvas.height);
-  this.render(0);
 };
 
 Engine.prototype.demoEntities = function() {

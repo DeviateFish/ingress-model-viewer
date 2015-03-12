@@ -27,7 +27,8 @@
         "OrnamentFinishPointTexture": { "path": "scanner/ornaments/finish_point.png", "minFilter": "Linear", "magFilter": "Linear", "wrapS": "ClampToEdge", "wrapT": "ClampToEdge" },
         "OrnamentClusterTexture": { "path": "scanner/ornaments/cluster.png", "minFilter": "Linear", "magFilter": "Linear", "wrapS": "ClampToEdge", "wrapT": "ClampToEdge" },
         "OrnamentVolatileTexture": { "path": "scanner/ornaments/volatile.png", "minFilter": "Linear", "magFilter": "Linear", "wrapS": "ClampToEdge", "wrapT": "ClampToEdge" },
-        "RegionTexture": { "path": "scanner/region_tiling.png", "minFilter": "MipMapLinearLinear", "magFilter": "Linear", "wrapS": "Repeat", "wrapT": "Repeat" }
+        "RegionTexture": { "path": "scanner/region_tiling.png", "minFilter": "MipMapLinearLinear", "magFilter": "Linear", "wrapS": "Repeat", "wrapT": "Repeat" },
+        "WorldTexture": { "path": "/static/world.jpg", "minFilter": "Linear", "magFilter": "Linear", "wrapS": "ClampToEdge", "wrapT": "ClampToEdge", "static": true }
     },
     "mesh": {
         "PlayerMesh": { "path": "scanner/playerMesh.obj" },
@@ -317,6 +318,7 @@
         "sprite_channel_replacer": { "vertex": "shaders/sprite_channel_replacer.glsl.vert", "fragment": "shaders/sprite_channel_replacer.glsl.frag" },
         "sprite_map_region": { "vertex": "shaders/sprite_map_region.glsl.vert", "fragment": "shaders/sprite_map_region.glsl.frag" },
         "sprite_tinted_alpha_map": { "vertex": "shaders/sprite_tinted_alpha_map.glsl.vert", "fragment": "shaders/sprite_tinted_alpha_map.glsl.frag" },
-        "captured_region": { "vertex": "shaders/captured_region.glsl.vert", "fragment": "shaders/captured_region.glsl.frag" }
+        "captured_region": { "vertex": "shaders/captured_region.glsl.vert", "fragment": "shaders/captured_region.glsl.frag" },
+        "atmosphere": { "vertex": "/static/atmosphere.glsl.vert", "fragment": "/static/atmosphere.glsl.frag", "program": "Glowramp", "static": true }
     }
 }

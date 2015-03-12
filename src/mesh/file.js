@@ -34,14 +34,28 @@ var FileMesh = (function(){
     var jd = new JavaDeserializer(arraybuf);
     var stream = jd.getStream();
     var blocks = stream.getContents();
+
+    // should be Float32Array
     var values = blocks[0].contents.toArray();
+
+    // should be ArrayBuffer
     var attributeData = blocks[3].contents.toArray();
+
+    // array of VertexAttributes
     var attributes = parseAttributes(attributeData);
+
+    // should be Uint16Array
     var faces = blocks[1].contents.toArray();
+
+    // should be Uint16Array
     //var lines = blocks[2].contents.toArray();
+
     Mesh.call(this, gl, values, attributes, faces);
   };
   inherits(fileMesh, Mesh);
 
   return fileMesh;
 }());
+
+imv.Meshes = imv.Meshes || {};
+imv.Meshes.File = FileMesh;

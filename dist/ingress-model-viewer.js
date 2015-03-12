@@ -391,7 +391,8 @@ var constants = {
     Textured: 'textured',
     Glowramp: 'portal_scanner',
     Xm: 'xm',
-    ShieldEffect: 'shield'
+    ShieldEffect: 'shield',
+    Atmosphere: 'atmosphere'
   },
   Texture: {
     FlipCard: 'FlipCardTexture',
@@ -411,6 +412,7 @@ var constants = {
 };
 
 imv.Constants = constants;
+
 
 var inherits = function(a, b) {
   function C(){}
@@ -753,17 +755,131 @@ var FileMesh = (function(){
     var jd = new JavaDeserializer(arraybuf);
     var stream = jd.getStream();
     var blocks = stream.getContents();
+
+    // should be Float32Array
     var values = blocks[0].contents.toArray();
+
+    // should be ArrayBuffer
     var attributeData = blocks[3].contents.toArray();
+
+    // array of VertexAttributes
     var attributes = parseAttributes(attributeData);
+
+    // should be Uint16Array
     var faces = blocks[1].contents.toArray();
+
+    // should be Uint16Array
     //var lines = blocks[2].contents.toArray();
+
     Mesh.call(this, gl, values, attributes, faces);
   };
   inherits(fileMesh, Mesh);
 
   return fileMesh;
 }());
+
+imv.Meshes = imv.Meshes || {};
+imv.Meshes.File = FileMesh;
+
+
+var SphereMesh = (function(){
+
+  // part of doing away with the THREE.js dependency
+  // means giving up a lot of helper code for doing things
+  // like this.
+  //
+  // Needless to say, this borrows heavily from THREE.SphereGeometry
+  // https://github.com/mrdoob/three.js/blob/master/src/extras/geometries/SphereGeometry.js
+  var createSphere = function(radius, phiSlices, thetaSlices) {
+    var i, j, u, v, vec, v1, v2, v3, v4,
+        verticesRow, faces,
+        phi = Math.PI * 2,
+        theta = Math.PI,
+        // size is 8 for vec3 a_position + vec2 a_texCoord + vec3 a_normal
+        values = new Float32Array((phiSlices + 1) * (thetaSlices + 1) * 8),
+        faceArray = [],
+        vertices = [],
+        aIdx = 0,
+        attributes = [];
+    phiSlices = Math.max(3, phiSlices || 8);
+    thetaSlices = Math.max(2, thetaSlices || 6);
+
+    for(i = 0; i <= phiSlices; i++) {
+      verticesRow = [];
+      for(j = 0; j <= thetaSlices; j++)
+      {
+        u = j / phiSlices;
+        v = i / thetaSlices;
+        vec = vec3.fromValues(
+          -radius * Math.cos(u * phi) * Math.sin(v * theta),
+          radius * Math.cos(v * theta),
+          radius * Math.sin(u * phi) * Math.sin(v * theta)
+        );
+
+        values[aIdx * 8 + 0] = vec[0];
+        values[aIdx * 8 + 1] = vec[1];
+        values[aIdx * 8 + 2] = vec[2];
+        values[aIdx * 8 + 3] = u;
+        values[aIdx * 8 + 4] = v;
+        // normalized:
+        vec3.normalize(vec, vec);
+        values[aIdx * 8 + 5] = vec[0];
+        values[aIdx * 8 + 6] = vec[1];
+        values[aIdx * 8 + 7] = vec[2];
+
+        verticesRow.push(aIdx++);
+      }
+      vertices.push(verticesRow);
+    }
+
+    for(i = 0; i < phiSlices; i++) {
+      for(j = 0; j < thetaSlices; j++) {
+        v1 = vertices[i][j + 1];
+        v2 = vertices[i][j];
+        v3 = vertices[i + 1][j];
+        v4 = vertices[i + 1][j + 1];
+
+        if(Math.abs(values[v1 * 8 + 1]) === radius) {
+          faceArray.push.apply(faceArray, [v1, v3, v4]);
+          values[v1 * 8 + 3] = (values[v1 * 8 + 3] + values[v2 * 8 + 3]) / 2;
+        }
+        else if(Math.abs(values[v3 * 8 + 1]) === radius) {
+          faceArray.push.apply(faceArray, [v1, v2, v3]);
+          values[v3 * 8 + 3] = (values[v3 * 8 + 3] + values[v4 * 8 + 3]) / 2;
+        }
+        else {
+          faceArray.push.apply(faceArray, [v1, v2, v4]);
+          faceArray.push.apply(faceArray, [v2, v3, v4]);
+        }
+      }
+    }
+
+    faces = new Uint16Array(faceArray.length);
+    faceArray.forEach(function(v, i) {
+      faces[i] = v;
+    });
+    attributes.push(new VertexAttribute('a_position', 3));
+    attributes.push(new VertexAttribute('a_texCoord0', 2));
+    attributes.push(new VertexAttribute('a_normal', 3));
+    return {
+      values: values,
+      faces: faces,
+      attributes: attributes
+    };
+  };
+
+  var sphereMesh = function(gl, radius, vSlices, hSlices) {
+    var parsed = createSphere(radius, vSlices, hSlices);
+    Mesh.call(this, gl, parsed.values, parsed.attributes, parsed.faces);
+  };
+  inherits(sphereMesh, Mesh);
+
+  return sphereMesh;
+}());
+
+imv.Meshes = imv.Meshes || {};
+imv.Meshes.Sphere = SphereMesh;
+
 
 var Program = (function(){
 
@@ -987,6 +1103,7 @@ var Program = (function(){
 
 imv.Program = Program;
 
+
 var OpaqueProgram = (function(){
 
   var opaque = function(gl, vertex, fragment) {
@@ -1152,11 +1269,14 @@ var ModelDrawable = (function() {
     MeshDrawable.call(this, programName, meshName);
     this.viewProject = mat4.create();
     this.model = mat4.create();
+    this.local = mat4.create();
+    this.world = mat4.create();
   };
   inherits(modelDrawable, MeshDrawable);
 
   modelDrawable.prototype.updateMatrix = function() {
     var mvp = mat4.create();
+    mat4.multiply(this.model, this.world, this.local);
     mat4.multiply(mvp, this.viewProject, this.model);
     this.uniforms.u_modelViewProject = mvp;
   };
@@ -1176,6 +1296,7 @@ var ModelDrawable = (function() {
 
 imv.Drawables = imv.Drawables || {};
 imv.Drawables.Model = ModelDrawable;
+
 
 var TexturedDrawable = function(programName, meshName, textureName) {
   ModelDrawable.call(this, programName, meshName);
@@ -1487,6 +1608,38 @@ imv.Drawables.ShieldEffect = ShieldEffectDrawable;
 
 }());
 
+var AtmosphereDrawable = (function(){
+
+  // this program (atmosphere.glsl.vert and atmosphere.glsl.frag)
+  // is a modified version of the atmosphere program in
+  // https://github.com/dataarts/webgl-globe/blob/master/globe/globe.js
+  var PROGRAM = imv.Constants.Program.Atmosphere;
+
+  // this current expects a SphereMesh, but what that really
+  // means is that it's expecting a mesh that provides
+  // a_postion, a_texCoord0 and a_normal attributes.
+  var atmosphereDrawable = function(meshName, scaleFactor) {
+    ModelDrawable.call(this, PROGRAM, meshName);
+    this.uniforms.u_normalMatrix = mat3.create();
+    this.scaleFactor = scaleFactor || 1.1;
+    mat4.scale(this.local, this.local, [this.scaleFactor, this.scaleFactor, this.scaleFactor]);
+  };
+  inherits(atmosphereDrawable, ModelDrawable);
+
+  atmosphereDrawable.prototype.updateView = function(viewProject) {
+    ModelDrawable.prototype.updateView.call(this, viewProject);
+     var invert = mat4.invert(mat4.create(), viewProject),
+         transpose = mat4.transpose(mat4.create(), invert);
+    this.uniforms.u_normalMatrix = mat3.fromMat4(mat3.create(), transpose);
+  };
+
+  return atmosphereDrawable;
+}());
+
+imv.Drawables = imv.Drawables || {};
+imv.Drawables.Atmosphere = AtmosphereDrawable;
+
+
 var Entity = function() {
   this.drawables = {};
   this.transform = mat4.create();
@@ -1721,6 +1874,18 @@ var AssetManager = (function() {
     }
   };
 
+  assetManager.prototype.addTexture = function(name, texture) {
+    this.textures[name] = texture;
+  };
+
+  assetManager.prototype.addMesh = function(name, mesh) {
+    this.meshes[name] = mesh;
+  };
+
+  assetManager.prototype.addProgram = function(name, program) {
+    this.programs[name] = program;
+  };
+
   assetManager.prototype.handleTexture = function(idx, name, info, err, value) {
     if(err)
     {
@@ -1729,7 +1894,7 @@ var AssetManager = (function() {
       throw 'Could not load ' + name;
     }
 
-    this.textures[name] = new Texture(this._gl, info, value);
+    this.addTexture(name, new Texture(this._gl, info, value));
     this.queues.texture[idx] = 1;
     console.info('loaded texture ' + name);
     _isComplete.call(this);
@@ -1743,7 +1908,7 @@ var AssetManager = (function() {
       throw 'Could not load ' + name;
     }
 
-    this.meshes[name] = new FileMesh(this._gl, value);
+    this.addMesh(name, new FileMesh(this._gl, value));
     this.queues.mesh[idx] = 1;
     console.info('loaded mesh ' + name);
     _isComplete.call(this);
@@ -1762,7 +1927,7 @@ var AssetManager = (function() {
     {
       klass = imv.Programs[info.program];
     }
-    this.programs[name] = new klass(this._gl, vals[0], vals[1]);
+    this.addProgram(name, new klass(this._gl, vals[0], vals[1]));
     this.queues.program[idx] = 1;
     console.info('loaded program ' + name);
     _isComplete.call(this);
@@ -1790,7 +1955,7 @@ var AssetManager = (function() {
         this.textures[i] = null;
         asset = manifest.texture[i];
         this.loader.loadAsset(
-          this.path + asset.path,
+          (!asset.static ? this.path : '') + asset.path,
           'image',
           this.handleTexture.bind(this, this.queues.texture.length, i, asset)
         );
@@ -1804,7 +1969,7 @@ var AssetManager = (function() {
         this.meshes[i] = null;
         asset = manifest.mesh[i];
         this.loader.loadAsset(
-          this.path + asset.path,
+          (!asset.static ? this.path : '') + asset.path,
           'arraybuffer',
           this.handleMesh.bind(this, this.queues.mesh.length, i, asset)
         );
@@ -1818,7 +1983,7 @@ var AssetManager = (function() {
         this.programs[i] = null;
         asset = manifest.program[i];
         this.loader.loadAssetGroup(
-          [this.path + asset.vertex, this.path + asset.fragment],
+          [(!asset.static ? this.path : '') + asset.vertex, (!asset.static ? this.path : '') + asset.fragment],
           ['text', 'text'],
           this.handleProgram.bind(this, this.queues.program.length, i, asset)
         );
@@ -1841,6 +2006,7 @@ var AssetManager = (function() {
 }());
 
 imv.AssetManager = AssetManager;
+
 
 var Renderer = function(gl, manager) {
   GLBound.call(this, gl);
@@ -1942,6 +2108,7 @@ ObjectRenderer.prototype.updateTime = function(delta) {
 imv.Renderers = imv.Renderers || {};
 imv.Renderers.Object = ObjectRenderer;
 
+
 var PortalRenderer = function(gl, manager) {
   Renderer.call(this, gl, manager);
   this.portals = [];
@@ -2000,7 +2167,12 @@ var Engine = function(canvas, assets, enableSnapshots)
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   this.gl = gl;
   this.view = mat4.create();
-    mat4.lookAt(this.view, [0.0, 2.0, 5.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
+  mat4.lookAt(this.view, [0.0, 2.0, 5.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
+
+  // this should be in radians, not degrees.
+  this.hFoV = Math.PI / 4;
+
+  this.far = 100;
   this.project = mat4.create();
   this.assetManager = new AssetManager(this.gl, assets);
   this.objectRenderer = new ObjectRenderer(this.gl, this.assetManager);
@@ -2016,11 +2188,12 @@ Engine.prototype.resize = function(width, height)
   this.canvas.width = width;
   this.canvas.height = height;
   this.gl.viewport(0, 0, width, height);
-  mat4.perspective(this.project, 45, width / height, 0.1, 100);
-  this.objectRenderer.updateView(this.view, this.project);
+  this.updateView();
 };
 
 Engine.prototype.updateView = function() {
+  this.project = mat4.create();
+  mat4.perspective(this.project, this.hFoV, this.canvas.width / this.canvas.height, 0.1, this.far);
   this.objectRenderer.updateView(this.view, this.project);
 };
 
@@ -2030,11 +2203,6 @@ Engine.prototype.stop = function() {
   if(this.frame) {
     window.cancelAnimationFrame(this.frame);
   }
-};
-
-Engine.prototype.start = function() {
-  this.resize(this.canvas.width, this.canvas.height);
-  this.render(0);
 };
 
 Engine.prototype.demoEntities = function() {
@@ -2164,7 +2332,8 @@ Engine.prototype.preload = function(callback) {
 
 imv.Engine = Engine;
 
-  imv.VERSION = '0.12.0';
+
+  imv.VERSION = '0.13.0';
 
   root.IMV = imv;
 

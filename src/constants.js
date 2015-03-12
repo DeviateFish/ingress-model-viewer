@@ -340,7 +340,8 @@ var constants = {
     Textured: 'textured',
     Glowramp: 'portal_scanner',
     Xm: 'xm',
-    ShieldEffect: 'shield'
+    ShieldEffect: 'shield',
+    Atmosphere: 'atmosphere'
   },
   Texture: {
     FlipCard: 'FlipCardTexture',

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ingress Model Sandbox</title>
+    <script src="/bower_components/gl-matrix/dist/gl-matrix.js"></script>
+    <script src="/bower_components/java-deserializer/dist/java-deserializer.min.js"></script>
+    <script src="/bower_components/libtga/dist/libtga.min.js"></script>
+    <script src="../dist/ingress-model-viewer.js"></script>
+    <script src="https://rawgit.com/eligrey/FileSaver.js/master/FileSaver.min.js"></script>
+    <style>
+      html, body {
+        height: 100%;
+        width: 100%;
+        position: relative;
+        margin: 0;
+      }
+    </style>
+</head>
+<body>
+<canvas id="screen" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;"></canvas>
+<script type="text/javascript">
+  var canvas = document.getElementById('screen'), engine,
+      assets = {},
+      radius = 100,
+      artifactInfos = null;
+  canvas.width = document.body.offsetWidth;
+  canvas.height = document.body.offsetHeight;
+
+  var LatLngToWorld = function(drawable, lat, lng) {
+    var mat = mat4.create();
+    mat4.rotateY(mat, mat, lng * Math.PI / 180);
+    mat4.rotateZ(mat, mat, (lat - 90) * Math.PI / 180);
+    mat4.translate(mat, mat, [0, radius, 0]);
+    mat4.multiply(drawable.local, mat, drawable.local);
+  };
+
+  var addShardPortal = function(lat, lng, team, shards) {
+    var portal = new IMV.Drawables.World.Portal(),
+      shardDrawables = [];
+
+    shards.forEach(function(el) {
+      shardDrawables.push(new IMV.Drawables.Artifact.Shonin['Shonin'+el]());
+    });
+
+    shardDrawables.forEach(function(d) {
+      LatLngToWorld(d, lat , lng);
+      engine.objectRenderer.addDrawable(d);
+      d.onUpdate = rotate;
+    })
+    LatLngToWorld(portal, lat, lng);
+    portal.uniforms.u_baseColor = vec4.clone(IMV.Constants.teamColors[team]);
+    engine.objectRenderer.addDrawable(portal);
+    portal.onUpdate = rotate;
+  };
+
+  var addTargetPortal = function(lat, lng, team) {
+    var portal = new IMV.Drawables.World.Portal(),
+      target = new IMV.Drawables.World.ArtifactsTargetGlow();
+
+    LatLngToWorld(target, lat , lng);
+    target.uniforms.u_baseColor = vec4.clone(IMV.Constants.artifactGlowColors.Shonin.Target);
+    engine.objectRenderer.addDrawable(target);
+    target.onUpdate = rotate;
+
+    LatLngToWorld(portal, lat, lng);
+    portal.uniforms.u_baseColor = vec4.clone(IMV.Constants.teamColors[team]);
+    engine.objectRenderer.addDrawable(portal);
+    portal.onUpdate = rotate;
+  };
+
+  var init = function(assets) {
+    engine = new IMV.Engine(canvas, assets, true);
+    mat4.lookAt(engine.view, [radius * 3, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
+    engine.hFoV = Math.PI / 3;
+    engine.far = radius * 5;
+    engine.updateView();
+    engine.preload(function() {
+      var globe, atmosphere;
+
+      engine.assetManager.addMesh('world', new IMV.Meshes.Sphere(engine.gl, radius, 50, 50));
+
+      globe = new IMV.Drawables.Textured('textured', 'world', 'WorldTexture');
+      atmosphere = new IMV.Drawables.Atmosphere('world');
+
+      engine.objectRenderer.addDrawable(globe);
+      engine.objectRenderer.addDrawable(atmosphere);
+      globe.onUpdate = rotate;
+      //atmosphere.onUpdate = rotate;
+
+      if(artifactInfos) {
+        artifactInfos.targetInfos.forEach(function(obj) {
+          var arr = obj.portalInfo;
+          var team = obj.team;
+          addTargetPortal(arr[2] / 1E6, arr[3] / 1E6, team);
+        });
+        artifactInfos.fragmentInfos.forEach(function(obj) {
+          var arr = obj.portalInfo,
+              team = arr[1] === 'R' ? 'RESISTANCE' :
+                (arr[1] === 'E' ? 'ENLIGHTENED' : 'NEUTRAL');
+          addShardPortal(arr[2] / 1E6, arr[3] / 1E6, team, obj.fragments);
+        });
+      }
+      engine.render(0);
+      console.log('ready');
+    });
+  };
+
+  var rotate = function(delta) {
+    mat4.rotateY(this.world, this.world, delta / 5000);
+    this.updateMatrix();
+    return true;
+  };
+
+  IMV.Utilities.loadResource('/assets.json', 'text', function(err, val) {
+    if(err) {
+      throw err;
+    }
+    assets = JSON.parse(val);
+    if(assets) {
+      IMV.Utilities.loadResource('/snapshot.json', 'text', function(err, val) {
+        if(err) {
+          throw err;
+        }
+        artifactInfos = JSON.parse(val);
+        init(assets);
+        engine.draw(0);
+      });
+
+    }
+  });
+</script>
+</body>
+</html>

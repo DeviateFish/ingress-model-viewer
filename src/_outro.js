@@ -1,4 +1,4 @@
-  imv.VERSION = '0.13.0';
+  imv.VERSION = '0.14.0';
 
   root.IMV = imv;
 

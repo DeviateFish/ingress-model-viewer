@@ -4,11 +4,14 @@ var ModelDrawable = (function() {
     MeshDrawable.call(this, programName, meshName);
     this.viewProject = mat4.create();
     this.model = mat4.create();
+    this.local = mat4.create();
+    this.world = mat4.create();
   };
   inherits(modelDrawable, MeshDrawable);
 
   modelDrawable.prototype.updateMatrix = function() {
     var mvp = mat4.create();
+    mat4.multiply(this.model, this.world, this.local);
     mat4.multiply(mvp, this.viewProject, this.model);
     this.uniforms.u_modelViewProject = mvp;
   };

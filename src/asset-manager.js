@@ -56,6 +56,18 @@ var AssetManager = (function() {
     }
   };
 
+  assetManager.prototype.addTexture = function(name, texture) {
+    this.textures[name] = texture;
+  };
+
+  assetManager.prototype.addMesh = function(name, mesh) {
+    this.meshes[name] = mesh;
+  };
+
+  assetManager.prototype.addProgram = function(name, program) {
+    this.programs[name] = program;
+  };
+
   assetManager.prototype.handleTexture = function(idx, name, info, err, value) {
     if(err)
     {
@@ -64,7 +76,7 @@ var AssetManager = (function() {
       throw 'Could not load ' + name;
     }
 
-    this.textures[name] = new Texture(this._gl, info, value);
+    this.addTexture(name, new Texture(this._gl, info, value));
     this.queues.texture[idx] = 1;
     console.info('loaded texture ' + name);
     _isComplete.call(this);
@@ -78,7 +90,7 @@ var AssetManager = (function() {
       throw 'Could not load ' + name;
     }
 
-    this.meshes[name] = new FileMesh(this._gl, value);
+    this.addMesh(name, new FileMesh(this._gl, value));
     this.queues.mesh[idx] = 1;
     console.info('loaded mesh ' + name);
     _isComplete.call(this);
@@ -97,7 +109,7 @@ var AssetManager = (function() {
     {
       klass = imv.Programs[info.program];
     }
-    this.programs[name] = new klass(this._gl, vals[0], vals[1]);
+    this.addProgram(name, new klass(this._gl, vals[0], vals[1]));
     this.queues.program[idx] = 1;
     console.info('loaded program ' + name);
     _isComplete.call(this);
@@ -125,7 +137,7 @@ var AssetManager = (function() {
         this.textures[i] = null;
         asset = manifest.texture[i];
         this.loader.loadAsset(
-          this.path + asset.path,
+          (!asset.static ? this.path : '') + asset.path,
           'image',
           this.handleTexture.bind(this, this.queues.texture.length, i, asset)
         );
@@ -139,7 +151,7 @@ var AssetManager = (function() {
         this.meshes[i] = null;
         asset = manifest.mesh[i];
         this.loader.loadAsset(
-          this.path + asset.path,
+          (!asset.static ? this.path : '') + asset.path,
           'arraybuffer',
           this.handleMesh.bind(this, this.queues.mesh.length, i, asset)
         );
@@ -153,7 +165,7 @@ var AssetManager = (function() {
         this.programs[i] = null;
         asset = manifest.program[i];
         this.loader.loadAssetGroup(
-          [this.path + asset.vertex, this.path + asset.fragment],
+          [(!asset.static ? this.path : '') + asset.vertex, (!asset.static ? this.path : '') + asset.fragment],
           ['text', 'text'],
           this.handleProgram.bind(this, this.queues.program.length, i, asset)
         );
