@@ -34,38 +34,54 @@
     mat4.multiply(drawable.local, mat, drawable.local);
   };
 
+  var addRotatingDrawable = function(drawable, lat, lng) {
+    LatLngToWorld(drawable, lat, lng);
+    drawable.onUpdate = rotate;
+    engine.objectRenderer.addDrawable(drawable);
+  };
+
   var addShardPortal = function(lat, lng, team, shards) {
     var portal = new IMV.Drawables.World.Portal(),
+      green = new IMV.Drawables.World.ArtifactsGreenGlow(),
+      purple = new IMV.Drawables.World.ArtifactsPurpleGlow(),
       shardDrawables = [];
 
     shards.forEach(function(el) {
-      shardDrawables.push(new IMV.Drawables.Artifact.Shonin['Shonin'+el]());
+      var shard = new IMV.Drawables.Artifact.Shonin['Shonin'+el]();
+      addRotatingDrawable(shard, lat, lng);
     });
 
-    shardDrawables.forEach(function(d) {
-      LatLngToWorld(d, lat , lng);
-      engine.objectRenderer.addDrawable(d);
-      d.onUpdate = rotate;
-    })
-    LatLngToWorld(portal, lat, lng);
     portal.uniforms.u_baseColor = vec4.clone(IMV.Constants.teamColors[team]);
-    engine.objectRenderer.addDrawable(portal);
-    portal.onUpdate = rotate;
+    addRotatingDrawable(portal, lat, lng);
+
+    green.uniforms.u_baseColor = vec4.clone(IMV.Constants.teamColors[team]);
+    addRotatingDrawable(green, lat, lng);
+
+    purple.uniforms.u_baseColor = vec4.clone(IMV.Constants.artifactGlowColors.Shonin.Purple);
+    addRotatingDrawable(purple, lat, lng);
   };
 
   var addTargetPortal = function(lat, lng, team) {
     var portal = new IMV.Drawables.World.Portal(),
-      target = new IMV.Drawables.World.ArtifactsTargetGlow();
+      target = new IMV.Drawables.World.ArtifactsTargetGlow(),
+      green = new IMV.Drawables.World.ArtifactsGreenGlow(),
+      red = new IMV.Drawables.World.ArtifactsRedGlow(),
+      purple = new IMV.Drawables.World.ArtifactsPurpleGlow();
 
-    LatLngToWorld(target, lat , lng);
     target.uniforms.u_baseColor = vec4.clone(IMV.Constants.artifactGlowColors.Shonin.Target);
-    engine.objectRenderer.addDrawable(target);
-    target.onUpdate = rotate;
+    addRotatingDrawable(target, lat, lng);
 
-    LatLngToWorld(portal, lat, lng);
     portal.uniforms.u_baseColor = vec4.clone(IMV.Constants.teamColors[team]);
-    engine.objectRenderer.addDrawable(portal);
-    portal.onUpdate = rotate;
+    addRotatingDrawable(portal, lat, lng);
+
+    green.uniforms.u_baseColor = vec4.clone(IMV.Constants.teamColors[team]);
+    addRotatingDrawable(green, lat, lng);
+
+    red.uniforms.u_baseColor = vec4.clone(IMV.Constants.artifactGlowColors.Shonin.Red);
+    addRotatingDrawable(red, lat, lng);
+
+    purple.uniforms.u_baseColor = vec4.clone(IMV.Constants.artifactGlowColors.Shonin.Purple);
+    addRotatingDrawable(purple, lat, lng);
   };
 
   var init = function(assets) {
