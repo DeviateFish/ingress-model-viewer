@@ -1,4 +1,5 @@
-{
+[
+ {
    "targetInfos":[
       {
          "portalInfo":[
@@ -663,4 +664,5 @@
       }
    ],
    "artifactId":"shonin"
-}
+  }
+]

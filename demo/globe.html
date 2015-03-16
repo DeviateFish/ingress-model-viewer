@@ -104,12 +104,12 @@
       //atmosphere.onUpdate = rotate;
 
       if(artifactInfos) {
-        artifactInfos.targetInfos.forEach(function(obj) {
+        artifactInfos[0].targetInfos.forEach(function(obj) {
           var arr = obj.portalInfo;
           var team = obj.team;
           addTargetPortal(arr[2] / 1E6, arr[3] / 1E6, team);
         });
-        artifactInfos.fragmentInfos.forEach(function(obj) {
+        artifactInfos[0].fragmentInfos.forEach(function(obj) {
           var arr = obj.portalInfo,
               team = arr[1] === 'R' ? 'RESISTANCE' :
                 (arr[1] === 'E' ? 'ENLIGHTENED' : 'NEUTRAL');
