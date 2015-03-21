@@ -96,6 +96,16 @@ var AssetManager = (function() {
     _isComplete.call(this);
   };
 
+  assetManager.prototype.createProgram = function(name, info) {
+    var klass = Program;
+    if(info.program in imv.Programs)
+    {
+      klass = imv.Programs[info.program];
+    }
+    this.addProgram(name, new klass(this._gl, info.vertex, info.fragment));
+    console.log('created program ' + name);
+  };
+
   assetManager.prototype.handleProgram = function(idx, name, info, err, vals) {
     if(err)
     {
@@ -130,8 +140,7 @@ var AssetManager = (function() {
   assetManager.prototype.loadAll = function(callback) {
     var i, asset, manifest = this.manifest;
     this.complete = callback;
-    for(i in manifest.texture)
-    {
+    for(i in manifest.texture) {
       if(manifest.texture.hasOwnProperty(i) && !(i in this.textures))
       {
         this.textures[i] = null;
@@ -144,8 +153,7 @@ var AssetManager = (function() {
         this.queues.texture.push(0);
       }
     }
-    for(i in manifest.mesh)
-    {
+    for(i in manifest.mesh) {
       if(manifest.mesh.hasOwnProperty(i) && !(i in this.meshes))
       {
         this.meshes[i] = null;
@@ -158,8 +166,7 @@ var AssetManager = (function() {
         this.queues.mesh.push(0);
       }
     }
-    for(i in manifest.program)
-    {
+    for(i in manifest.program) {
       if(manifest.program.hasOwnProperty(i) && !(i in this.programs))
       {
         this.programs[i] = null;
@@ -170,6 +177,11 @@ var AssetManager = (function() {
           this.handleProgram.bind(this, this.queues.program.length, i, asset)
         );
         this.queues.program.push(0);
+      }
+    }
+    for(i in manifest.rawProgram) {
+      if(manifest.rawProgram.hasOwnProperty(i) && !(i in this.programs)) {
+        this.createProgram(i, manifest.rawProgram[i]);
       }
     }
 

@@ -8,16 +8,16 @@ var AtmosphereDrawable = (function(){
   // this current expects a SphereMesh, but what that really
   // means is that it's expecting a mesh that provides
   // a_postion, a_texCoord0 and a_normal attributes.
-  var atmosphereDrawable = function(meshName, scaleFactor) {
-    ModelDrawable.call(this, PROGRAM, meshName);
+  var atmosphereDrawable = function(mesh, scaleFactor) {
+    DynamicModelDrawable.call(this, PROGRAM, mesh);
     this.uniforms.u_normalMatrix = mat3.create();
     this.scaleFactor = scaleFactor || 1.1;
     mat4.scale(this.local, this.local, [this.scaleFactor, this.scaleFactor, this.scaleFactor]);
   };
-  inherits(atmosphereDrawable, ModelDrawable);
+  inherits(atmosphereDrawable, DynamicModelDrawable);
 
   atmosphereDrawable.prototype.updateView = function(viewProject) {
-    ModelDrawable.prototype.updateView.call(this, viewProject);
+    DynamicModelDrawable.prototype.updateView.call(this, viewProject);
      var invert = mat4.invert(mat4.create(), viewProject),
          transpose = mat4.transpose(mat4.create(), invert);
     this.uniforms.u_normalMatrix = mat3.fromMat4(mat3.create(), transpose);

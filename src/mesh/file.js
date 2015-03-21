@@ -50,9 +50,9 @@ var FileMesh = (function(){
     // should be Uint16Array
     //var lines = blocks[2].contents.toArray();
 
-    Mesh.call(this, gl, values, attributes, faces);
+    StaticMesh.call(this, gl, values, attributes, faces);
   };
-  inherits(fileMesh, Mesh);
+  inherits(fileMesh, StaticMesh);
 
   return fileMesh;
 }());

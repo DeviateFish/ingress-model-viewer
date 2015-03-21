@@ -1,4 +1,4 @@
-var PortalLinkMesh = (function(){
+var SphericalPortalLinkMesh = (function(){
 
   // TODO: Parameterize this concept a little better
   // this has potential to be a really flexible and powerful way of
@@ -106,10 +106,7 @@ var PortalLinkMesh = (function(){
     return ind;
   };
 
-  var linkmesh = function(gl) {
-    // make room for some max number links... though technically, since we
-    // have to rebind these every time we update them anyway, we could just
-    // grow this to whatever arbitrary limit, on the fly.
+  var linkmesh = function(gl, spherRadius) {
     var buf = new Float32Array(_size * _chunkSize * MAX_LINKS);
     var attributes = [];
     attributes.push(new VertexAttribute('a_position', 4));
@@ -138,4 +135,4 @@ var PortalLinkMesh = (function(){
 }());
 
 imv.Meshes = imv.Meshes || {};
-imv.Meshes.PortalLink = PortalLinkMesh;
+imv.Meshes.SphericalPortalLink = SphericalPortalLinkMesh;

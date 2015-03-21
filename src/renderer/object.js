@@ -16,7 +16,7 @@ ObjectRenderer.prototype.addDrawable = function(drawable) {
   }
   if(drawable.updateView)
   {
-    drawable.updateView(this.viewProject);
+    drawable.updateView(this.viewProject, this.view, this.project);
   }
   this.drawables.push(drawable);
 };

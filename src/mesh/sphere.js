@@ -86,9 +86,9 @@ var SphereMesh = (function(){
 
   var sphereMesh = function(gl, radius, vSlices, hSlices) {
     var parsed = createSphere(radius, vSlices, hSlices);
-    Mesh.call(this, gl, parsed.values, parsed.attributes, parsed.faces);
+    StaticMesh.call(this, gl, parsed.values, parsed.attributes, parsed.faces);
   };
-  inherits(sphereMesh, Mesh);
+  inherits(sphereMesh, StaticMesh);
 
   return sphereMesh;
 }());

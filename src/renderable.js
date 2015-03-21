@@ -1,0 +1,1 @@
+var Renderable = function(attributes)
