@@ -30,7 +30,7 @@
     var mat = mat4.create();
     mat4.rotateY(mat, mat, lng * Math.PI / 180);
     mat4.rotateZ(mat, mat, (lat - 90) * Math.PI / 180);
-    mat4.translate(mat, mat, [0, radius, 0]);
+    mat4.translate(mat, mat, [0, radius * 1.01, 0]);
     mat4.multiply(drawable.local, mat, drawable.local);
   };
 
@@ -91,19 +91,19 @@
     engine.far = radius * 5;
     engine.updateView();
     engine.preload(function() {
-      var globe, atmosphere;
+      var globe, atmosphere, world;
 
-      engine.assetManager.addMesh('world', new IMV.Meshes.Sphere(engine.gl, radius, 50, 50));
+      world = new IMV.Meshes.Sphere(engine.gl, radius, 50, 50);
 
-      globe = new IMV.Drawables.Textured('textured', 'world', 'WorldTexture');
-      atmosphere = new IMV.Drawables.Atmosphere('world');
+      globe = new IMV.Drawables.DynamicTextured('textured', world, 'WorldTexture');
+      //atmosphere = new IMV.Drawables.Atmosphere(world);
 
       engine.objectRenderer.addDrawable(globe);
-      engine.objectRenderer.addDrawable(atmosphere);
-      globe.onUpdate = rotate;
+      //engine.objectRenderer.addDrawable(atmosphere);
+      //globe.onUpdate = rotate;
       //atmosphere.onUpdate = rotate;
 
-      if(artifactInfos) {
+      /*if(artifactInfos) {
         artifactInfos[0].targetInfos.forEach(function(obj) {
           var arr = obj.portalInfo;
           var team = obj.team;
@@ -115,7 +115,7 @@
                 (arr[1] === 'E' ? 'ENLIGHTENED' : 'NEUTRAL');
           addShardPortal(arr[2] / 1E6, arr[3] / 1E6, team, obj.fragments);
         });
-      }
+      }*/
       engine.render(0);
       console.log('ready');
     });

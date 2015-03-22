@@ -1,9 +1,68 @@
-module.exports = function(grunt) {
+'use strict';
+var LIVERELOAD_PORT = 35729;
+var lrSnippet = require('connect-livereload')({port: LIVERELOAD_PORT});
+var mountFolder = function (connect, dir) {
+  return connect.static(require('path').resolve(dir));
+};
+
+// # Globbing
+// for performance reasons we're only matching one level down:
+// 'test/spec/{,*/}*.js'
+// use this if you want to match all subfolders:
+// 'test/spec/**/*.js'
+
+module.exports = function (grunt) {
+  // show elapsed time at the end
+  require('time-grunt')(grunt);
+  // load all grunt tasks
+  require('load-grunt-tasks')(grunt);
+
+  // configurable paths
+  var config = {
+    app: 'src',
+    dist: 'dist',
+    demo: 'demo'
+  };
 
   grunt.initConfig({
-
+    paths: config,
     pkg: grunt.file.readJSON('package.json'),
-
+    watch: {
+      options: {
+        nospawn: true,
+        livereload: { liveCSS: false }
+      },
+      livereload: {
+        options: {
+          livereload: true
+        },
+        files: [
+          './<%= paths.demo %>/*.html',
+          './dist/<%= pkg.name.replace(".js", "") %>.js'
+        ]
+      },
+      js: {
+        files: ['./<%= paths.src %>/**/*.js'],
+        tasks: ['build']
+      }
+    },
+    connect: {
+      options: {
+        port: 9000,
+        // change this to '0.0.0.0' to access the server from outside
+        hostname: '0.0.0.0'
+      },
+      livereload: {
+        options: {
+          middleware: function (connect) {
+            return [
+              lrSnippet,
+              mountFolder(connect, './'),
+            ];
+          }
+        }
+      }
+    },
     concat: {
       options: {
         separator: "\n\n",
@@ -17,12 +76,18 @@ module.exports = function(grunt) {
           'src/utils.js',
           'src/loader.js',
           'src/gl-bound.js',
+          'src/gl/gl-buffer.js',
+          'src/gl/gl-attribute.js',
+          'src/gl/gl-index.js',
           'src/texture.js',
           'src/vertex-attribute.js',
           'src/attribute-buffer.js',
           'src/mesh.js',
+          'src/mesh/static.js',
           'src/mesh/file.js',
           'src/mesh/sphere.js',
+          'src/mesh/portal-link.js',
+          'src/mesh/spherical-portal-link.js',
           'src/program.js',
           'src/program/opaque.js',
           'src/program/glowramp.js',
@@ -38,6 +103,10 @@ module.exports = function(grunt) {
           'src/drawable/resource.js',
           'src/drawable/world.js',
           'src/drawable/artifact.js',
+          'src/drawable/dynamic.js',
+          'src/drawable/dynamic-model.js',
+          'src/drawable/dynamic-textured.js',
+          'src/drawable/link.js',
           'src/drawable/atmosphere.js',
           'src/entity.js',
           'src/entity/inventory.js',
@@ -52,7 +121,6 @@ module.exports = function(grunt) {
         dest: 'dist/<%= pkg.name.replace(".js", "") %>.js'
       }
     },
-
     uglify: {
       options: {
         banner: '/*! <%= pkg.name.replace(".js", "") %> <%= grunt.template.today("dd-mm-yyyy") %> */\n',
@@ -64,17 +132,6 @@ module.exports = function(grunt) {
         }
       }
     },
-
-    qunit: {
-      all: {
-        options: {
-          urls: [
-            'http://localhost:8082/test/all.html'
-          ]
-        }
-      }
-    },
-
     jshint: {
       files: ['dist/ingress-model-viewer.js'],
       options: {
@@ -86,21 +143,23 @@ module.exports = function(grunt) {
         jshintrc: '.jshintrc'
       }
     },
-
-    watch: {
-      files: ['<%= jshint.files %>'],
-      tasks: ['concat', 'jshint', 'qunit']
-    }
-
   });
 
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-qunit');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.registerTask('serve', function (target) {
+    grunt.task.run([
+      'connect:livereload',
+      'watch'
+    ]);
+  });
 
-  grunt.registerTask('test', ['jshint', 'qunit']);
-  grunt.registerTask('default', ['concat', 'jshint', 'qunit', 'uglify']);
+  grunt.registerTask('build', [
+    'concat',
+    'jshint',
+    'uglify'
+  ]);
 
+  grunt.registerTask('default', [
+    'build',
+    'serve'
+  ]);
 };

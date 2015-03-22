@@ -1,668 +1,589 @@
 [
- {
-   "targetInfos":[
+  {
+    "artifactId": "shonin",
+    "fragmentInfos": [
       {
-         "portalInfo":[
-            "p",
-            "E",
-            38889472,
-            -77035214,
-            8,
-            100,
-            8,
-            "http://lh5.ggpht.com/YdKngS6WTwtuOB3wvXfAppI-b8aklzig35yMASe6V9hT6wkkOI1Mb_XxjmJapZdHRkMMmwIyu7eB7x5_aG6e",
-            "Washington Monument",
-            [
-
-            ],
-            true,
-            false
-         ],
-         "portalGuid":"c4e989d8720b4acc9e69088f01dd8e32.12",
-         "team":"RESISTANCE"
+        "fragments": [
+          29
+        ],
+        "portalGuid": "dec59a1b704043a28e27ea0b486e1c46.16",
+        "portalInfo": [
+          "p",
+          "E",
+          -20385309,
+          -43413989,
+          8,
+          100,
+          8,
+          "http://lh3.ggpht.com/wEp-0xacowSBkRuiB6jI4Vf3pV9Ty2lqQS7wGrefmh-tFasqRka5Igz4LEjyDKRhFnjVXMJRG1oi63yxdO4",
+          "Toca do Zé Pereira",
+          [],
+          false,
+          false
+        ]
       },
       {
-         "portalInfo":[
-            "p",
-            "R",
-            51908127,
-            4490565,
-            8,
-            100,
-            8,
-            "http://lh4.ggpht.com/GyYhuh8rvE_PrwBVD9RVlQbbCO_pW8vS775iD9cGUFEaXQtOCC7HC1EsBQGRWy9gcmNS5C8HcTGU0go2IDG3kQ",
-            "Docking Stones",
-            [
-
-            ],
-            false,
-            false
-         ],
-         "portalGuid":"ff29384d5ac84ee6ad1de257040e7a82.16",
-         "team":"ENLIGHTENED"
+        "fragments": [
+          10
+        ],
+        "portalGuid": "3a39468ccaec44cd9a921313c8640324.16",
+        "portalInfo": [
+          "p",
+          "E",
+          51514182,
+          8741698,
+          7,
+          100,
+          8,
+          "http://lh6.ggpht.com/WLavird61yXeiE5BQcntbylJnhnu4CKUexyUpIsqFyWQiLa7qUqOEsMgy-zjQlGZOl9xX7v7CTnnRBUDfR0F",
+          "Dorfbrunnen Fürstenberg",
+          [],
+          false,
+          false
+        ]
+      },
+      {
+        "fragments": [
+          7
+        ],
+        "portalGuid": "1a3db7166b1e422ea84c956c021cba2c.12",
+        "portalInfo": [
+          "p",
+          "E",
+          44290528,
+          -68908328,
+          7,
+          94,
+          8,
+          "http://lh4.ggpht.com/_jdpxq5GvrXRnK1ZrmIQPPi4-2arOyehNdGng2BkCq2_c8JIzMMY_Z7oTys89Th1Gqe5UcZJdITbfu1DD_s",
+          "Islesboro Post Office",
+          [],
+          false,
+          false
+        ]
+      },
+      {
+        "fragments": [
+          3
+        ],
+        "portalGuid": "d3c0d6b284be4e0a95dd8e971a6172ed.16",
+        "portalInfo": [
+          "p",
+          "E",
+          12509535,
+          124665123,
+          7,
+          85,
+          8,
+          "http://lh3.ggpht.com/OqpoFP5M4QB1iFzRxaJskZpGQDb-dDgb06e9IKYBBf7EjE8Sdqzs9S6UXvUSZIyueNap-ph_gCUQOSa-5dG-",
+          "UEP Gymatorium",
+          [],
+          false,
+          false
+        ]
+      },
+      {
+        "fragments": [
+          16
+        ],
+        "portalGuid": "3eba4e9a9ed546638670e09cce7575fa.16",
+        "portalInfo": [
+          "p",
+          "R",
+          8683485,
+          106606365,
+          1,
+          70,
+          1,
+          "http://lh5.ggpht.com/Kl0TreTh9kirgWxcV_9MlX--07nc-4g9meOGoUmaQOVl5Z1DUd2zICsYY4UbiC2FxDrvACy6BM9rOdw2zxY",
+          "Con Dao Center",
+          [],
+          false,
+          false
+        ]
+      },
+      {
+        "fragments": [
+          9
+        ],
+        "portalGuid": "3139ecdb711e4118be6f19c28a90bc24.16",
+        "portalInfo": [
+          "p",
+          "E",
+          32813694,
+          -79723188,
+          8,
+          100,
+          8,
+          "http://lh6.ggpht.com/Ara8atEL3ncYYxQAwpdTeUQ5k36E1bvlhiFrtzOCAbgKdBIGP5nHjdPjnTY_3jt9xYctlHeTgHqAOYB9AUpj",
+          "Links Golf Course",
+          [],
+          false,
+          false
+        ]
+      },
+      {
+        "fragments": [
+          17
+        ],
+        "portalGuid": "a72fb39044f5445eb7cc79e448bf6dbd.16",
+        "portalInfo": [
+          "p",
+          "E",
+          -18858589,
+          -41943114,
+          7,
+          91,
+          8,
+          "http://lh5.ggpht.com/yDplmZd2KB-gkG7NGF9oAQn7Mz2mXCswTIQmG5FAeQTAo7V4Ia3Vo-CDqmS6xAroPi2o3AoNPPoM9irK2i7J",
+          "Busto De Mário Rocha",
+          [],
+          true,
+          false
+        ]
+      },
+      {
+        "fragments": [
+          4
+        ],
+        "portalGuid": "8120f7290da84911bb38afc2c8ddd6a6.12",
+        "portalInfo": [
+          "p",
+          "E",
+          43606093,
+          1445832,
+          8,
+          100,
+          8,
+          "http://www.panoramio.com/photos/small/15095164.jpg",
+          "Statue sur la façade",
+          [],
+          false,
+          false
+        ]
+      },
+      {
+        "fragments": [
+          21
+        ],
+        "portalGuid": "869b657f43f14c3d9f1661c3e937f64b.16",
+        "portalInfo": [
+          "p",
+          "E",
+          60186225,
+          154672071,
+          8,
+          100,
+          8,
+          "http://lh5.ggpht.com/5rNafloOz-NHno_cH2ctRaZJQO7L8dOSEie_a3foi5UR8bqSAFSqx9r8oS5qH9YulzA_kRdgW8S5v-b5Zf1BkA",
+          "Неизвестный Памятник",
+          [],
+          false,
+          false
+        ]
+      },
+      {
+        "fragments": [
+          18
+        ],
+        "portalGuid": "17740109d8b64d1d9a8a195a9479f625.16",
+        "portalInfo": [
+          "p",
+          "E",
+          35606218,
+          -77148482,
+          2,
+          59,
+          3,
+          "http://lh4.ggpht.com/-phk2wcu1mUoGk8Bcgtc5BXdv6UgUatvRuw2r3klm7MWoqWcptmW73m40M6V3ln9c_V1q3xP-L1Sn19JsS90",
+          "Triumph Missionary Baptist Church",
+          [],
+          false,
+          false
+        ]
+      },
+      {
+        "fragments": [
+          28
+        ],
+        "portalGuid": "88728de32b5d414e8e58104b7e6096a7.16",
+        "portalInfo": [
+          "p",
+          "R",
+          57928599,
+          12534002,
+          8,
+          100,
+          8,
+          "http://lh4.ggpht.com/0mADtT7OHzvvDItee6lsNxeUPO4NZkFI2BF2kbeGdYaEVJNonUscMGXnUa0hvEkiBGlnwbv67W8lx0Ju9Vc",
+          "Färgeribron ",
+          [],
+          false,
+          false
+        ]
+      },
+      {
+        "fragments": [
+          6,
+          14,
+          30
+        ],
+        "portalGuid": "fc6ecc71601547e68675db47a2eeef02.16",
+        "portalInfo": [
+          "p",
+          "E",
+          58982171,
+          -2954962,
+          7,
+          70,
+          8,
+          "http://lh3.ggpht.com/miZvZp_SWQuNjSKAjAs2kX8w-5f7J7RN9sGD2VFZhGZoA5JJL3gYi_J5afARRLXETrwSGyixa0VawpOyNqI",
+          "The Willows",
+          [],
+          false,
+          false
+        ]
+      },
+      {
+        "fragments": [
+          13
+        ],
+        "portalGuid": "337c349bcc764d53b372eb57331e963b.16",
+        "portalInfo": [
+          "p",
+          "R",
+          67274181,
+          14434727,
+          8,
+          100,
+          8,
+          "http://lh3.ggpht.com/jkyoArNjtkpOlGKpos962dxD0cPpOffDdA9eq4mRUohG0dQzjLL4pxy3PIusB09YDNsqRiz0ThOk1GDORajxBQ",
+          "Bodin Church",
+          [],
+          false,
+          false
+        ]
+      },
+      {
+        "fragments": [
+          19
+        ],
+        "portalGuid": "2af95823820a4c538e11ecacdb5753a0.16",
+        "portalInfo": [
+          "p",
+          "R",
+          52187366,
+          4924358,
+          5,
+          26,
+          6,
+          "http://lh5.ggpht.com/VFyq7hOgKCXYBr7bdo8CBLZroLvh7xA2o0p4LnqcgdBpGDe7CptjkTjXRHpnKfNatNHoNTBB4QMJmPb-vyThLw",
+          "Donkereindse Bos",
+          [],
+          false,
+          false
+        ]
+      },
+      {
+        "fragments": [
+          22
+        ],
+        "portalGuid": "10a4faa19cb048a1bb907e5a2f2ef287.16",
+        "portalInfo": [
+          "p",
+          "E",
+          26165264,
+          -97173779,
+          7,
+          100,
+          8,
+          "http://lh5.ggpht.com/IkTSzDnxgCc3w_H4bBgs3R7MF9-czfsU9QNO0EyNq2UNIpodV7RBUGDIIpXe1K7uHjEvuyWDc-g-TP0oiA",
+          "Edwin King Atwood Park",
+          [],
+          false,
+          false
+        ]
+      },
+      {
+        "fragments": [
+          11
+        ],
+        "portalGuid": "f15ac175737548e0b5bfe34ceab63841.16",
+        "portalInfo": [
+          "p",
+          "R",
+          19084672,
+          -155773900,
+          6,
+          57,
+          7,
+          "http://lh5.ggpht.com/Y3wpBhNsBJwM7N9COJted8luAdEU9hQgTttAujY9ocPWa5wAKLyVgkmbDxaK4_KPGZENsCcu2rn1R31O6pR1",
+          "Ocean View Post Office",
+          [],
+          false,
+          false
+        ]
+      },
+      {
+        "fragments": [
+          24
+        ],
+        "portalGuid": "65683f88bf9c42c1a7fe694f06affdf6.16",
+        "portalInfo": [
+          "p",
+          "R",
+          62430558,
+          -114416499,
+          7,
+          100,
+          8,
+          "http://lh3.ggpht.com/zmHVms-IGDeZY-hYDwyRBz_-ofqh7HK4goKtnBud6VkqP11immTkcmlMhegaWTUa57LDZ2OGjQYtbeNyciSv",
+          "Yk Guild Of Arts And Crafts",
+          [],
+          true,
+          true
+        ]
+      },
+      {
+        "fragments": [
+          20
+        ],
+        "portalGuid": "27f078a0f85e4302a69d4cc3bf556f58.16",
+        "portalInfo": [
+          "p",
+          "R",
+          40785290,
+          -111978587,
+          7,
+          100,
+          8,
+          "http://lh5.ggpht.com/SmTMmSANulkDt5c8kdK3ZHPiL6alODwePJYbUwOJwrY0iezVOzZ5w4HcVdULXdMjO99SQnAsFrt7LJZn7FOG",
+          "Airport Art Gallery",
+          [],
+          true,
+          true
+        ]
+      },
+      {
+        "fragments": [
+          25,
+          31
+        ],
+        "portalGuid": "b9a01c59cff946328587e470445e449c.16",
+        "portalInfo": [
+          "p",
+          "R",
+          48457803,
+          -89196109,
+          7,
+          85,
+          8,
+          "http://lh6.ggpht.com/mpKDPkWhra4awWH61P0qTWCUYOrFXZUuUpGi-d1Cyxf4L7h3Be6jQe2D0d-YHmZaaKM7vTighWaxWPFC_Ug",
+          "Western Rex Cedar Plaque",
+          [],
+          false,
+          false
+        ]
+      },
+      {
+        "fragments": [
+          26
+        ],
+        "portalGuid": "16879935c00c4c508f04fcc4b1bc42cf.16",
+        "portalInfo": [
+          "p",
+          "E",
+          -20366056,
+          57371620,
+          7,
+          100,
+          8,
+          "http://lh4.ggpht.com/0g3FXylEVVKEZA4iOcr7X7GwF7GH8zV_esrUPsVMDFIDgh4cFLXZ77_KZmXwnZBIVOZ7U45k1LC5lhDnQyc",
+          "海豚湾",
+          [],
+          false,
+          false
+        ]
+      },
+      {
+        "fragments": [
+          1
+        ],
+        "portalGuid": "fbeab82ff2264385b8daeb110e776bea.16",
+        "portalInfo": [
+          "p",
+          "R",
+          52131302,
+          5017030,
+          8,
+          99,
+          8,
+          "http://lh6.ggpht.com/MRXf6v2mzy-WCVu38IocIcfuBYlVmSwRjNCoxod4tsm90y4MPPIaVu0OG7KgMUrMHWbsQQF32x6PEQ4EUlo",
+          "Bso Knetterhonk Mural 1",
+          [],
+          false,
+          false
+        ]
+      },
+      {
+        "fragments": [
+          8
+        ],
+        "portalGuid": "5f078dbc0fde4f7fa140a1123e4ff31f.16",
+        "portalInfo": [
+          "p",
+          "R",
+          64008947,
+          -22561797,
+          7,
+          64,
+          8,
+          "http://lh5.ggpht.com/LIXg-O7TNbPl9VMurORwjm4hEzAeSgsZtu_tKjayt6md3x-mOq9yNhiC1f3BRXBmOE5uMQIt4ZsfvmS2Hhk",
+          "Casino",
+          [],
+          false,
+          false
+        ]
+      },
+      {
+        "fragments": [
+          2
+        ],
+        "portalGuid": "06ddb1432f584f78ac10d359ad1aaf34.16",
+        "portalInfo": [
+          "p",
+          "R",
+          -16429308,
+          -71524696,
+          6,
+          100,
+          8,
+          "http://lh5.ggpht.com/B2X1LKdzjx6EVLISEollLghyQbkzrZo8sUzSkJOeSAO5MVdCmGukxdrkQHXMNnAs8Prm6StWtcjvhR9uRBGY",
+          "Pilar Centro",
+          [],
+          false,
+          false
+        ]
+      },
+      {
+        "fragments": [
+          15,
+          23
+        ],
+        "portalGuid": "c4e989d8720b4acc9e69088f01dd8e32.12",
+        "portalInfo": [
+          "p",
+          "E",
+          38889472,
+          -77035214,
+          1,
+          100,
+          3,
+          "http://lh5.ggpht.com/YdKngS6WTwtuOB3wvXfAppI-b8aklzig35yMASe6V9hT6wkkOI1Mb_XxjmJapZdHRkMMmwIyu7eB7x5_aG6e",
+          "Washington Monument",
+          [],
+          true,
+          false
+        ]
+      },
+      {
+        "fragments": [
+          5
+        ],
+        "portalGuid": "b8d56ea2c60d4d42959524c40ff15eae.16",
+        "portalInfo": [
+          "p",
+          "R",
+          8689183,
+          106607604,
+          1,
+          85,
+          1,
+          "http://lh6.ggpht.com/Z3l8hmTXU9IIhlcTbfikLdp2EHcs9p3TAE7CBFc8qMOgJql01hNr8X653GY8RnCIAaPXg1kl-m4ekIo4F-06jg",
+          "Prison Livestock Building ",
+          [],
+          false,
+          false
+        ]
+      },
+      {
+        "fragments": [
+          12
+        ],
+        "portalGuid": "e305ce0a3a3b43dc943f90caabf5a621.16",
+        "portalInfo": [
+          "p",
+          "E",
+          46129814,
+          -74589455,
+          7,
+          100,
+          8,
+          "http://lh4.ggpht.com/5-GkWZutfsaUnFHeoChQX7kqs7_08kzFy8qR9wpbuzHwRnMOlzsnxavsBUO2Lpd4QgltNq2yCTZljPeLP-a8Xw",
+          "Boat Metal Sculpture",
+          [],
+          false,
+          false
+        ]
+      },
+      {
+        "fragments": [
+          27
+        ],
+        "portalGuid": "8bbe8dd64cf24f15a61a8a20dd37b7e2.16",
+        "portalInfo": [
+          "p",
+          "N",
+          19408503,
+          -99076248,
+          1,
+          0,
+          0,
+          "http://lh5.ggpht.com/5xxS_gxsmT_mxnkp3hm9jg2RNHsyUu4NMjWQnqjrJ7wqV2KCFl7QZvfv8MArH6LXmSqwhnuaY7WguShpYVLb",
+          "Virgen de Guadalupe",
+          [],
+          false,
+          false
+        ]
       }
-   ],
-   "fragmentInfos":[
+    ],
+    "targetInfos": [
       {
-         "portalInfo":[
-            "p",
-            "R",
-            -16402629,
-            -71534812,
-            5,
-            86,
-            8,
-            "http://lh6.ggpht.com/topgQq9aDILGkyu_iQyFfB7UkdwQsFf6CcDlF_DqvYtqAVSjiwIr7iVN662LYWcbF1Mqctt_gcTnd0utoq87fg",
-            "mercado De San Camilo",
-            [
-
-            ],
-            false,
-            false
-         ],
-         "fragments":[
-            2
-         ],
-         "portalGuid":"31097bdcec5c41e39791f7d88e05d128.16"
+        "portalGuid": "ff29384d5ac84ee6ad1de257040e7a82.16",
+        "portalInfo": [
+          "p",
+          "R",
+          51908127,
+          4490565,
+          3,
+          100,
+          5,
+          "http://lh4.ggpht.com/GyYhuh8rvE_PrwBVD9RVlQbbCO_pW8vS775iD9cGUFEaXQtOCC7HC1EsBQGRWy9gcmNS5C8HcTGU0go2IDG3kQ",
+          "Docking Stones",
+          [],
+          false,
+          false
+        ],
+        "team": "ENLIGHTENED"
       },
       {
-         "portalInfo":[
-            "p",
-            "E",
-            -20385309,
-            -43413989,
-            8,
-            100,
-            8,
-            "http://lh3.ggpht.com/wEp-0xacowSBkRuiB6jI4Vf3pV9Ty2lqQS7wGrefmh-tFasqRka5Igz4LEjyDKRhFnjVXMJRG1oi63yxdO4",
-            "Toca do Zé Pereira",
-            [
-
-            ],
-            false,
-            false
-         ],
-         "fragments":[
-            17
-         ],
-         "portalGuid":"dec59a1b704043a28e27ea0b486e1c46.16"
-      },
-      {
-         "portalInfo":[
-            "p",
-            "E",
-            70075717,
-            29747673,
-            5,
-            100,
-            8,
-            "http://lh4.ggpht.com/fzLQAyLMfWTrxC-icIwMQPAc8RPocvwZrWRMlLDNH5-Cns9ROp-NLhcrxSu91PRczkc1KbLsAEPHpy_2ucUe",
-            "Elvebåtstaker",
-            [
-
-            ],
-            false,
-            false
-         ],
-         "fragments":[
-            13
-         ],
-         "portalGuid":"5d558bebfaf14c29a1bc0280ff8e5cd5.16"
-      },
-      {
-         "portalInfo":[
-            "p",
-            "E",
-            12508538,
-            124663857,
-            7,
-            100,
-            8,
-            "http://lh4.ggpht.com/OqzfgVUoZspw6fd0HNbpWXfQ9pazft7G2XozYtQNR50bba7nZ7JrkZ90rjpskfuRAb4CvLl-ey445_BjfcmV",
-            "UEP College Of Argiculture, Fisheries And Natural Resources",
-            [
-
-            ],
-            false,
-            false
-         ],
-         "fragments":[
-            3
-         ],
-         "portalGuid":"90b8d497830547cf98409e8741608eee.16"
-      },
-      {
-         "portalInfo":[
-            "p",
-            "E",
-            -18856295,
-            -41939735,
-            7,
-            100,
-            8,
-            "http://lh5.ggpht.com/8_39sOj2usVo_lm7r7BPD-KtDmc7DHFYaPpoGoycG68Bgr343FOpMB1H4ebP8Q5MmxPDzN3-QIYZ-ZVk4FBjjuZMMj6VNMNGf82wLH8bJVT7EXo",
-            "Catedral GV",
-            [
-
-            ],
-            false,
-            false
-         ],
-         "fragments":[
-            29
-         ],
-         "portalGuid":"13501349a77543c9830dc7677c37dd47.11"
-      },
-      {
-         "portalInfo":[
-            "p",
-            "E",
-            62211657,
-            -6709275,
-            7,
-            100,
-            8,
-            "http://lh4.ggpht.com/ccW3Kpcl4kw4B-ti_k5wH8pglwckUwQGLRliAm2-F2bQqQYNRJsqg1NBu_UNvjxujhZ_kfPHh0cNfxoZJKkVQg",
-            "Leirvíkar kirkja",
-            [
-
-            ],
-            false,
-            false
-         ],
-         "fragments":[
-            14,
-            30
-         ],
-         "portalGuid":"e2c7518dd85b44bebe047dec9936dc81.16"
-      },
-      {
-         "portalInfo":[
-            "p",
-            "R",
-            64013249,
-            -22183201,
-            7,
-            100,
-            8,
-            "http://lh3.ggpht.com/pbAT0yZ8A9KKccZoTKNNQ_-luUEkWUykCG4w2cPa3MYJ_Ym2ZpJZKjNMqHvHd6BJT6WbPZru4TlITV6xTGw3",
-            "Kúagerði",
-            [
-
-            ],
-            true,
-            false
-         ],
-         "fragments":[
-            8
-         ],
-         "portalGuid":"b8229cb5c621410ea11113fc9855226c.16"
-      },
-      {
-         "portalInfo":[
-            "p",
-            "E",
-            32813694,
-            -79723188,
-            7,
-            100,
-            8,
-            "http://lh6.ggpht.com/Ara8atEL3ncYYxQAwpdTeUQ5k36E1bvlhiFrtzOCAbgKdBIGP5nHjdPjnTY_3jt9xYctlHeTgHqAOYB9AUpj",
-            "Links Golf Course",
-            [
-
-            ],
-            false,
-            false
-         ],
-         "fragments":[
-            9
-         ],
-         "portalGuid":"3139ecdb711e4118be6f19c28a90bc24.16"
-      },
-      {
-         "portalInfo":[
-            "p",
-            "R",
-            41543155,
-            -70605066,
-            7,
-            100,
-            8,
-            "http://lh5.ggpht.com/OejYfL6gjuRxo4m89vOF8GSvkFgtVfKqC236oS4CsYye0lU-1R7TRD1HWg1ouAtEFjgg5I8ULi3Js5LVWVs6cw",
-            "Falmouth Yacht Club",
-            [
-
-            ],
-            false,
-            false
-         ],
-         "fragments":[
-            7
-         ],
-         "portalGuid":"22d20a43418e453e9569b101afc3f362.16"
-      },
-      {
-         "portalInfo":[
-            "p",
-            "R",
-            54363294,
-            13084065,
-            8,
-            100,
-            8,
-            "http://lh6.ggpht.com/6zSy7mnP5IwQvo0pKCPGEzYabUbYY5UtzIevWA7hj__-95ki0gRbsRcz9VFMhklT6UyKEWGwiAcpv7dOzsnmDA",
-            "Ankerpoint MTS",
-            [
-
-            ],
-            false,
-            false
-         ],
-         "fragments":[
-            10
-         ],
-         "portalGuid":"fb899d34d8234ad29afc7f4e3fe79ec5.16"
-      },
-      {
-         "portalInfo":[
-            "p",
-            "E",
-            57262683,
-            13830563,
-            7,
-            99,
-            8,
-            "http://www.panoramio.com/photos/small/56568826.jpg",
-            "High Chaparral, Småland, Sveri",
-            [
-
-            ],
-            false,
-            false
-         ],
-         "fragments":[
-            28
-         ],
-         "portalGuid":"d61a43e0d29a48a09d50d56e90c8e9f1.12"
-      },
-      {
-         "portalInfo":[
-            "p",
-            "R",
-            28658871,
-            -17914060,
-            8,
-            100,
-            8,
-            "http://lh4.ggpht.com/zIuErSOX_15i8iFtgLyfqcE_sF6uohZFio71e4EpBi017BNHKyUDUHJMiOo16Aiko_t1O7vwVsp_SmKPfxPs",
-            "Reloj Los Llanos De Aridane",
-            [
-
-            ],
-            false,
-            false
-         ],
-         "fragments":[
-            15,
-            23
-         ],
-         "portalGuid":"ae80825c0a524ff5a5986f424ff13e50.16"
-      },
-      {
-         "portalInfo":[
-            "p",
-            "R",
-            44848274,
-            -74299707,
-            7,
-            100,
-            8,
-            "http://lh6.ggpht.com/oUSFDrMn-gQshZv1NkBM-Fj7K-TXog2hjkQnj2N6mhvvd_5FJcA6iGKoqDSQOe0bEMy7cFNOVOt5hwdXrJ2x6Q",
-            "St. Joseph's Church",
-            [
-
-            ],
-            false,
-            false
-         ],
-         "fragments":[
-            12
-         ],
-         "portalGuid":"710be9e109c64bad8ee0dd452035028a.16"
-      },
-      {
-         "portalInfo":[
-            "p",
-            "N",
-            8695715,
-            106617247,
-            1,
-            0,
-            0,
-            "http://lh5.ggpht.com/b94nhWdPoviLmctDnGoWaCSu2iKb7ldTeDy1ObNhUQog6tQmleFWwo7zz5YgXV4bKSOtWilh_A2uVqaxBQM",
-            "Mystery Gate",
-            [
-
-            ],
-            false,
-            false
-         ],
-         "fragments":[
-            16
-         ],
-         "portalGuid":"fae075bba0d84fdf86cf20da4265cb1b.16"
-      },
-      {
-         "portalInfo":[
-            "p",
-            "R",
-            21204961,
-            72840597,
-            8,
-            100,
-            8,
-            "http://lh5.ggpht.com/XTZ0qaQBnWFJuo8Ml_JU5Nd2im-BsHkbeKoF7I0hInB-w37gSi6dqKWaHD1X37_lE4ephL4rbdbJS6HQ3hCVUAP6GNTUaBYrd8Cme1y3EukrVYxIvQ",
-            "Surat Station",
-            [
-
-            ],
-            false,
-            false
-         ],
-         "fragments":[
-            5
-         ],
-         "portalGuid":"4c3a38b1b88f46e98370f110f14a3be0.16"
-      },
-      {
-         "portalInfo":[
-            "p",
-            "E",
-            18476915,
-            -70009526,
-            1,
-            49,
-            1,
-            "http://lh3.ggpht.com/jvkbNNxJmVbH260dwOpkY27V_WTKRLPHsMnN6oMMGeJftuBYnZ50JZJwPMzZ4aphQjcEjA89M6j82m2IGDBhwA",
-            "New Tabernacle Church Manoguayabo",
-            [
-
-            ],
-            false,
-            false
-         ],
-         "fragments":[
-            22
-         ],
-         "portalGuid":"eba14b91c9164a6cb5635eb93dfc2ce3.16"
-      },
-      {
-         "portalInfo":[
-            "p",
-            "E",
-            -37191880,
-            142607883,
-            7,
-            100,
-            8,
-            "http://lh3.ggpht.com/pSKn1RmMnH-piDz5pNCqPtODIwqv4-PT0FnCwF3gyvJHpWn2CfVM1h7tIdHmhSCyEW6EioWNrnSsXtjs3hzp",
-            "Pomonal Community Church",
-            [
-
-            ],
-            false,
-            false
-         ],
-         "fragments":[
-            24
-         ],
-         "portalGuid":"923416bc568c4abeb9c5239923460623.16"
-      },
-      {
-         "portalInfo":[
-            "p",
-            "R",
-            36436796,
-            -76693384,
-            7,
-            100,
-            8,
-            "http://lh5.ggpht.com/sasARUiE0ZNwMfr8Oh4NY72LL2rWz9FPjFxIhp9zBIFuB5A-ZXcWiApm8XfnZ6Rzu3h6tjEW3Er27lwK1VPm",
-            "Lassiter Trail",
-            [
-
-            ],
-            false,
-            false
-         ],
-         "fragments":[
-            18
-         ],
-         "portalGuid":"87c29c6b81744427bd46f46b116749fa.16"
-      },
-      {
-         "portalInfo":[
-            "p",
-            "R",
-            19362053,
-            -99287994,
-            7,
-            100,
-            8,
-            "http://lh5.ggpht.com/K1w12aIFhI9aPV188e2HEP52TS84y4etzBz_9srI8ge7EKG35TMWxbh6sa-YPlNRoZrPhj-wd9DBYTivn4Q",
-            "Altar a La Virgen En La Base De Combis a Santa Rosa",
-            [
-
-            ],
-            false,
-            false
-         ],
-         "fragments":[
-            27
-         ],
-         "portalGuid":"52e2f50117c74ba6a31c2f702ee8718a.16"
-      },
-      {
-         "portalInfo":[
-            "p",
-            "N",
-            52442127,
-            5761549,
-            1,
-            0,
-            0,
-            "http://lh4.ggpht.com/ZOCRWWmaFPfY-JrcbSS-X7q6W6fac_NzFUOodqBRB78ab0aZ_lLH-QAsD0as13vWWFzz58FanKrN8wKu1Hwqbg",
-            "Skydiver - Walibi Holland",
-            [
-
-            ],
-            false,
-            false
-         ],
-         "fragments":[
-            19
-         ],
-         "portalGuid":"6052989149394f3bb02cea518c637b68.16"
-      },
-      {
-         "portalInfo":[
-            "p",
-            "R",
-            58978493,
-            -2945471,
-            7,
-            100,
-            8,
-            "http://lh5.ggpht.com/elMS-PzHB2JSKa4vv04exfZMgTkqc7aa13LQuSrgINtmElzMEgTNVL1M6I4JrOFkHLgeLTHbkvZKTA9cVH2Q",
-            "Orkney Theatre",
-            [
-
-            ],
-            false,
-            false
-         ],
-         "fragments":[
-            6
-         ],
-         "portalGuid":"ac98402b70db48938acd9ce7bcbb241e.16"
-      },
-      {
-         "portalInfo":[
-            "p",
-            "R",
-            43605803,
-            1428892,
-            8,
-            100,
-            8,
-            "http://lh5.ggpht.com/0ypGtiHtYbTSvpIjyHmtONz5flTyWlU7rDuOG4vCi8o6HYxLfPqoPuk4w8K32suAc335T_OlnTO_Sb15lamd",
-            "Maison De Valverde",
-            [
-
-            ],
-            false,
-            false
-         ],
-         "fragments":[
-            4
-         ],
-         "portalGuid":"d5cc3cb64c1d4dd4906afe7e61e62468.16"
-      },
-      {
-         "portalInfo":[
-            "p",
-            "R",
-            35370619,
-            133539371,
-            7,
-            100,
-            8,
-            "http://lh5.ggpht.com/kTMpkOug6Fd2iL1GB9USfd4FCQdohKlTa7RerO0s4sAX3l2ftSi75oMLH-hv80V2yg7UXIHpQ1Y_BVmIJ4j0",
-            "大山三角点",
-            [
-
-            ],
-            false,
-            false
-         ],
-         "fragments":[
-            21
-         ],
-         "portalGuid":"cc4302e6f81f4a29b12ea80a3659d081.16"
-      },
-      {
-         "portalInfo":[
-            "p",
-            "E",
-            35759638,
-            140069020,
-            8,
-            100,
-            8,
-            "http://lh5.ggpht.com/J0vTaqLu0eqe2kRm-sJqvIokMFW5PXuIC6vcXE9DgQS-QIU4LB5_GKFtpOvbq-Isc_ZhOxjJqsmzgFiYemNz",
-            "Lawson ローソン 船橋豊富町",
-            [
-
-            ],
-            false,
-            false
-         ],
-         "fragments":[
-            11
-         ],
-         "portalGuid":"5a10f691c41d4b10a88ee2cd1894cc8d.16"
-      },
-      {
-         "portalInfo":[
-            "p",
-            "R",
-            41734887,
-            -92719062,
-            8,
-            100,
-            8,
-            "http://lh5.ggpht.com/OuTfBJahD57ja3i5GGASAldvvAUyfND6u9QT1ePLMOd4KHWEnv54MzUr7ATIgcSzDWyjN4iMXY9jKpk4Tuaa",
-            "Grinnell Community Garden",
-            [
-
-            ],
-            false,
-            false
-         ],
-         "fragments":[
-            25,
-            31
-         ],
-         "portalGuid":"8a40a1d309a14940b66135fb2b241796.16"
-      },
-      {
-         "portalInfo":[
-            "p",
-            "E",
-            -20366056,
-            57371620,
-            7,
-            70,
-            8,
-            "http://lh4.ggpht.com/0g3FXylEVVKEZA4iOcr7X7GwF7GH8zV_esrUPsVMDFIDgh4cFLXZ77_KZmXwnZBIVOZ7U45k1LC5lhDnQyc",
-            "海豚湾",
-            [
-
-            ],
-            false,
-            false
-         ],
-         "fragments":[
-            26
-         ],
-         "portalGuid":"16879935c00c4c508f04fcc4b1bc42cf.16"
-      },
-      {
-         "portalInfo":[
-            "p",
-            "R",
-            37111915,
-            -114492767,
-            8,
-            100,
-            8,
-            "",
-            "Carp Post Office",
-            [
-
-            ],
-            false,
-            false
-         ],
-         "fragments":[
-            20
-         ],
-         "portalGuid":"425955d65dd04cf4a8ae6f63ca4f532e.12"
-      },
-      {
-         "portalInfo":[
-            "p",
-            "R",
-            52582764,
-            5748460,
-            4,
-            100,
-            7,
-            "http://lh4.ggpht.com/tSxLRMySC2HDjgJisiJOTseOuFMrH89pXw5mDu5bypHf3hcPVwihTStEr02xqWwo_Ko-A3_qY6Tme0bs0CTI",
-            "Figuren Dijk",
-            [
-
-            ],
-            false,
-            false
-         ],
-         "fragments":[
-            1
-         ],
-         "portalGuid":"8718027d0f664224bd1e9891b00a6590.16"
+        "portalGuid": "c4e989d8720b4acc9e69088f01dd8e32.12",
+        "portalInfo": [
+          "p",
+          "E",
+          38889472,
+          -77035214,
+          1,
+          100,
+          3,
+          "http://lh5.ggpht.com/YdKngS6WTwtuOB3wvXfAppI-b8aklzig35yMASe6V9hT6wkkOI1Mb_XxjmJapZdHRkMMmwIyu7eB7x5_aG6e",
+          "Washington Monument",
+          [],
+          true,
+          false
+        ],
+        "team": "RESISTANCE"
       }
-   ],
-   "artifactId":"shonin"
+    ]
   }
 ]

@@ -22,3 +22,6 @@ var DynamicDrawable = (function() {
 
   return dynamic;
 }());
+
+imv.Drawables = imv.Drawables || {};
+imv.Drawables.Dynamic = DynamicDrawable;

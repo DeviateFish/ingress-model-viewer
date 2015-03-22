@@ -13,7 +13,7 @@ var Engine = function(canvas, assets, enableSnapshots)
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   this.gl = gl;
   this.view = mat4.create();
-  mat4.lookAt(this.view, [0.0, 2.0, 5.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
+  mat4.lookAt(this.view, [0.0, 20.0, 25.0], [0.0, 10.0, 0.0], [0.0, 1.0, 0.0]);
 
   // this should be in radians, not degrees.
   this.hFoV = Math.PI / 4;
@@ -78,7 +78,7 @@ Engine.prototype.demo = function() {
   for(i in imv.Drawables.Inventory) {
     item = new imv.Drawables.Inventory[i]();
     if(item) {
-      mat4.translate(item.model, item.model, vec3.fromValues(x, y, z));
+      mat4.translate(item.world, item.world, vec3.fromValues(x, y, z));
       x++;
       if(x > 5) {
         x = -5;
@@ -92,7 +92,7 @@ Engine.prototype.demo = function() {
   for(i in imv.Drawables.Resource) {
     item = new imv.Drawables.Resource[i]();
     if(item) {
-      mat4.translate(item.model, item.model, vec3.fromValues(x, y, z));
+      mat4.translate(item.world, item.world, vec3.fromValues(x, y, z));
       x++;
       if(x > 5) {
         x = -5;
@@ -106,7 +106,7 @@ Engine.prototype.demo = function() {
   for(i in imv.Drawables.World) {
     item = new imv.Drawables.World[i]();
     if(item) {
-      mat4.translate(item.model, item.model, vec3.fromValues(x, y, z));
+      mat4.translate(item.world, item.world, vec3.fromValues(x, y, z));
       x++;
       if(x > 5) {
         x = -5;
@@ -121,7 +121,7 @@ Engine.prototype.demo = function() {
     for(j in imv.Drawables.Artifact[i]) {
       item = new imv.Drawables.Artifact[i][j]();
       if(item) {
-        mat4.translate(item.model, item.model, vec3.fromValues(x, y, z));
+        mat4.translate(item.world, item.world, vec3.fromValues(x, y, z));
         x++;
         if(x > 5) {
           x = -5;

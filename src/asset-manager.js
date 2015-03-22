@@ -42,6 +42,12 @@ var AssetManager = (function() {
       mesh: [],
       program: []
     };
+    this.stats = {
+      texture: {},
+      mesh: {},
+      program: {},
+      rawProgram: {}
+    };
     this.complete = null;
     this.path = '/assets/';
   };
@@ -126,15 +132,32 @@ var AssetManager = (function() {
   };
 
   assetManager.prototype.getTexture = function(name) {
-    return this.textures[name];
+    var texture = this.textures[name];
+    if(texture) {
+      this.stats.texture[name] = (this.stats.texture[name] || 0) + 1;
+    }
+    return texture;
   };
 
   assetManager.prototype.getMesh = function(name) {
-    return this.meshes[name];
+    var mesh = this.meshes[name];
+    if(mesh) {
+      this.stats.mesh[name] = (this.stats.mesh[name] || 0) + 1;
+    }
+    return mesh;
   };
 
   assetManager.prototype.getProgram = function(name) {
-    return this.programs[name];
+    var prog = this.programs[name];
+    if(prog) {
+      if(this.stats.rawProgram.hasOwnProperty(name)) {
+        this.stats.rawProgram[name]++;
+      }
+      else {
+        this.stats.program[name] = (this.stats.program[name] || 0) + 1;
+      }
+    }
+    return prog;
   };
 
   assetManager.prototype.loadAll = function(callback) {
@@ -181,6 +204,7 @@ var AssetManager = (function() {
     }
     for(i in manifest.rawProgram) {
       if(manifest.rawProgram.hasOwnProperty(i) && !(i in this.programs)) {
+        this.stats.rawProgram[i] = 0;
         this.createProgram(i, manifest.rawProgram[i]);
       }
     }
@@ -194,6 +218,19 @@ var AssetManager = (function() {
       mesh: summarize(this.queues.mesh),
       program: summarize(this.queues.program)
     };
+  };
+
+  assetManager.prototype.generateManifest = function() {
+    var manifest = {}, keys = ['texture', 'mesh', 'rawProgram', 'program'];
+    keys.forEach(function(section) {
+      manifest[section] = {};
+      for(var i in this.stats[section]) {
+        if(this.stats[section].hasOwnProperty(i) && this.stats[section][i] > 0) {
+          manifest[section][i] = this.manifest[section][i];
+        }
+      }
+    }.bind(this));
+    return manifest;
   };
 
   return assetManager;

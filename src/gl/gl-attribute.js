@@ -9,6 +9,9 @@ var GLAttribute = (function() {
     this.size = this.count = null;
     this.validate = false;
     this.getSize();
+    if(this.values) {
+      this.update();
+    }
     return this;
   };
   inherits(glAttribute, GLBuffer);
@@ -16,7 +19,6 @@ var GLAttribute = (function() {
   // these are float-based types only, for now.
   glAttribute.prototype.getSize = function()
   {
-    var gl = this._gl;
     this.size = 0;
     var width = 0;
     for(var i = 0, a; i < this.attributes.length; i++)
@@ -57,7 +59,7 @@ var GLAttribute = (function() {
       {
         // I don't know if I should suppress this, but if I
         // don't, it generates one warning per frame.
-        console.warn('Program is missing attribute ' + a.name);
+        //console.warn('Program is missing attribute ' + a.name);
         continue;
       }
       gl.enableVertexAttribArray(locations[a.name]);
@@ -70,5 +72,5 @@ var GLAttribute = (function() {
   return glAttribute;
 }());
 
-IMV.GL = IMV.GL || {};
-IMV.GL.Attribute = GLAttribute;
+imv.GL = imv.GL || {};
+imv.GL.Attribute = GLAttribute;

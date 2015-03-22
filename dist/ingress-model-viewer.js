@@ -582,6 +582,170 @@ var GLBound = function(gl)
 
 imv.GLBound = GLBound;
 
+
+var GLBuffer = function(gl, target, usage) {
+  GLBound.call(this, gl);
+  this.target = target || gl.ARRAY_BUFFER; // probably shouldn't default this.
+  this.usage = usage || gl.STATIC_DRAW;
+  this.glBuf = null;
+  this.values = null;
+  return this;
+};
+inherits(GLBuffer, GLBound);
+
+GLBuffer.prototype.bindBuffer = function() {
+  if(!this.values) {
+    console.warn('trying to update a buffer with no values.');
+    return false;
+  }
+  if(!this.glBuf) {
+    this.glBuf = this._gl.createBuffer();
+  }
+  this._gl.bindBuffer(this.target, this.glBuf);
+  return this;
+};
+
+GLBuffer.prototype.unbindBuffer = function() {
+  // this._gl.bindBuffer(this.target, 0);  // apparently this makes webgl cranky
+  return this;
+};
+
+GLBuffer.prototype.update = function() {
+  this.bindBuffer();
+  // if I do it this way, does it break?
+  // if it works, will updating the underlying buffer
+  // update the buffer without needing to call gl.bufferData again??
+  this._gl.bufferData(this.target, this.values, this.usage);
+  return this; // .unbindBuffer(); // apparently this makes webgl angry.
+};
+
+GLBuffer.prototype.setValues = function(values, offset) {
+  if(!this.values) {
+    this.values = values;
+  } else {
+    this.values.set(values, offset);
+  }
+  return this.update();
+};
+
+GLBuffer.prototype.updateBuffer = function(values) {
+  this.values = values;
+  return this.update();
+};
+
+imv.GL = imv.GL || {};
+imv.GL.Buffer = GLBuffer;
+
+
+var GLAttribute = (function() {
+
+  var glAttribute = function(gl, attributes, values, usage)
+  {
+    usage = usage || gl.STATIC_DRAW;
+    GLBuffer.call(this, gl, gl.ARRAY_BUFFER, usage);
+    this.attributes = attributes;
+    this.values = values;
+    this.size = this.count = null;
+    this.validate = false;
+    this.getSize();
+    if(this.values) {
+      this.update();
+    }
+    return this;
+  };
+  inherits(glAttribute, GLBuffer);
+
+  // these are float-based types only, for now.
+  glAttribute.prototype.getSize = function()
+  {
+    this.size = 0;
+    var width = 0;
+    for(var i = 0, a; i < this.attributes.length; i++)
+    {
+      a = this.attributes[i];
+      this.size += 4 * a.size; // 4 because float is 4 bytes.
+      width += a.size;
+    }
+  };
+
+  glAttribute.prototype.validate = function() {
+    if(this.validate) {
+      var width = this.attributes.reduce(function(sum, attr){
+        return sum + attr.size;
+      }, 0);
+      if(this.values.length % width !== 0)
+      {
+        console.warn('values array length is not an even multiple of the total size of the attributes');
+      }
+    }
+  };
+
+  glAttribute.prototype.updateValues = function(values) {
+    this.values = values;
+    this.validate();
+    this.update();
+  };
+
+  glAttribute.prototype.draw = function(locations)
+  {
+    var gl = this._gl;
+    var a, s = 0;
+    this.bindBuffer();
+    for(var i = 0; i < this.attributes.length; i++)
+    {
+      a = this.attributes[i];
+      if(!(a.name in locations))
+      {
+        // I don't know if I should suppress this, but if I
+        // don't, it generates one warning per frame.
+        //console.warn('Program is missing attribute ' + a.name);
+        continue;
+      }
+      gl.enableVertexAttribArray(locations[a.name]);
+      gl.vertexAttribPointer(locations[a.name], a.size, gl.FLOAT, false, this.size, s);
+      s += 4 * a.size;
+    }
+    return this; //.unbindBuffer();  // maybe?
+  };
+
+  return glAttribute;
+}());
+
+imv.GL = imv.GL || {};
+imv.GL.Attribute = GLAttribute;
+
+
+var GLIndex = (function() {
+
+  var glIndex = function(gl, values, drawMode, usage)
+  {
+    usage = usage || gl.STATIC_DRAW;
+    GLBuffer.call(this, gl, gl.ELEMENT_ARRAY_BUFFER, usage);
+    this.mode = drawMode;
+    this.values = values;
+    this.count = null;
+    if(this.values) {
+      this.update();
+    }
+    return this;
+  };
+  inherits(glIndex, GLBuffer);
+
+  glIndex.prototype.draw = function()
+  {
+    var gl = this._gl;
+    this.bindBuffer();
+    gl.drawElements(this.mode, this.values.length, gl.UNSIGNED_SHORT, 0);
+    return this; //.unbindBuffer();  // maybe?
+  };
+
+  return glIndex;
+}());
+
+imv.GL = imv.GL || {};
+imv.GL.Index = GLIndex;
+
+
 var Texture = function(gl, info, image)
 {
   GLBound.call(this, gl);
@@ -630,94 +794,36 @@ var VertexAttribute = function(name, size)
 
 imv.VertexAttribute = VertexAttribute;
 
-var AttributeBuffer = function(gl, attributes, values)
-{
-  GLBound.call(this, gl);
-  this.attributes = attributes;
-  this.values = values;
-  this.glBuf = this.size = this.count = null;
-};
-inherits(AttributeBuffer, GLBound);
+var Mesh = (function() {
+  var MODE_TRIANGLES = 'triangles',
+      MODE_LINES = 'lines';
 
-AttributeBuffer.prototype.init = function()
-{
-  var gl = this._gl;
-  this.glBuf = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuf);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.values), gl.STATIC_DRAW);
-  this.size = 0;
-  var width = 0;
-  for(var i = 0, a; i < this.attributes.length; i++)
-  {
-    a = this.attributes[i];
-    this.size += 4 * a.size;
-    width += a.size;
-  }
-  if(this.values.length % width !== 0)
-  {
-    console.warn('values array length is not an even multiple of the total size of the attributes');
-  }
-  this.count = Math.floor(this.values.length / width);
-};
+  var Mesh = function(gl, attributes, faces, lines) {
+    GLBound.call(this, gl);
+    this.attributes = attributes;
+    this.faces = faces;
+    this.lines = lines;
+    this.mode = MODE_TRIANGLES;
+  };
+  inherits(Mesh, GLBound);
 
-AttributeBuffer.prototype.draw = function(locations)
-{
-  var gl = this._gl;
-  var a, s = 0;
-  if(!this.glBuf)
-  {
-    this.init();
-  }
-  gl.bindBuffer(gl.ARRAY_BUFFER, this.glBuf);
-  for(var i = 0; i < this.attributes.length; i++)
-  {
-    a = this.attributes[i];
-    if(!(a.name in locations))
-    {
-      // I don't know if I should suppress this, but if I
-      // don't, it generates one warning per frame.
-      //console.warn('Program is missing attribute ' + a.name);
-      continue;
+  Mesh.MODE_LINES = MODE_LINES;
+  Mesh.MODE_TRIANGLES = MODE_TRIANGLES;
+
+  Mesh.prototype.draw = function(locations) {
+    this.attributes.draw(locations);
+    if(this.mode === MODE_TRIANGLES) {
+      this.faces.draw();
+    } else if (this.mode === MODE_LINES) {
+      this.lines.draw();
     }
-    gl.enableVertexAttribArray(locations[a.name]);
-    gl.vertexAttribPointer(locations[a.name], a.size, gl.FLOAT, false, this.size, s);
-    s += 4 * a.size;
-  }
-};
+  };
 
-imv.AttributeBuffer = AttributeBuffer;
-
-var Mesh = function(gl, attributeBuf, attributeSpec, faces)
-{
-  GLBound.call(this, gl);
-  this.attributes = new AttributeBuffer(gl, attributeSpec, attributeBuf);
-  this.faces = faces;
-  this.indexBuf = null;
-};
-inherits(Mesh, GLBound);
-
-Mesh.prototype.init = function()
-{
-  var gl = this._gl;
-  this.attributes.init();
-  this.indexBuf = gl.createBuffer();
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuf);
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.faces), gl.STATIC_DRAW);
-};
-
-Mesh.prototype.draw = function(locations)
-{
-  var gl = this._gl;
-  if(!this.indexBuf)
-  {
-    this.init();
-  }
-  this.attributes.draw(locations);
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuf);
-  gl.drawElements(gl.TRIANGLES, this.faces.length, gl.UNSIGNED_SHORT, 0);
-};
+  return Mesh;
+}());
 
 imv.Mesh = Mesh;
+
 
 var FileMesh = (function(){
 
@@ -763,15 +869,16 @@ var FileMesh = (function(){
     var attributeData = blocks[3].contents.toArray();
 
     // array of VertexAttributes
-    var attributes = parseAttributes(attributeData);
+    var spec = parseAttributes(attributeData);
 
     // should be Uint16Array
-    var faces = blocks[1].contents.toArray();
+    var faces = new GLIndex(gl, blocks[1].contents.toArray(), gl.TRIANGLES);
+    var attributes = new GLAttribute(gl, spec, values);
 
     // should be Uint16Array
-    //var lines = blocks[2].contents.toArray();
+    var lines = new GLIndex(gl, blocks[2].contents.toArray(), gl.LINES);
 
-    Mesh.call(this, gl, values, attributes, faces);
+    Mesh.call(this, gl, attributes, faces, lines);
   };
   inherits(fileMesh, Mesh);
 
@@ -870,7 +977,9 @@ var SphereMesh = (function(){
 
   var sphereMesh = function(gl, radius, vSlices, hSlices) {
     var parsed = createSphere(radius, vSlices, hSlices);
-    Mesh.call(this, gl, parsed.values, parsed.attributes, parsed.faces);
+    var attributes = new GLAttribute(gl, parsed.attributes, parsed.values);
+    var faces = new GLIndex(gl, parsed.faces, gl.TRIANGLES);
+    Mesh.call(this, gl, attributes, faces);
   };
   inherits(sphereMesh, Mesh);
 
@@ -879,6 +988,354 @@ var SphereMesh = (function(){
 
 imv.Meshes = imv.Meshes || {};
 imv.Meshes.Sphere = SphereMesh;
+
+
+var PortalLinkMesh = (function(){
+
+  // TODO: Parameterize this concept a little better
+  // this has potential to be a really flexible and powerful way of
+  // making, essentially, extruded geometry.
+
+  // 9 sets of 6 points, breaking the link into 8 pieces, each providing 6 faces, something like that?
+  var _len = 9, _size = _len * 6, _chunkSize = 12;
+  var c = new Array(_len),
+    d = new Array(_len),
+    e = new Array(_len);
+
+  var MAX_LINKS = 100; // seems reasonable.
+
+  var clampedSin = function(f)
+  {
+    return Math.sin(Math.PI * Math.max(Math.min(1.0, f), 0) / 2);
+  };
+
+  for(var i = 0; i < _len; i++)
+  {
+    var f = i / 8.0;
+    c[i] = f;
+    e[i] = (3.0 + (-1.5 * Math.pow(clampedSin(2.0 * Math.abs(f - 0.5)), 4)));
+    d[i] = clampedSin(1.0 - 2.0 * Math.abs(f - 0.5));
+  }
+
+  var baseColor = vec4.fromValues(0.46, 0.18, 0.18, 1.0);
+
+  var baseOffset = vec4.create();
+
+  var fillChunk = function(buf, index, x, y, z, u, v, normal, f6, color)
+  {
+    var off = index * _chunkSize;
+    buf[off + 0] = x;
+    buf[off + 1] = y;
+    buf[off + 2] = z;
+    buf[off + 3] = f6;
+    buf[off + 4] = u;
+    buf[off + 5] = v;
+    buf[off + 6] = normal[0];
+    buf[off + 7] = normal[2];
+    buf[off + 8] = color[0];
+    buf[off + 9] = color[1];
+    buf[off + 10] = color[2];
+    buf[off + 11] = color[3];
+  };
+
+  var _generateLinkAttributes = function(start, end, color, startPercent, endPercent) {
+    startPercent = startPercent === undefined ? 1 : Math.max(Math.min(startPercent, 1), 0);
+    endPercent = endPercent === undefined ? 1 : Math.max(Math.min(endPercent, 1), 0);
+    var values = new Float32Array(_size * _chunkSize);
+    var length = Math.sqrt((end[0] - start[0]) * (end[0] - start[0]) + (end[1] - start[1]) * (end[1] - start[1]));
+    var yMin = baseOffset[1],
+      yMax = yMin + Math.min(30.0, 0.08 * length),
+      avgPercent = (startPercent + endPercent) / 2.0,
+      f6 = 0.01 * length,
+      f7 = 0.1 + avgPercent * 0.3;
+    var vec = vec3.fromValues(end[0], 0, end[1]);
+    vec3.subtract(vec, vec, vec3.fromValues(start[0], 0, start[1]));
+    var up = vec3.fromValues(0, 1, 0);
+    var right = vec3.cross(vec3.create(), vec, up);
+    vec3.normalize(right, right);
+    var step = _len * 2;
+    for(var i = 0; i < _len; i++)
+    {
+      var f8 = c[i],
+        f9 = startPercent + f8 * (endPercent - startPercent),
+        f10 = 0.6 + 0.35 * f9,
+        f12 = f8 * f6,
+        f13 = start[0] + f8 * vec[0],
+        f14 = start[1] + f8 * vec[2],
+        f15 = yMin + d[i] * (yMax - yMin),
+        f16 = e[i];
+      var cl = vec4.lerp(vec4.create(), baseColor, color, 0.25 + f9 * 0.75);
+      cl[3] = f10;
+      fillChunk(values, (i * 2), f13 + f16 * right[0], f15, f14 + f16 * right[2], 0, f12, up, f7, cl);
+      fillChunk(values, (i * 2) + 1, f13 - f16 * right[0], f15, f14 - f16 * right[2], 0.5, f12, up, f7, cl);
+      fillChunk(values, step + (i * 2), f13, f15 + f16, f14, 0, f12, right, f7, cl);
+      fillChunk(values, step + (i * 2) + 1, f13, f15 - f16, f14, 0.5, f12, right, f7, cl);
+      fillChunk(values, 2 * step + (i * 2), f13, f15 - f16, f14, 0.5, f12, right, f7, cl);
+      fillChunk(values, 2 * step + (i * 2) + 1, f13, 0, f14, 1.0, f12, right, f7, cl);
+    }
+    return values;
+  };
+
+  var _generateFaces = function(vertexOffset) {
+    var ind = new Uint16Array(144),
+        iOff = 0;
+    for(var i = 0; i < 3; i++) {
+
+      for(var j = 0; j < _len - 1; j++) {
+
+        ind[iOff + 0] = vertexOffset + 1;
+        ind[iOff + 1] = vertexOffset + 0;
+        ind[iOff + 2] = vertexOffset + 2;
+        ind[iOff + 3] = vertexOffset + 1;
+        ind[iOff + 4] = vertexOffset + 2;
+        ind[iOff + 5] = vertexOffset + 3;
+        vertexOffset += 2;
+        iOff += 6;
+      }
+      vertexOffset += 2;
+    }
+
+    return ind;
+  };
+
+  var linkmesh = function(gl) {
+    // make room for some max number links... though technically, since we
+    // have to rebind these every time we update them anyway, we could just
+    // grow this to whatever arbitrary limit, on the fly.
+    var buf = new Float32Array(_size * _chunkSize * MAX_LINKS);
+    var attributes = [];
+    attributes.push(new VertexAttribute('a_position', 4));
+    attributes.push(new VertexAttribute('a_texCoord0', 4));
+    attributes.push(new VertexAttribute('a_color', 4));
+    var attribute = new GLAttribute(gl, attributes, buf, gl.DYNAMIC_DRAW);
+    var faces = new GLIndex(gl, new Uint16Array(144 * MAX_LINKS), gl.TRIANGLES);
+    Mesh.call(this, gl, attribute, faces);
+    this.nLinks = 0;
+  };
+  inherits(linkmesh, Mesh);
+
+  linkmesh.prototype.addLink = function(start, end, color, startPercent, endPercent) {
+
+    var linkAttributes = _generateLinkAttributes(start, end, color, startPercent, endPercent);
+    var vertexOffset = this.nLinks * _size;
+    var ind = _generateFaces(vertexOffset);
+    this.attributes.setValues(linkAttributes, vertexOffset * _chunkSize);
+    this.faces.setValues(ind, this.nLinks * 144);
+    this.nFaces += 144;
+    return this.nLinks++;
+  };
+
+  return linkmesh;
+}());
+
+imv.Meshes = imv.Meshes || {};
+imv.Meshes.PortalLink = PortalLinkMesh;
+
+
+var SphericalPortalLinkMesh = (function(){
+
+  var _chunkSize = 12;
+  var MAX_LINKS = 50; // seems reasonable.
+  var EST_CHUNKS = 25; // half a hemisphere
+
+  var clampedSin = function(f)
+  {
+    return Math.sin(Math.PI * Math.max(Math.min(1.0, f), 0) / 2);
+  };
+
+  var buildMatrix = function(lat, lng, radius) {
+    var mat = mat4.create();
+    mat4.rotateY(mat, mat, lng);
+    mat4.rotateZ(mat, mat, (lat - Math.PI / 2));
+    mat4.translate(mat, mat, [0, radius, 0]);
+    return mat;
+  };
+
+  var getInnerAngle = function(s, e) {
+    var dx = Math.cos(e[0]) * Math.cos(e[1]) - Math.cos(s[0]) * Math.cos(s[1]),
+        dy = Math.cos(e[0]) * Math.sin(e[1]) - Math.cos(s[0]) * Math.sin(s[1]),
+        dz = Math.sin(e[0]) - Math.sin(s[0]),
+        chord = Math.sqrt(dx * dx + dy * dy + dz * dz),
+        angle = 2 * Math.asin(chord / 2);
+    return angle;
+  };
+
+  var toRadians = function(point) {
+    return vec2.fromValues(point[0] * Math.PI / 180, point[1] * Math.PI / 180);
+  };
+
+  var baseColor = vec4.fromValues(0.46, 0.18, 0.18, 1.0);
+
+  var baseOffset = vec4.create();
+
+  var fillChunk = function(buf, index, pos, uv, normal, f6, color)
+  {
+    var off = index * _chunkSize;
+    buf[off + 0] = pos[0];
+    buf[off + 1] = pos[1];
+    buf[off + 2] = pos[2];
+    buf[off + 3] = f6;
+    buf[off + 4] = uv[0];
+    buf[off + 5] = uv[1];
+    buf[off + 6] = normal[0];
+    buf[off + 7] = normal[2];
+    buf[off + 8] = color[0];
+    buf[off + 9] = color[1];
+    buf[off + 10] = color[2];
+    buf[off + 11] = color[3];
+  };
+
+  // start and end should probably be in radians?
+  var _generateLinkAttributes = function(radius, start, end, color, startPercent, endPercent) {
+    start = toRadians(start);
+    end = toRadians(end);
+    var angle = getInnerAngle(start, end);
+    var segments = Math.floor(angle / Math.PI * 50) + 1; // 50 segments for a half-circle sounds good, I guess.
+    startPercent = startPercent === undefined ? 1 : Math.max(Math.min(startPercent, 1), 0);
+    endPercent = endPercent === undefined ? 1 : Math.max(Math.min(endPercent, 1), 0);
+    var values = new Float32Array(segments * _chunkSize * 6);
+    var length = angle * radius;
+    var yMin = baseOffset[1],
+      yMax = yMin + Math.min(radius * 0.01, 0.08 * length),
+      avgPercent = (startPercent + endPercent) / 2.0,
+      f6 = 0.01 * length,
+      f7 = 0.1 + avgPercent * 0.3;
+    var step = segments * 2;
+    for(var i = 0; i < segments; i++)
+    {
+      var f8 = i / (segments - 1),
+        f9 = startPercent + f8 * (endPercent - startPercent),
+        f10 = 0.6 + 0.35 * f9,
+        // v as in "uv" as in texcoords
+        v = f8 * f6,
+        // "current" point in progression
+        curr = vec2.lerp(vec2.create(), start, end, f8),
+        // "next" point in the progression
+        next = vec2.lerp(vec2.create(), start, end, f8 + (1 / (segments - 1))),
+        transform = buildMatrix(curr[0], curr[1], radius),
+        nextTransform = buildMatrix(next[0], next[1], radius),
+        // point on the surface of the sphere that's the base of the cross-shaped structure we're generating
+        base = vec3.transformMat4(vec3.create(), vec3.fromValues(curr[0], 0, curr[1]), transform),
+        // "next" point on the sphere on the path.
+        nextBase = vec3.transformMat4(vec3.create(), vec3.fromValues(next[0], 0, next[1]), nextTransform),
+        // normalized, base poiont also functions as the "up" direction
+        up = vec3.normalize(vec3.create(), base),
+        // direction the link is "facing"
+        heading = vec3.subtract(vec3.create(), nextBase, base),
+        // determines what's "to the right"
+        right = vec3.normalize(vec3.create(), vec3.cross(vec3.create(), heading, up)),
+        // "height" of the centerpoint of the link.
+        h = yMin + (3.0 + (-1.5 * Math.pow(clampedSin(2.0 * Math.abs(f8 - 0.5)), 4))) * (yMax - yMin),
+        // "radius" of the link
+        w = radius * 0.01 * clampedSin(1.0 - 2.0 * Math.abs(f8 - 0.5)),
+        hVec = vec3.scale(vec3.create(), up, h),
+        wRight = vec3.scale(vec3.create(), right, w),
+        wUp = vec3.scale(vec3.create(), up, w),
+        cl = vec4.lerp(vec4.create(), baseColor, color, 0.25 + f9 * 0.75);
+      cl[3] = f10;
+
+      // top horizontal segment
+      // right point
+      fillChunk(values, (i * 2),
+        vec3.add(vec3.create(), base, vec3.add(vec3.create(), hVec, wRight)),
+        vec2.fromValues(0, v),
+        up,
+        f7,
+        cl);
+      // left point
+      fillChunk(values, (i * 2) + 1,
+        vec3.add(vec3.create(), base, vec3.subtract(vec3.create(), hVec, wRight)),
+        vec2.fromValues(0.5, v),
+        up,
+        f7,
+        cl);
+
+      // top vertical segment
+      fillChunk(values, step + (i * 2),
+        vec3.add(vec3.create(), base, vec3.add(vec3.create(), hVec, wUp)),
+        vec2.fromValues(0, v),
+        right,
+        f7,
+        cl);
+      fillChunk(values, step + (i * 2) + 1,
+        vec3.add(vec3.create(), base, vec3.subtract(vec3.create(), hVec, wUp)),
+        vec2.fromValues(0.5, v),
+        right,
+        f7,
+        cl);
+
+      // bottom vertical segment
+      fillChunk(values, 2 * step + (i * 2),
+        vec3.add(vec3.create(), base, vec3.subtract(vec3.create(), hVec, wUp)),
+        vec2.fromValues(0.5, v),
+        right,
+        f7,
+        cl);
+      fillChunk(values, 2 * step + (i * 2) + 1,
+        base,
+        vec2.fromValues(1.0, v),
+        right,
+        f7,
+        cl);
+    }
+    return values;
+  };
+
+  var _generateFaces = function(vertexOffset, segments) {
+    var ind = new Uint16Array(6 * (segments - 1) * 3),
+        iOff = 0;
+    for(var i = 0; i < 3; i++) {
+
+      for(var j = 0; j < segments - 1; j++) {
+
+        ind[iOff + 0] = vertexOffset + 1;
+        ind[iOff + 1] = vertexOffset + 0;
+        ind[iOff + 2] = vertexOffset + 2;
+        ind[iOff + 3] = vertexOffset + 1;
+        ind[iOff + 4] = vertexOffset + 2;
+        ind[iOff + 5] = vertexOffset + 3;
+        vertexOffset += 2;
+        iOff += 6;
+      }
+      vertexOffset += 2;
+    }
+
+    return ind;
+  };
+
+  var linkmesh = function(gl, sphereRadius) {
+    var buf = new Float32Array(EST_CHUNKS * _chunkSize * MAX_LINKS);
+    var attributes = [];
+    attributes.push(new VertexAttribute('a_position', 4));
+    attributes.push(new VertexAttribute('a_texCoord0', 4));
+    attributes.push(new VertexAttribute('a_color', 4));
+    var attribute = new GLAttribute(gl, attributes, buf, gl.DYNAMIC_DRAW);
+    var faces = new GLIndex(gl, new Uint16Array(EST_CHUNKS * 18 * MAX_LINKS), gl.TRIANGLES);
+    this.radius = sphereRadius;
+    this.vertexOffset = 0;
+    this.faceOffset = 0;
+    Mesh.call(this, gl, attribute, faces);
+    return this;
+  };
+  inherits(linkmesh, Mesh);
+
+  linkmesh.prototype.addLink = function(start, end, color, startPercent, endPercent) {
+
+    var linkAttributes = _generateLinkAttributes(this.radius, start, end, color, startPercent, endPercent);
+    var len = linkAttributes.length, segments = Math.floor(len / _chunkSize / 6);
+    var ind = _generateFaces(this.vertexOffset, segments);
+    this.attributes.setValues(linkAttributes, this.vertexOffset);
+    this.vertexOffset += len;
+    this.faces.setValues(ind, this.faceOffset);
+    this.faceOffset += ind.length;
+    return this;
+  };
+
+  return linkmesh;
+}());
+
+imv.Meshes = imv.Meshes || {};
+imv.Meshes.SphericalPortalLink = SphericalPortalLinkMesh;
 
 
 var Program = (function(){
@@ -1608,6 +2065,143 @@ imv.Drawables.ShieldEffect = ShieldEffectDrawable;
 
 }());
 
+var DynamicDrawable = (function() {
+
+  // private function ;)
+  var _draw = function(locations, uniforms)
+  {
+    for(var i in this.uniforms)
+    {
+      if(this.uniforms.hasOwnProperty(i) && (i in uniforms))
+      {
+        uniforms[i](this.uniforms[i]);
+      }
+    }
+    this.mesh.draw(locations);
+  };
+
+  var dynamic = function(programName, mesh) {
+    Drawable.call(this, programName);
+    this.mesh = mesh;
+    this.drawfn = _draw.bind(this);
+  };
+  inherits(dynamic, Drawable);
+
+  return dynamic;
+}());
+
+imv.Drawables = imv.Drawables || {};
+imv.Drawables.Dynamic = DynamicDrawable;
+
+
+var DynamicModelDrawable = (function() {
+
+  var modelDrawable = function(programName, mesh) {
+    DynamicDrawable.call(this, programName, mesh);
+    this.viewProject = mat4.create();
+    this.model = mat4.create();
+    this.local = mat4.create();
+    this.world = mat4.create();
+  };
+  inherits(modelDrawable, DynamicDrawable);
+
+  modelDrawable.prototype.updateMatrix = function() {
+    var mvp = mat4.create();
+    mat4.multiply(this.model, this.world, this.local);
+    mat4.multiply(mvp, this.viewProject, this.model);
+    this.uniforms.u_modelViewProject = mvp;
+  };
+
+  modelDrawable.prototype.updateView = function(viewProject) {
+    this.viewProject = viewProject;
+    this.updateMatrix();
+  };
+
+  modelDrawable.prototype.setMatrix = function(mat) {
+    this.model = mat;
+    this.updateMatrix();
+  };
+
+  return modelDrawable;
+}());
+
+imv.Drawables = imv.Drawables || {};
+imv.Drawables.DynamicModel = DynamicModelDrawable;
+
+
+var DynamicTexturedDrawable = function(programName, mesh, textureName) {
+  DynamicModelDrawable.call(this, programName, mesh);
+  this.textureName = textureName;
+  this.texture = null;
+};
+inherits(DynamicTexturedDrawable, DynamicModelDrawable);
+
+DynamicTexturedDrawable.prototype.draw = function()
+{
+  this.texture.use(0);
+  this.uniforms.u_texture = 0;
+  DynamicModelDrawable.prototype.draw.call(this);
+};
+
+DynamicTexturedDrawable.prototype.init = function(manager)
+{
+  this.texture = manager.getTexture(this.textureName);
+  if(!this.texture) {
+    console.warn('missing texture ' + this.textureName);
+    return false;
+  }
+  return DynamicModelDrawable.prototype.init.call(this, manager);
+};
+
+imv.Drawables = imv.Drawables || {};
+imv.Drawables.DynamicTextured = DynamicTexturedDrawable;
+
+var LinkDrawable = (function(){
+
+  // no defaults here.
+  var PROGRAM_NAME = 'LinkShader';
+
+  var linkDrawable = function(mesh, textureName) {
+    DynamicTexturedDrawable.call(this, PROGRAM_NAME, mesh, textureName);
+    this.uniforms.u_cameraFwd = vec3.fromValues(0, 0, -1);
+    this.uniforms.u_elapsedTime = 0;
+  };
+  inherits(linkDrawable, DynamicTexturedDrawable);
+
+  // TODO: needs a camera class:
+  linkDrawable.prototype.updateView = function(viewProject, view, project) {
+    DynamicTexturedDrawable.prototype.updateView.call(this, viewProject, view, project);
+    if(view) {
+      var rot = mat3.fromMat4(mat3.create(), view);
+      var q = quat.fromMat3(quat.create(), rot);
+      var fwd = vec3.transformQuat(vec3.create(), vec3.fromValues(0, 0, -1), q);
+      vec3.normalize(fwd, fwd);
+      this.uniforms.u_cameraFwd = fwd;
+    }
+  };
+
+  linkDrawable.prototype.updateTime = function(delta) {
+    var ret = DynamicTexturedDrawable.prototype.updateTime.call(this, delta);
+    this.uniforms.u_elapsedTime = ((this.elapsed / 1000) % 300.0) * 0.1;
+    return ret;
+  };
+
+  linkDrawable.prototype.addLink = function(start, end, color, startPercent, endPercent) {
+    // since this doesn't need to be loaded
+    // perhaps change this behavior?
+    if(!this.mesh) {
+      throw 'Mesh not ready yet!';
+    }
+
+    return this.mesh.addLink(start, end, color, startPercent, endPercent);
+  };
+
+  return linkDrawable;
+}());
+
+imv.Drawables = imv.Drawables || {};
+imv.Drawables.Link = LinkDrawable;
+
 var AtmosphereDrawable = (function(){
 
   // this program (atmosphere.glsl.vert and atmosphere.glsl.frag)
@@ -1618,16 +2212,16 @@ var AtmosphereDrawable = (function(){
   // this current expects a SphereMesh, but what that really
   // means is that it's expecting a mesh that provides
   // a_postion, a_texCoord0 and a_normal attributes.
-  var atmosphereDrawable = function(meshName, scaleFactor) {
-    ModelDrawable.call(this, PROGRAM, meshName);
+  var atmosphereDrawable = function(mesh, scaleFactor) {
+    DynamicModelDrawable.call(this, PROGRAM, mesh);
     this.uniforms.u_normalMatrix = mat3.create();
     this.scaleFactor = scaleFactor || 1.1;
     mat4.scale(this.local, this.local, [this.scaleFactor, this.scaleFactor, this.scaleFactor]);
   };
-  inherits(atmosphereDrawable, ModelDrawable);
+  inherits(atmosphereDrawable, DynamicModelDrawable);
 
   atmosphereDrawable.prototype.updateView = function(viewProject) {
-    ModelDrawable.prototype.updateView.call(this, viewProject);
+    DynamicModelDrawable.prototype.updateView.call(this, viewProject);
      var invert = mat4.invert(mat4.create(), viewProject),
          transpose = mat4.transpose(mat4.create(), invert);
     this.uniforms.u_normalMatrix = mat3.fromMat4(mat3.create(), transpose);
@@ -1860,6 +2454,12 @@ var AssetManager = (function() {
       mesh: [],
       program: []
     };
+    this.stats = {
+      texture: {},
+      mesh: {},
+      program: {},
+      rawProgram: {}
+    };
     this.complete = null;
     this.path = '/assets/';
   };
@@ -1914,6 +2514,16 @@ var AssetManager = (function() {
     _isComplete.call(this);
   };
 
+  assetManager.prototype.createProgram = function(name, info) {
+    var klass = Program;
+    if(info.program in imv.Programs)
+    {
+      klass = imv.Programs[info.program];
+    }
+    this.addProgram(name, new klass(this._gl, info.vertex, info.fragment));
+    console.log('created program ' + name);
+  };
+
   assetManager.prototype.handleProgram = function(idx, name, info, err, vals) {
     if(err)
     {
@@ -1934,22 +2544,38 @@ var AssetManager = (function() {
   };
 
   assetManager.prototype.getTexture = function(name) {
-    return this.textures[name];
+    var texture = this.textures[name];
+    if(texture) {
+      this.stats.texture[name] = (this.stats.texture[name] || 0) + 1;
+    }
+    return texture;
   };
 
   assetManager.prototype.getMesh = function(name) {
-    return this.meshes[name];
+    var mesh = this.meshes[name];
+    if(mesh) {
+      this.stats.mesh[name] = (this.stats.mesh[name] || 0) + 1;
+    }
+    return mesh;
   };
 
   assetManager.prototype.getProgram = function(name) {
-    return this.programs[name];
+    var prog = this.programs[name];
+    if(prog) {
+      if(this.stats.rawProgram.hasOwnProperty(name)) {
+        this.stats.rawProgram[name]++;
+      }
+      else {
+        this.stats.program[name] = (this.stats.program[name] || 0) + 1;
+      }
+    }
+    return prog;
   };
 
   assetManager.prototype.loadAll = function(callback) {
     var i, asset, manifest = this.manifest;
     this.complete = callback;
-    for(i in manifest.texture)
-    {
+    for(i in manifest.texture) {
       if(manifest.texture.hasOwnProperty(i) && !(i in this.textures))
       {
         this.textures[i] = null;
@@ -1962,8 +2588,7 @@ var AssetManager = (function() {
         this.queues.texture.push(0);
       }
     }
-    for(i in manifest.mesh)
-    {
+    for(i in manifest.mesh) {
       if(manifest.mesh.hasOwnProperty(i) && !(i in this.meshes))
       {
         this.meshes[i] = null;
@@ -1976,8 +2601,7 @@ var AssetManager = (function() {
         this.queues.mesh.push(0);
       }
     }
-    for(i in manifest.program)
-    {
+    for(i in manifest.program) {
       if(manifest.program.hasOwnProperty(i) && !(i in this.programs))
       {
         this.programs[i] = null;
@@ -1988,6 +2612,12 @@ var AssetManager = (function() {
           this.handleProgram.bind(this, this.queues.program.length, i, asset)
         );
         this.queues.program.push(0);
+      }
+    }
+    for(i in manifest.rawProgram) {
+      if(manifest.rawProgram.hasOwnProperty(i) && !(i in this.programs)) {
+        this.stats.rawProgram[i] = 0;
+        this.createProgram(i, manifest.rawProgram[i]);
       }
     }
 
@@ -2002,6 +2632,19 @@ var AssetManager = (function() {
     };
   };
 
+  assetManager.prototype.generateManifest = function() {
+    var manifest = {}, keys = ['texture', 'mesh', 'rawProgram', 'program'];
+    keys.forEach(function(section) {
+      manifest[section] = {};
+      for(var i in this.stats[section]) {
+        if(this.stats[section].hasOwnProperty(i) && this.stats[section][i] > 0) {
+          manifest[section][i] = this.manifest[section][i];
+        }
+      }
+    }.bind(this));
+    return manifest;
+  };
+
   return assetManager;
 }());
 
@@ -2012,11 +2655,15 @@ var Renderer = function(gl, manager) {
   GLBound.call(this, gl);
   this.manager = manager;
   this.viewProject = mat4.create();
+  this.view = mat4.create();
+  this.project = mat4.create();
   this.elapsed = 0;
 };
 inherits(Renderer, GLBound);
 
 Renderer.prototype.updateView = function(view, project) {
+  this.view = view;
+  this.project = project;
   mat4.multiply(this.viewProject, project, view);
 };
 
@@ -2048,7 +2695,7 @@ ObjectRenderer.prototype.addDrawable = function(drawable) {
   }
   if(drawable.updateView)
   {
-    drawable.updateView(this.viewProject);
+    drawable.updateView(this.viewProject, this.view, this.project);
   }
   this.drawables.push(drawable);
 };
@@ -2167,7 +2814,7 @@ var Engine = function(canvas, assets, enableSnapshots)
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   this.gl = gl;
   this.view = mat4.create();
-  mat4.lookAt(this.view, [0.0, 2.0, 5.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
+  mat4.lookAt(this.view, [0.0, 20.0, 25.0], [0.0, 10.0, 0.0], [0.0, 1.0, 0.0]);
 
   // this should be in radians, not degrees.
   this.hFoV = Math.PI / 4;
@@ -2232,7 +2879,7 @@ Engine.prototype.demo = function() {
   for(i in imv.Drawables.Inventory) {
     item = new imv.Drawables.Inventory[i]();
     if(item) {
-      mat4.translate(item.model, item.model, vec3.fromValues(x, y, z));
+      mat4.translate(item.world, item.world, vec3.fromValues(x, y, z));
       x++;
       if(x > 5) {
         x = -5;
@@ -2246,7 +2893,7 @@ Engine.prototype.demo = function() {
   for(i in imv.Drawables.Resource) {
     item = new imv.Drawables.Resource[i]();
     if(item) {
-      mat4.translate(item.model, item.model, vec3.fromValues(x, y, z));
+      mat4.translate(item.world, item.world, vec3.fromValues(x, y, z));
       x++;
       if(x > 5) {
         x = -5;
@@ -2260,7 +2907,7 @@ Engine.prototype.demo = function() {
   for(i in imv.Drawables.World) {
     item = new imv.Drawables.World[i]();
     if(item) {
-      mat4.translate(item.model, item.model, vec3.fromValues(x, y, z));
+      mat4.translate(item.world, item.world, vec3.fromValues(x, y, z));
       x++;
       if(x > 5) {
         x = -5;
@@ -2275,7 +2922,7 @@ Engine.prototype.demo = function() {
     for(j in imv.Drawables.Artifact[i]) {
       item = new imv.Drawables.Artifact[i][j]();
       if(item) {
-        mat4.translate(item.model, item.model, vec3.fromValues(x, y, z));
+        mat4.translate(item.world, item.world, vec3.fromValues(x, y, z));
         x++;
         if(x > 5) {
           x = -5;
@@ -2333,7 +2980,7 @@ Engine.prototype.preload = function(callback) {
 imv.Engine = Engine;
 
 
-  imv.VERSION = '0.13.0';
+  imv.VERSION = '0.14.0';
 
   root.IMV = imv;
 

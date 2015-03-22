@@ -42,17 +42,18 @@ var FileMesh = (function(){
     var attributeData = blocks[3].contents.toArray();
 
     // array of VertexAttributes
-    var attributes = parseAttributes(attributeData);
+    var spec = parseAttributes(attributeData);
 
     // should be Uint16Array
-    var faces = blocks[1].contents.toArray();
+    var faces = new GLIndex(gl, blocks[1].contents.toArray(), gl.TRIANGLES);
+    var attributes = new GLAttribute(gl, spec, values);
 
     // should be Uint16Array
-    //var lines = blocks[2].contents.toArray();
+    var lines = new GLIndex(gl, blocks[2].contents.toArray(), gl.LINES);
 
-    StaticMesh.call(this, gl, values, attributes, faces);
+    Mesh.call(this, gl, attributes, faces, lines);
   };
-  inherits(fileMesh, StaticMesh);
+  inherits(fileMesh, Mesh);
 
   return fileMesh;
 }());

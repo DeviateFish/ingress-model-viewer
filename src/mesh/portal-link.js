@@ -29,21 +29,21 @@ var PortalLinkMesh = (function(){
 
   var baseOffset = vec4.create();
 
-  var fillChunk = function(buf, index, f1, f2, f3, f4, f5, v1, f6, v2)
+  var fillChunk = function(buf, index, x, y, z, u, v, normal, f6, color)
   {
     var off = index * _chunkSize;
-    buf[off + 0] = f1;
-    buf[off + 1] = f2;
-    buf[off + 2] = f3;
+    buf[off + 0] = x;
+    buf[off + 1] = y;
+    buf[off + 2] = z;
     buf[off + 3] = f6;
-    buf[off + 4] = f4;
-    buf[off + 5] = f5;
-    buf[off + 6] = v1[0];
-    buf[off + 7] = v1[2];
-    buf[off + 8] = v2[0];
-    buf[off + 9] = v2[1];
-    buf[off + 10] = v2[2];
-    buf[off + 11] = v2[3];
+    buf[off + 4] = u;
+    buf[off + 5] = v;
+    buf[off + 6] = normal[0];
+    buf[off + 7] = normal[2];
+    buf[off + 8] = color[0];
+    buf[off + 9] = color[1];
+    buf[off + 10] = color[2];
+    buf[off + 11] = color[3];
   };
 
   var _generateLinkAttributes = function(start, end, color, startPercent, endPercent) {
@@ -115,9 +115,9 @@ var PortalLinkMesh = (function(){
     attributes.push(new VertexAttribute('a_position', 4));
     attributes.push(new VertexAttribute('a_texCoord0', 4));
     attributes.push(new VertexAttribute('a_color', 4));
-    Mesh.call(this, gl, attributes, buf);
-    this.faces = new Uint16Array(144 * MAX_LINKS);
-    this.nFaces = 0;
+    var attribute = new GLAttribute(gl, attributes, buf, gl.DYNAMIC_DRAW);
+    var faces = new GLIndex(gl, new Uint16Array(144 * MAX_LINKS), gl.TRIANGLES);
+    Mesh.call(this, gl, attribute, faces);
     this.nLinks = 0;
   };
   inherits(linkmesh, Mesh);
@@ -128,9 +128,8 @@ var PortalLinkMesh = (function(){
     var vertexOffset = this.nLinks * _size;
     var ind = _generateFaces(vertexOffset);
     this.attributes.setValues(linkAttributes, vertexOffset * _chunkSize);
-    this.faces.set(ind, this.nLinks * 144);
+    this.faces.setValues(ind, this.nLinks * 144);
     this.nFaces += 144;
-    this.bindFaces();
     return this.nLinks++;
   };
 
