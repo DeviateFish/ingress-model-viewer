@@ -110,10 +110,10 @@
 
       engine.objectRenderer.addDrawable(globe);
       engine.objectRenderer.addDrawable(atmosphere);
-      //globe.onUpdate = rotate;
-      //atmosphere.onUpdate = rotate;
+      globe.onUpdate = rotate;
+      atmosphere.onUpdate = rotate;
 
-      /*if(artifactInfos) {
+      if(artifactInfos) {
         artifactInfos[0].targetInfos.forEach(function(obj) {
           var arr = obj.portalInfo;
           var team = obj.team;
@@ -125,7 +125,7 @@
                 (arr[1] === 'E' ? 'ENLIGHTENED' : 'NEUTRAL');
           addShardPortal(arr[2] / 1E6, arr[3] / 1E6, team, obj.fragments);
         });
-      }*/
+      }
       engine.render(0);
       controls.enable();
       window.requestAnimationFrame(updateCamera);
