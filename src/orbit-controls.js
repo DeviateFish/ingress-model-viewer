@@ -47,22 +47,45 @@ var OrbitControls = (function() {
     this.mouseMove = this.onMouseMove.bind(this);
     this.mouseUp = this.onMouseUp.bind(this);
     this.mouseOut = this.onMouseOut.bind(this);
-    this.canvas.addEventListener('mousedown', this.onMouseDown.bind(this), false);
-    if(this.options.allowZoom)
-    {
-      this.canvas.addEventListener('mousewheel', this.onMouseWheel.bind(this), false);
-    }
+    this.mouseDown = this.onMouseDown.bind(this);
+    this.mouseWheel = this.onMouseWheel.bind(this);
 
     this.touches = [];
     this.touchDelta = 0;
     this.touchMove = this.onTouchMove.bind(this);
     this.touchEnd = this.onTouchEnd.bind(this);
     this.touchLeave = this.onTouchLeave.bind(this);
-    this.canvas.addEventListener('touchstart', this.onTouchStart.bind(this), false);
+    this.touchStart = this.onTouchStart.bind(this);
+    this.mouseOver = function() { this.overRenderer = true; }.bind(this);
+    this.mouseOut = function() { this.overRenderer = false; }.bind(this);
+    this.enabled = false;
+  };
 
-    var _this = this;
-    this.canvas.addEventListener('mouseover', function() { _this.overRenderer = true; }, false);
-    this.canvas.addEventListener('mouseout', function() { _this.overRenderer = false; }, false);
+  controls.prototype.disable = function() {
+    this.canvas.removeEventListener('mousedown', this.mouseDown, false);
+    this.canvas.removeEventListener('mousemove', this.mouseMove, false);
+    this.canvas.removeEventListener('mouseup', this.mouseUp, false);
+    this.canvas.removeEventListener('mouseout', this.mouseOut, false);
+    this.canvas.removeEventListener('touchstart', this.touchStart, false);
+    this.canvas.removeEventListener('touchmove', this.touchMove, false);
+    this.canvas.removeEventListener('touchend', this.touchEnd, false);
+    this.canvas.removeEventListener('touchleave', this.touchLeave, false);
+    this.canvas.removeEventListener('mousewheel', this.mouseWheel, false);
+    this.canvas.removeEventListener('mouseover', this.mouseOver, false);
+    this.canvas.removeEventListener('mouseout', this.mouseOut, false);
+    this.enabled = false;
+  };
+
+  controls.prototype.enable = function() {
+    this.canvas.addEventListener('mousedown', this.onMouseDown.bind(this), false);
+    if(this.options.allowZoom)
+    {
+      this.canvas.addEventListener('mousewheel', this.mouseWheel, false);
+    }
+    this.canvas.addEventListener('touchstart', this.touchStart, false);
+    this.canvas.addEventListener('mouseover', this.mouseOver, false);
+    this.canvas.addEventListener('mouseout', this.mouseOut, false);
+    this.enabled = true;
   };
 
   controls.prototype.updateTargets = function()
