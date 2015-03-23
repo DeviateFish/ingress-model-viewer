@@ -115,6 +115,7 @@ module.exports = function (grunt) {
           'src/renderer.js',
           'src/renderer/object.js',
           'src/renderer/portal.js',
+          'src/orbit-controls.js',
           'src/engine.js',
           'src/_outro.js'
         ],

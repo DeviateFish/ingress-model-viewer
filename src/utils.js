@@ -20,6 +20,26 @@ var resetGL = function(gl) {
   gl.depthMask(true);
 };
 
+var setParams = function(base, opts, deep)
+{
+  for(var i in base)
+  {
+    if(base.hasOwnProperty(i) && opts.hasOwnProperty(i))
+    {
+      if(deep && typeof(base[i]) == 'object' && typeof(opts[i]) == 'object')
+      {
+        base[i] = setParams(base[i], opts[i], deep);
+      }
+      else
+      {
+        base[i] = opts[i];
+      }
+    }
+  }
+  return base;
+};
+
 imv.Utilities = imv.Utilities || {};
 imv.Utilities.inherits = inherits;
 imv.Utilities.resetGL = resetGL;
+imv.Utilities.setParams = setParams;

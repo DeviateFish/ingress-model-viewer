@@ -22,7 +22,11 @@
   var canvas = document.getElementById('screen'), engine,
       assets = {},
       radius = 100,
-      artifactInfos = null;
+      artifactInfos = null,
+      controls = new IMV.Controls.Orbit(canvas, radius * 3, {
+        distanceMin: radius,
+        distanceMax: 5 * radius
+      });
   canvas.width = document.body.offsetWidth;
   canvas.height = document.body.offsetHeight;
 
@@ -84,6 +88,12 @@
     addRotatingDrawable(purple, lat, lng);
   };
 
+  var updateCamera = function() {
+    controls.updateView(engine.view);
+    engine.updateView();
+    window.requestAnimationFrame(updateCamera);
+  };
+
   var init = function(assets) {
     engine = new IMV.Engine(canvas, assets, true);
     mat4.lookAt(engine.view, [radius * 3, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
@@ -96,11 +106,10 @@
       world = new IMV.Meshes.Sphere(engine.gl, radius, 50, 50);
 
       globe = new IMV.Drawables.DynamicTextured('textured', world, 'WorldTexture');
-      mat4.rotateY(globe.world, globe.world, Math.PI);
-      //atmosphere = new IMV.Drawables.Atmosphere(world);
+      atmosphere = new IMV.Drawables.Atmosphere(world);
 
       engine.objectRenderer.addDrawable(globe);
-      //engine.objectRenderer.addDrawable(atmosphere);
+      engine.objectRenderer.addDrawable(atmosphere);
       //globe.onUpdate = rotate;
       //atmosphere.onUpdate = rotate;
 
@@ -118,6 +127,7 @@
         });
       }*/
       engine.render(0);
+      window.requestAnimationFrame(updateCamera);
       console.log('ready');
     });
   };
