@@ -7,9 +7,6 @@ var GLIndex = (function() {
     this.mode = drawMode;
     this.values = values;
     this.count = null;
-    if(this.values) {
-      this.update();
-    }
     return this;
   };
   inherits(glIndex, GLBuffer);
@@ -17,9 +14,13 @@ var GLIndex = (function() {
   glIndex.prototype.draw = function()
   {
     var gl = this._gl;
-    this.bindBuffer();
+    if(!this.glBuf) {
+      this.update();
+    } else {
+      this.bindBuffer();
+    }
     gl.drawElements(this.mode, this.values.length, gl.UNSIGNED_SHORT, 0);
-    return this; //.unbindBuffer();  // maybe?
+    return this;
   };
 
   return glIndex;

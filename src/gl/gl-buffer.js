@@ -40,7 +40,7 @@ GLBuffer.prototype.setValues = function(values, offset) {
   } else {
     this.values.set(values, offset);
   }
-  return this.update();
+  return this;
 };
 
 GLBuffer.prototype.updateBuffer = function(values) {

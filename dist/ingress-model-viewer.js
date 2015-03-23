@@ -625,7 +625,7 @@ GLBuffer.prototype.setValues = function(values, offset) {
   } else {
     this.values.set(values, offset);
   }
-  return this.update();
+  return this;
 };
 
 GLBuffer.prototype.updateBuffer = function(values) {
@@ -648,9 +648,6 @@ var GLAttribute = (function() {
     this.size = this.count = null;
     this.validate = false;
     this.getSize();
-    if(this.values) {
-      this.update();
-    }
     return this;
   };
   inherits(glAttribute, GLBuffer);
@@ -683,14 +680,18 @@ var GLAttribute = (function() {
   glAttribute.prototype.updateValues = function(values) {
     this.values = values;
     this.validate();
-    this.update();
+    return this.update();
   };
 
   glAttribute.prototype.draw = function(locations)
   {
     var gl = this._gl;
     var a, s = 0;
-    this.bindBuffer();
+    if(!this.glBuf) {
+      this.update();
+    } else {
+      this.bindBuffer();
+    }
     for(var i = 0; i < this.attributes.length; i++)
     {
       a = this.attributes[i];
@@ -724,9 +725,6 @@ var GLIndex = (function() {
     this.mode = drawMode;
     this.values = values;
     this.count = null;
-    if(this.values) {
-      this.update();
-    }
     return this;
   };
   inherits(glIndex, GLBuffer);
@@ -734,9 +732,13 @@ var GLIndex = (function() {
   glIndex.prototype.draw = function()
   {
     var gl = this._gl;
-    this.bindBuffer();
+    if(!this.glBuf) {
+      this.update();
+    } else {
+      this.bindBuffer();
+    }
     gl.drawElements(this.mode, this.values.length, gl.UNSIGNED_SHORT, 0);
-    return this; //.unbindBuffer();  // maybe?
+    return this;
   };
 
   return glIndex;
@@ -1143,21 +1145,41 @@ var SphericalPortalLinkMesh = (function(){
     return Math.sin(Math.PI * Math.max(Math.min(1.0, f), 0) / 2);
   };
 
-  var buildMatrix = function(lat, lng, radius) {
+  var getBearing = function(start, end) {
+    var s = start[0],
+        e = end[0],
+        dl = (end[1] - start[1]);
+    var y = Math.sin(dl) * Math.cos(e),
+        x = Math.cos(s) * Math.sin(e) - Math.sin(s) * Math.cos(e) * Math.cos(dl);
+
+    return (Math.atan2(y, x) + Math.PI * 2) % (Math.PI * 2);
+  };
+
+  var dest = function(p, bearing, angle) {
+    var lat = Math.asin(Math.sin(p[0]) * Math.cos(angle) + Math.cos(p[0]) * Math.sin(angle) * Math.cos(bearing)),
+        lon = p[1] + Math.atan2(Math.sin(bearing) * Math.sin(angle) * Math.cos(p[0]), Math.cos(angle) - Math.sin(p[0]) * Math.sin(lat));
+
+    lon = (lon + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
+    return vec2.fromValues(lat, lon);
+  };
+
+  var buildMatrix = function(s, e, radius) {
     var mat = mat4.create();
-    mat4.rotateY(mat, mat, lng);
-    mat4.rotateZ(mat, mat, (lat - Math.PI / 2));
+    mat4.rotateY(mat, mat, s[1]);
+    mat4.rotateZ(mat, mat, s[0] - Math.PI / 2);
+    mat4.rotateY(mat, mat, -getBearing(s, e));
     mat4.translate(mat, mat, [0, radius, 0]);
     return mat;
   };
 
-  var getInnerAngle = function(s, e) {
-    var dx = Math.cos(e[0]) * Math.cos(e[1]) - Math.cos(s[0]) * Math.cos(s[1]),
-        dy = Math.cos(e[0]) * Math.sin(e[1]) - Math.cos(s[0]) * Math.sin(s[1]),
-        dz = Math.sin(e[0]) - Math.sin(s[0]),
-        chord = Math.sqrt(dx * dx + dy * dy + dz * dz),
-        angle = 2 * Math.asin(chord / 2);
-    return angle;
+  var getRadialDistance = function(s, e) {
+    var dLat = e[0] - s[0],
+        dLon = e[1] - s[1];
+
+    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(s[0]) * Math.cos(e[0]) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+    return 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   };
 
   var toRadians = function(point) {
@@ -1187,19 +1209,22 @@ var SphericalPortalLinkMesh = (function(){
 
   // start and end should probably be in radians?
   var _generateLinkAttributes = function(radius, start, end, color, startPercent, endPercent) {
-    start = toRadians(start);
-    end = toRadians(end);
-    var angle = getInnerAngle(start, end);
-    var segments = Math.floor(angle / Math.PI * 50) + 1; // 50 segments for a half-circle sounds good, I guess.
+    var s = toRadians(start);
+    var e = toRadians(end);
+    var angle = getRadialDistance(s, e);
+    var bearing = getBearing(s, e);
+    var length = angle * radius;
+    var segments = Math.max(Math.floor(angle / Math.PI * 50) + 1, 2); // 50 segments for a half-circle sounds good, I guess.
     startPercent = startPercent === undefined ? 1 : Math.max(Math.min(startPercent, 1), 0);
     endPercent = endPercent === undefined ? 1 : Math.max(Math.min(endPercent, 1), 0);
     var values = new Float32Array(segments * _chunkSize * 6);
-    var length = angle * radius;
     var yMin = baseOffset[1],
       yMax = yMin + Math.min(radius * 0.01, 0.08 * length),
       avgPercent = (startPercent + endPercent) / 2.0,
       f6 = 0.01 * length,
-      f7 = 0.1 + avgPercent * 0.3;
+      f7 = 0.1 + avgPercent * 0.3,
+      up = vec3.fromValues(0, 1, 0),
+      right = vec3.fromValues(0, 0, 1);
     var step = segments * 2;
     for(var i = 0; i < segments; i++)
     {
@@ -1209,72 +1234,60 @@ var SphericalPortalLinkMesh = (function(){
         // v as in "uv" as in texcoords
         v = f8 * f6,
         // "current" point in progression
-        curr = vec2.lerp(vec2.create(), start, end, f8),
+        curr = f8 === 0 ? s : dest(s, bearing, angle * f8),
         // "next" point in the progression
-        next = vec2.lerp(vec2.create(), start, end, f8 + (1 / (segments - 1))),
-        transform = buildMatrix(curr[0], curr[1], radius),
-        nextTransform = buildMatrix(next[0], next[1], radius),
-        // point on the surface of the sphere that's the base of the cross-shaped structure we're generating
-        base = vec3.transformMat4(vec3.create(), vec3.fromValues(curr[0], 0, curr[1]), transform),
-        // "next" point on the sphere on the path.
-        nextBase = vec3.transformMat4(vec3.create(), vec3.fromValues(next[0], 0, next[1]), nextTransform),
-        // normalized, base poiont also functions as the "up" direction
-        up = vec3.normalize(vec3.create(), base),
-        // direction the link is "facing"
-        heading = vec3.subtract(vec3.create(), nextBase, base),
-        // determines what's "to the right"
-        right = vec3.normalize(vec3.create(), vec3.cross(vec3.create(), heading, up)),
+        next = dest(s, bearing, angle * (f8 + 1 / (segments - 1))),
+        transform = buildMatrix(curr, next, radius),
         // "height" of the centerpoint of the link.
-        h = yMin + (3.0 + (-1.5 * Math.pow(clampedSin(2.0 * Math.abs(f8 - 0.5)), 4))) * (yMax - yMin),
+        h = vec3.fromValues(0, yMin + (3.0 + (-1.5 * Math.pow(clampedSin(2.0 * Math.abs(f8 - 0.5)), 4))) * (yMax - yMin), 0),
         // "radius" of the link
         w = radius * 0.01 * clampedSin(1.0 - 2.0 * Math.abs(f8 - 0.5)),
-        hVec = vec3.scale(vec3.create(), up, h),
-        wRight = vec3.scale(vec3.create(), right, w),
-        wUp = vec3.scale(vec3.create(), up, w),
+        wUp = vec3.fromValues(0, w, 0),
+        wRight = vec3.fromValues(0, 0, w),
         cl = vec4.lerp(vec4.create(), baseColor, color, 0.25 + f9 * 0.75);
       cl[3] = f10;
 
       // top horizontal segment
       // right point
       fillChunk(values, (i * 2),
-        vec3.add(vec3.create(), base, vec3.add(vec3.create(), hVec, wRight)),
+        vec3.transformMat4(vec3.create(), vec3.add(vec3.create(), h, wRight), transform),
         vec2.fromValues(0, v),
-        up,
+        vec3.transformMat4(vec3.create(), up, transform),
         f7,
         cl);
       // left point
       fillChunk(values, (i * 2) + 1,
-        vec3.add(vec3.create(), base, vec3.subtract(vec3.create(), hVec, wRight)),
+        vec3.transformMat4(vec3.create(), vec3.subtract(vec3.create(), h, wRight), transform),
         vec2.fromValues(0.5, v),
-        up,
+        vec3.transformMat4(vec3.create(), up, transform),
         f7,
         cl);
 
       // top vertical segment
       fillChunk(values, step + (i * 2),
-        vec3.add(vec3.create(), base, vec3.add(vec3.create(), hVec, wUp)),
+        vec3.transformMat4(vec3.create(), vec3.add(vec3.create(), h, wUp), transform),
         vec2.fromValues(0, v),
-        right,
+        vec3.transformMat4(vec3.create(), right, transform),
         f7,
         cl);
       fillChunk(values, step + (i * 2) + 1,
-        vec3.add(vec3.create(), base, vec3.subtract(vec3.create(), hVec, wUp)),
+        vec3.transformMat4(vec3.create(), vec3.subtract(vec3.create(), h, wUp), transform),
         vec2.fromValues(0.5, v),
-        right,
+        vec3.transformMat4(vec3.create(), right, transform),
         f7,
         cl);
 
       // bottom vertical segment
       fillChunk(values, 2 * step + (i * 2),
-        vec3.add(vec3.create(), base, vec3.subtract(vec3.create(), hVec, wUp)),
+        vec3.transformMat4(vec3.create(), vec3.subtract(vec3.create(), h, wUp), transform),
         vec2.fromValues(0.5, v),
-        right,
+        vec3.transformMat4(vec3.create(), right, transform),
         f7,
         cl);
       fillChunk(values, 2 * step + (i * 2) + 1,
-        base,
+        vec3.transformMat4(vec3.create(), vec3.fromValues(0, 0, 0), transform),
         vec2.fromValues(1.0, v),
-        right,
+        vec3.transformMat4(vec3.create(), right, transform),
         f7,
         cl);
     }
@@ -1323,7 +1336,7 @@ var SphericalPortalLinkMesh = (function(){
 
     var linkAttributes = _generateLinkAttributes(this.radius, start, end, color, startPercent, endPercent);
     var len = linkAttributes.length, segments = Math.floor(len / _chunkSize / 6);
-    var ind = _generateFaces(this.vertexOffset, segments);
+    var ind = _generateFaces(this.vertexOffset / _chunkSize, segments);
     this.attributes.setValues(linkAttributes, this.vertexOffset);
     this.vertexOffset += len;
     this.faces.setValues(ind, this.faceOffset);

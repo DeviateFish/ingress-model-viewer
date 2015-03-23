@@ -9,9 +9,6 @@ var GLAttribute = (function() {
     this.size = this.count = null;
     this.validate = false;
     this.getSize();
-    if(this.values) {
-      this.update();
-    }
     return this;
   };
   inherits(glAttribute, GLBuffer);
@@ -44,14 +41,18 @@ var GLAttribute = (function() {
   glAttribute.prototype.updateValues = function(values) {
     this.values = values;
     this.validate();
-    this.update();
+    return this.update();
   };
 
   glAttribute.prototype.draw = function(locations)
   {
     var gl = this._gl;
     var a, s = 0;
-    this.bindBuffer();
+    if(!this.glBuf) {
+      this.update();
+    } else {
+      this.bindBuffer();
+    }
     for(var i = 0; i < this.attributes.length; i++)
     {
       a = this.attributes[i];
