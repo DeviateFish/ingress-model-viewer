@@ -319,6 +319,7 @@
         "sprite_map_region": { "vertex": "shaders/sprite_map_region.glsl.vert", "fragment": "shaders/sprite_map_region.glsl.frag" },
         "sprite_tinted_alpha_map": { "vertex": "shaders/sprite_tinted_alpha_map.glsl.vert", "fragment": "shaders/sprite_tinted_alpha_map.glsl.frag" },
         "captured_region": { "vertex": "shaders/captured_region.glsl.vert", "fragment": "shaders/captured_region.glsl.frag" },
-        "atmosphere": { "vertex": "/static/atmosphere.glsl.vert", "fragment": "/static/atmosphere.glsl.frag", "program": "Glowramp", "static": true }
+        "atmosphere": { "vertex": "/static/atmosphere.glsl.vert", "fragment": "/static/atmosphere.glsl.frag", "program": "Glowramp", "static": true },
+        "link3d": { "vertex": "/static/link3d.glsl.vert", "fragment": "/static/link3d.glsl.frag", "program": "Glowramp", "static": true }
     }
 }

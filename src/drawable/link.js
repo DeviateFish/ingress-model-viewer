@@ -1,10 +1,7 @@
 var LinkDrawable = (function(){
 
-  // no defaults here.
-  var PROGRAM_NAME = 'LinkShader';
-
-  var linkDrawable = function(mesh, textureName) {
-    DynamicTexturedDrawable.call(this, PROGRAM_NAME, mesh, textureName);
+  var linkDrawable = function(programName, mesh, textureName) {
+    DynamicTexturedDrawable.call(this, programName, mesh, textureName);
     this.uniforms.u_cameraFwd = vec3.fromValues(0, 0, -1);
     this.uniforms.u_elapsedTime = 0;
   };
@@ -41,5 +38,17 @@ var LinkDrawable = (function(){
   return linkDrawable;
 }());
 
+var PortalLinkDrawable = function(mesh, textureName) {
+  LinkDrawable.call(this, 'LinkShader', mesh, textureName);
+};
+inherits(PortalLinkDrawable, LinkDrawable);
+
+var SphericalLinkDrawable = function(mesh, textureName) {
+  LinkDrawable.call(this, 'link3d', mesh, textureName);
+};
+inherits(SphericalLinkDrawable, LinkDrawable);
+
 imv.Drawables = imv.Drawables || {};
 imv.Drawables.Link = LinkDrawable;
+imv.Drawables.PortalLink = PortalLinkDrawable;
+imv.Drawables.SphericalLink = SphericalLinkDrawable;

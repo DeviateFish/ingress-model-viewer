@@ -1157,7 +1157,7 @@ imv.Meshes.PortalLink = PortalLinkMesh;
 
 var SphericalPortalLinkMesh = (function(){
 
-  var _chunkSize = 12;
+  var _chunkSize = 13;
   var MAX_LINKS = 50; // seems reasonable.
   var EST_CHUNKS = 25; // half a hemisphere
 
@@ -1214,6 +1214,7 @@ var SphericalPortalLinkMesh = (function(){
   var fillChunk = function(buf, index, pos, uv, normal, f6, color)
   {
     var off = index * _chunkSize;
+    vec3.normalize(normal, normal);
     buf[off + 0] = pos[0];
     buf[off + 1] = pos[1];
     buf[off + 2] = pos[2];
@@ -1221,11 +1222,12 @@ var SphericalPortalLinkMesh = (function(){
     buf[off + 4] = uv[0];
     buf[off + 5] = uv[1];
     buf[off + 6] = normal[0];
-    buf[off + 7] = normal[2];
-    buf[off + 8] = color[0];
-    buf[off + 9] = color[1];
-    buf[off + 10] = color[2];
-    buf[off + 11] = color[3];
+    buf[off + 7] = normal[1];
+    buf[off + 8] = normal[2];
+    buf[off + 9] = color[0];
+    buf[off + 10] = color[1];
+    buf[off + 11] = color[2];
+    buf[off + 12] = color[3];
   };
 
   // start and end should probably be in radians?
@@ -1341,7 +1343,8 @@ var SphericalPortalLinkMesh = (function(){
     var buf = new Float32Array(EST_CHUNKS * _chunkSize * MAX_LINKS);
     var attributes = [];
     attributes.push(new VertexAttribute('a_position', 4));
-    attributes.push(new VertexAttribute('a_texCoord0', 4));
+    attributes.push(new VertexAttribute('a_texCoord0', 2));
+    attributes.push(new VertexAttribute('a_normal', 3));
     attributes.push(new VertexAttribute('a_color', 4));
     var attribute = new GLAttribute(gl, attributes, buf, gl.DYNAMIC_DRAW);
     var faces = new GLIndex(gl, new Uint16Array(EST_CHUNKS * 18 * MAX_LINKS), gl.TRIANGLES);
@@ -2192,11 +2195,8 @@ imv.Drawables.DynamicTextured = DynamicTexturedDrawable;
 
 var LinkDrawable = (function(){
 
-  // no defaults here.
-  var PROGRAM_NAME = 'LinkShader';
-
-  var linkDrawable = function(mesh, textureName) {
-    DynamicTexturedDrawable.call(this, PROGRAM_NAME, mesh, textureName);
+  var linkDrawable = function(programName, mesh, textureName) {
+    DynamicTexturedDrawable.call(this, programName, mesh, textureName);
     this.uniforms.u_cameraFwd = vec3.fromValues(0, 0, -1);
     this.uniforms.u_elapsedTime = 0;
   };
@@ -2233,8 +2233,21 @@ var LinkDrawable = (function(){
   return linkDrawable;
 }());
 
+var PortalLinkDrawable = function(mesh, textureName) {
+  LinkDrawable.call(this, 'LinkShader', mesh, textureName);
+};
+inherits(PortalLinkDrawable, LinkDrawable);
+
+var SphericalLinkDrawable = function(mesh, textureName) {
+  LinkDrawable.call(this, 'link3d', mesh, textureName);
+};
+inherits(SphericalLinkDrawable, LinkDrawable);
+
 imv.Drawables = imv.Drawables || {};
 imv.Drawables.Link = LinkDrawable;
+imv.Drawables.PortalLink = PortalLinkDrawable;
+imv.Drawables.SphericalLink = SphericalLinkDrawable;
+
 
 var AtmosphereDrawable = (function(){
 
