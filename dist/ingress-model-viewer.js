@@ -102,6 +102,11 @@ var constants = {
       Red: vec4.fromValues(0.78, 0.84, 1.0, 1.0),
       Purple: vec4.fromValues(0.25, 0.81, 1.0, 1.0),
       Target: vec4.fromValues(0.70, 0.70, 0.70, 1.0)
+    },
+    Lightman: {
+      Red: vec4.fromValues(1.0, 0.44, 0.45, 1.0),
+      Purple: vec4.fromValues(1.0, 0.24, 0.25, 1.0),
+      Target: vec4.fromValues(0.74, 0.0, 0.02, 1.0)
     }
   },
   xmColors: {
