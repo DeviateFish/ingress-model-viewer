@@ -490,7 +490,6 @@ var constants = {
     Media: 'MediaCubeTexture',
     Waypoint: 'FtWaypointTexture',
     ShieldEffect: 'PortalShieldTexture',
-    MediaCube: 'MediaCubeTexture',
     ColorGlow: 'ColorGlowTexture',
     TargetGlow: 'TargetGlowTexture',
     ArtifactHelios: 'ArtifactHeliosTexture',
@@ -2056,7 +2055,7 @@ imv.Drawables.ShieldEffect = ShieldEffectDrawable;
       TexturedDrawable.call(this,
         imv.Constants.Program.Textured,
         inventory[name],
-        imv.Constants.Texture.MediaCube
+        imv.Constants.Texture.FlipCard
       );
     };
     inherits(media, TexturedDrawable);
@@ -2080,6 +2079,7 @@ imv.Drawables.ShieldEffect = ShieldEffectDrawable;
     }
   }
 }());
+
 
 (function() {
   var resource = imv.Constants.Mesh.Resource;

@@ -23,9 +23,9 @@
   canvas.width = document.body.offsetWidth;
   canvas.height = document.body.offsetHeight;
 
-  window.addEventListener('resize', function(){
+  /*window.addEventListener('resize', function(){
     engine.resize(document.body.offsetWidth, document.body.offsetHeight);
-  })
+  });*/
 
   var init = function(assets) {
     engine = new IMV.Engine(canvas, assets, true);

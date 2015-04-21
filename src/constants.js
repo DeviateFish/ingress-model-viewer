@@ -439,7 +439,6 @@ var constants = {
     Media: 'MediaCubeTexture',
     Waypoint: 'FtWaypointTexture',
     ShieldEffect: 'PortalShieldTexture',
-    MediaCube: 'MediaCubeTexture',
     ColorGlow: 'ColorGlowTexture',
     TargetGlow: 'TargetGlowTexture',
     ArtifactHelios: 'ArtifactHeliosTexture',

@@ -26,7 +26,7 @@
       TexturedDrawable.call(this,
         imv.Constants.Program.Textured,
         inventory[name],
-        imv.Constants.Texture.MediaCube
+        imv.Constants.Texture.FlipCard
       );
     };
     inherits(media, TexturedDrawable);
