@@ -157,11 +157,10 @@ var OrbitControls = (function() {
 
   controls.prototype.onMouseWheel = function(ev)
   {
-    ev.preventDefault();
     if (this.overRenderer) {
       this.zoom(ev.wheelDeltaY * this.options.wheelScale * (this.distance < MIN_LOG_DIST ? this.distance : Math.log(this.distance)));
     }
-    return false;
+    return true;
   };
 
   controls.prototype.onTouchStart = function(ev)
