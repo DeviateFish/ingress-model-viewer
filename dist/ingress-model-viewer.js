@@ -1326,7 +1326,7 @@ var SphericalPortalLinkMesh = (function(){
     var angle = getRadialDistance(s, e);
     var bearing = getBearing(s, e);
     var length = angle * radius;
-    var segments = Math.max(Math.floor(angle / Math.PI * 50) + 1, 2); // 50 segments for a half-circle sounds good, I guess.
+    var segments = Math.max(Math.floor(angle / Math.PI * 50) + 1, 8); // 50 segments for a half-circle sounds good, I guess.
     startPercent = startPercent === undefined ? 1 : Math.max(Math.min(startPercent, 1), 0);
     endPercent = endPercent === undefined ? 1 : Math.max(Math.min(endPercent, 1), 0);
     var values = new Float32Array(segments * _chunkSize * 6);
