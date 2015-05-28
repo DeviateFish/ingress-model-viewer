@@ -2,7 +2,7 @@ var SphericalPortalLinkMesh = (function(){
 
   var _chunkSize = 13;
   var MAX_LINKS = 50; // seems reasonable.
-  var EST_CHUNKS = 25; // half a hemisphere
+  var EST_CHUNKS = 50; // half a hemisphere
 
   var clampedSin = function(f)
   {
