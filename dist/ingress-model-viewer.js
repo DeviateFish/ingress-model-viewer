@@ -141,6 +141,7 @@ var constants = {
       Resonator: 'ResonatorMesh',
       ResonatorXm: 'ResonatorXMMesh',
       Capsule: 'CapsuleMesh',
+      InterestCapsule: 'InterestCapsuleMesh',
       CapsuleXm: 'CapsuleXmMesh',
       ExtraShield: 'ExtraShieldMesh',
       MediaCube: 'MediaCubeMesh',
@@ -161,6 +162,7 @@ var constants = {
       Resonator: 'ResonatorResourceUnitMesh',
       PortalShield: 'PortalShieldResourceUnitMesh',
       Capsule: 'CapsuleResourceUnitMesh',
+      InterestCapsule: 'InterestCapsuleResourceUnitMesh',
       ExtraShield: 'ExtraShieldResourceUnitMesh',
     },
     Player: {
@@ -2486,7 +2488,18 @@ imv.Entity = Entity;
   inherits(ExtraShield, Entity);
 
   imv.Entities.Inventory.ExtraShield = ExtraShield;
+
+  var InterestCapsule = function() {
+    Entity.call(this);
+    this.addDrawable('InterestCapsule', new imv.Drawables.Inventory.InterestCapsule());
+    this.addDrawable('CapsuleXm', new imv.Drawables.Inventory.CapsuleXm());
+    this.drawables.InterestCapsule.uniforms.u_color0 = vec4.clone(imv.Constants.qualityColors.VERY_RARE);
+  };
+  inherits(InterestCapsule, Entity);
+
+  imv.Entities.Inventory.InterestCapsule = InterestCapsule;
 }());
+
 
 var PortalEntity = function() {
   Entity.call(this);
@@ -3410,7 +3423,7 @@ Engine.prototype.preload = function(callback) {
 imv.Engine = Engine;
 
 
-  imv.VERSION = '0.14.0';
+  imv.VERSION = '0.15.0';
 
   root.IMV = imv;
 

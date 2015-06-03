@@ -66,4 +66,14 @@
   inherits(ExtraShield, Entity);
 
   imv.Entities.Inventory.ExtraShield = ExtraShield;
+
+  var InterestCapsule = function() {
+    Entity.call(this);
+    this.addDrawable('InterestCapsule', new imv.Drawables.Inventory.InterestCapsule());
+    this.addDrawable('CapsuleXm', new imv.Drawables.Inventory.CapsuleXm());
+    this.drawables.InterestCapsule.uniforms.u_color0 = vec4.clone(imv.Constants.qualityColors.VERY_RARE);
+  };
+  inherits(InterestCapsule, Entity);
+
+  imv.Entities.Inventory.InterestCapsule = InterestCapsule;
 }());

@@ -23,66 +23,26 @@
   var canvas = document.getElementById('screen'), engine;
   canvas.width = document.body.offsetWidth;
   canvas.height = document.body.offsetHeight;
-  var slim = {
-    "texture": {
-      "FlipCardTexture": { "path": "scanner/genericModTexture.png", "minFilter": "Linear", "magFilter": "Linear", "wrapS": "ClampToEdge", "wrapT": "ClampToEdge" },
-      "GlowrampTexture": { "path": "scanner/portalTexture.png", "minFilter": "MipMapLinearNearest", "magFilter": "Linear", "wrapS": "Repeat", "wrapT": "Repeat" },
-      "PortalShieldTexture": { "path": "scanner/portalShieldMod.png", "minFilter": "MipMapLinearLinear", "magFilter": "Linear", "wrapS": "Repeat", "wrapT": "Repeat" },
-      "ObjectXMTexture": { "path": "scanner/objectXMTexture.tga", "minFilter": "MipMapLinearLinear", "magFilter": "Linear", "wrapS": "Repeat", "wrapT": "Repeat" },
-    },
-    "mesh": {
-      "XmpMesh": { "path": "scanner/xmp.obj" },
-      "XmpXMMesh": { "path": "scanner/xmpXM.obj" },
-      "XmpResourceUnitMesh": { "path": "scanner/xmpResourceUnit.obj" },
-      "PortalShieldMesh": { "path": "scanner/shield.obj" },
-      "TexturedPortalMesh": { "path": "scanner/texturedPortal.obj" },
-      "LinkAmpMesh": { "path": "scanner/linkAmpResource.obj" },
-      "LinkAmpXmMesh": { "path": "scanner/linkAmpResourceXM.obj" },
-      "LinkAmpResourceUnitMesh": { "path": "scanner/linkAmpResourceUnit.obj" },
-    },
-    "program": {
-      "textured": { "vertex": "shaders/textured.glsl.vert", "fragment": "shaders/textured.glsl.frag", "program": "Opaque" },
-      "portal_scanner": { "vertex": "shaders/portal_scanner.glsl.vert", "fragment": "shaders/portal_scanner.glsl.frag", "program": "Glowramp" },
-      "shield": { "vertex": "shaders/shield.glsl.vert", "fragment": "shaders/shield.glsl.frag", "program": "Glowramp" },
-      "xm": { "vertex": "shaders/xm.glsl.vert", "fragment": "shaders/xm.glsl.frag", "program": "Opaque" },
-      "bicolor_textured": { "vertex": "shaders/bicolor_textured.glsl.vert", "fragment": "shaders/bicolor_textured.glsl.frag", "program": "Opaque" },
-    }
-  };
+
+  window.addEventListener('resize', function(){
+    engine.resize(document.body.offsetWidth, document.body.offsetHeight);
+  });
 
   var init = function(assets) {
     engine = new IMV.Engine(canvas, assets);
     engine.preload(function() {
-      mat4.lookAt(engine.view, [0.0, 25.0, 40.0], [0.0, 5.0, 0.0], [0.0, 1.0, 0.0]);
+      mat4.lookAt(engine.view, [0.0, 1.5, 3], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
       engine.objectRenderer.updateView(engine.view, engine.project);
-      //var la = new IMV.Entities.Inventory.LinkAmp();
-      //la.setAnimation(rotate);
-      //engine.objectRenderer.addEntity(la);
-      for(var i in IMV.Drawables.Artifact.Shonin) {
-        var n = new IMV.Drawables.Artifact.Shonin[i]();
-        //n.onUpdate = rotate;
-        engine.objectRenderer.addDrawable(n);
-      }
+      var ic = new IMV.Entities.Inventory.InterestCapsule();
+      ic.setAnimation(rotate);
+      engine.objectRenderer.addEntity(ic);
     });
   };
 
-  var renderloop = function() {
-    engine && engine.render();
-    requestAnimationFrame(renderloop);
-  };
-
   var rotate = function(delta) {
-    mat4.rotateY(this.model, this.model, delta / 1000);
+    mat4.rotateY(this.local, this.local, delta / 1000);
     this.updateMatrix();
     return true;
-  };
-
-  var addEach = function() {
-    for(var i in IMV.Entities) {
-      var t = new IMV.Entities[i](engine.objectRenderer);
-      t.translate(vec3.fromValues(Math.random() * 10 - 5, 0, Math.random() * 10 - 5));
-      t.add();
-      t.setAnimation(rotate);
-    }
   };
 
   var assets = {};
@@ -94,7 +54,6 @@
     if(assets) {
       init(assets);
       engine.render();
-      //addEach();
     }
   });
 

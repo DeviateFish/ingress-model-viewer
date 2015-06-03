@@ -90,6 +90,7 @@ var constants = {
       Resonator: 'ResonatorMesh',
       ResonatorXm: 'ResonatorXMMesh',
       Capsule: 'CapsuleMesh',
+      InterestCapsule: 'InterestCapsuleMesh',
       CapsuleXm: 'CapsuleXmMesh',
       ExtraShield: 'ExtraShieldMesh',
       MediaCube: 'MediaCubeMesh',
@@ -110,6 +111,7 @@ var constants = {
       Resonator: 'ResonatorResourceUnitMesh',
       PortalShield: 'PortalShieldResourceUnitMesh',
       Capsule: 'CapsuleResourceUnitMesh',
+      InterestCapsule: 'InterestCapsuleResourceUnitMesh',
       ExtraShield: 'ExtraShieldResourceUnitMesh',
     },
     Player: {
