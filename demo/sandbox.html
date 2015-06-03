@@ -28,6 +28,46 @@
     engine.resize(document.body.offsetWidth, document.body.offsetHeight);
   });
 
+  var minifest = {
+    "texture": {
+      "FlipCardTexture": {
+        "path": "scanner/genericModTexture.png",
+        "minFilter": "Linear",
+        "magFilter": "Linear",
+        "wrapS": "ClampToEdge",
+        "wrapT": "ClampToEdge"
+      },
+      "ObjectXMTexture": {
+        "path": "scanner/objectXMTexture.tga",
+        "minFilter": "MipMapLinearLinear",
+        "magFilter": "Linear",
+        "wrapS": "Repeat",
+        "wrapT": "Repeat"
+      }
+    },
+    "mesh": {
+      "InterestCapsuleMesh": {
+        "path": "scanner/interestCapsuleResource.obj"
+      },
+      "CapsuleXmMesh": {
+        "path": "scanner/capsuleResourceXM.obj"
+      }
+    },
+    "rawProgram": {},
+    "program": {
+      "bicolor_textured": {
+        "vertex": "shaders/bicolor_textured.glsl.vert",
+        "fragment": "shaders/bicolor_textured.glsl.frag",
+        "program": "Opaque"
+      },
+      "xm": {
+        "vertex": "shaders/xm.glsl.vert",
+        "fragment": "shaders/xm.glsl.frag",
+        "program": "Opaque"
+      }
+    }
+  };
+
   var init = function(assets) {
     engine = new IMV.Engine(canvas, assets);
     engine.preload(function() {
@@ -45,17 +85,8 @@
     return true;
   };
 
-  var assets = {};
-  IMV.Utilities.loadResource('/assets.json', 'text', function(err, val) {
-    if(err) {
-      throw err;
-    }
-    assets = JSON.parse(val);
-    if(assets) {
-      init(assets);
-      engine.render();
-    }
-  });
+  init(minifest);
+  engine.render();
 
   var findConstant = function(gl, num)
   {
