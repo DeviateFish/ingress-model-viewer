@@ -7,31 +7,22 @@ var GLAttribute = (function() {
     this.attributes = attributes;
     this.values = values;
     this.size = this.count = null;
-    this.validate = false;
-    this.getSize();
-    return this;
-  };
-  inherits(glAttribute, GLBuffer);
-
-  // these are float-based types only, for now.
-  glAttribute.prototype.getSize = function()
-  {
+    this._validate = false;
     this.size = 0;
-    var width = 0;
+    this.width = 0;
     for(var i = 0, a; i < this.attributes.length; i++)
     {
       a = this.attributes[i];
       this.size += 4 * a.size; // 4 because float is 4 bytes.
-      width += a.size;
+      this.width += a.size;
     }
+    return this;
   };
+  inherits(glAttribute, GLBuffer);
 
   glAttribute.prototype.validate = function() {
-    if(this.validate) {
-      var width = this.attributes.reduce(function(sum, attr){
-        return sum + attr.size;
-      }, 0);
-      if(this.values.length % width !== 0)
+    if(this._validate) {
+      if(this.values.length % this.width !== 0)
       {
         console.warn('values array length is not an even multiple of the total size of the attributes');
       }
@@ -68,6 +59,19 @@ var GLAttribute = (function() {
       s += 4 * a.size;
     }
     return this; //.unbindBuffer();  // maybe?
+  };
+
+  glAttribute.prototype.eachAttribute = function(attributeIndex, callback) {
+    var offset = 0, size, i;
+    if(attributeIndex >= 0 && attributeIndex < this.attributes.length) {
+      for(i = 0; i < attributeIndex; i++) {
+        offset += this.attributes[i].size;
+      }
+      size = this.attributes[attributeIndex].size;
+      for(i = offset; i < this.values.length; i += this.width) {
+        callback(this.values.subarray(i, i + size));
+      }
+    }
   };
 
   return glAttribute;

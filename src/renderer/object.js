@@ -21,16 +21,21 @@ ObjectRenderer.prototype.addDrawable = function(drawable) {
   this.drawables.push(drawable);
 };
 
-ObjectRenderer.prototype.removeDrawable = function(drawable) {
+ObjectRenderer.prototype.removeDrawable = function(drawable, destroy) {
   for(var i = 0; i < this.drawables.length; i++)
   {
     if(this.drawables[i] === drawable)
     {
       this.drawables.splice(i, 1);
-      // TODO: should dispose of drawable here.
-      return;
+      if(destroy) {
+        drawable.dispose();
+        return true;
+      } else {
+        return drawable;
+      }
     }
   }
+  return false;
 };
 
 ObjectRenderer.prototype.addEntity = function(entity) {

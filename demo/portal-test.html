@@ -23,6 +23,11 @@
   canvas.width = document.body.offsetWidth;
   canvas.height = document.body.offsetHeight;
 
+  var controls = new IMV.Controls.Orbit(canvas, 100, {
+        distanceMin: 1,
+        distanceMax: 150
+      });
+
   window.addEventListener('resize', function(){
     engine.resize(document.body.offsetWidth, document.body.offsetHeight);
   });
@@ -33,6 +38,42 @@
       console.log('ready');
       setupScene();
     });
+  };
+
+  var rotate = function(delta) {
+    mat4.rotateY(this.model, this.model, delta / 1000);
+    this.updateMatrix();
+    return true;
+  };
+
+  var updateCamera = function() {
+    controls.updateView(engine.view);
+    engine.updateView();
+    window.requestAnimationFrame(updateCamera);
+  };
+
+  var setupScene = function() {
+    mat4.lookAt(engine.view, [0.0, 50, 75], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
+    engine.far = 500;
+    engine.objectRenderer.updateView(engine.view, engine.project);
+    var portal = new IMV.Entities.World.Portal(engine);
+    portal.addShield();
+    engine.render();
+    controls.enable();
+    window.requestAnimationFrame(updateCamera);
+    var i = 0;
+    var reset = function() {
+      portal.drawables.Portal.onUpdate = IMV.Utilities.disco;
+    };
+    setTimeout(function addReso() {
+      if(i < 8) {
+        portal.addResonator('L8', i++);
+        setTimeout(addReso, 1000);
+      } else {
+        portal.setColor(IMV.Constants.teamColors.RESISTANCE);
+        setTimeout(reset, 1000);
+      }
+    }, 1000);
   };
 
   IMV.Utilities.loadResource('/assets.json', 'text', function(err, val) {

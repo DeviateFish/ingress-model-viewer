@@ -35,4 +35,9 @@ Texture.prototype.use = function(index)
   gl.activeTexture(gl.TEXTURE0 + index);
 };
 
+Texture.prototype.dispose = function() {
+  // TODO: Figure out when this should be called.
+  // noop;
+};
+
 imv.Texture = Texture;

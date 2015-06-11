@@ -21,8 +21,12 @@ var ShieldEffectDrawable = (function(){
   shieldEffectDrawable.prototype.updateTime = function(delta) {
     var ret = ModelDrawable.prototype.updateTime.call(this, delta);
     var inc = this.elapsed / 10000;
-    this.uniforms.u_rampTargetInvWidth[0] = (inc - Math.floor(inc)) * -2.0 + 1.0;
-    this.uniforms.u_rampTargetInvWidth[1] = (inc - Math.floor(inc)) * 2.0;
+    // this is so shitty, but again, this java decompiler really doesn't like the file.
+    // This is nothing close to what's 'supposed' to happen in these uniforms, just a hack
+    // that's kinda sorta like the actual thing.
+    this.uniforms.u_rampTargetInvWidth[0] = -(inc - Math.floor(inc));
+    this.uniforms.u_rampTargetInvWidth[1] = Math.sin((inc - Math.floor(inc)) * Math.PI / 2);
+    // u_contributionsAndAlpha?
     return ret;
   };
 

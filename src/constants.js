@@ -447,7 +447,9 @@ var constants = {
     ArtifactAmar: 'ArtifactAmarTexture',
     ArtifactJarvis: 'ArtifactJarvisTexture',
     ArtifactShonin: 'ArtifactShoninTexture',
-    ArtifactLightman: 'ArtifactLightmanTexture'
+    ArtifactLightman: 'ArtifactLightmanTexture',
+    PortalLink: 'PortalLinkTexture',
+    ResonatorLink: 'ResonatorLinkTexture'
   }
 };
 

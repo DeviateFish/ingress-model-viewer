@@ -498,7 +498,9 @@ var constants = {
     ArtifactAmar: 'ArtifactAmarTexture',
     ArtifactJarvis: 'ArtifactJarvisTexture',
     ArtifactShonin: 'ArtifactShoninTexture',
-    ArtifactLightman: 'ArtifactLightmanTexture'
+    ArtifactLightman: 'ArtifactLightmanTexture',
+    PortalLink: 'PortalLinkTexture',
+    ResonatorLink: 'ResonatorLinkTexture'
   }
 };
 
@@ -546,10 +548,19 @@ var setParams = function(base, opts, deep)
   return base;
 };
 
+var disco = function(delta, elapsed) {
+  var inc = elapsed / 1000;
+  this.uniforms.u_baseColor[0] = Math.sin(inc);
+  this.uniforms.u_baseColor[1] = Math.sin(inc + (2 * Math.PI / 3));
+  this.uniforms.u_baseColor[2] = Math.sin(inc + (4 * Math.PI / 3));
+  return true;
+};
+
 imv.Utilities = imv.Utilities || {};
 imv.Utilities.inherits = inherits;
 imv.Utilities.resetGL = resetGL;
 imv.Utilities.setParams = setParams;
+imv.Utilities.disco = disco;
 
 
 var loadResource = function(url, type, callback)
@@ -737,7 +748,31 @@ GLBuffer.prototype.setValues = function(values, offset) {
   } else {
     this.values.set(values, offset);
   }
+  this.update();
   return this;
+};
+
+// remove a chunk of a buffer
+GLBuffer.prototype.deleteWithin = function(start, end) {
+  if(!this.values) {
+    console.warn('Trying to splice a buffer that has no values.');
+    return false;
+  }
+  var nValues = end - start;
+  var empty = new this.values.constructor(nValues);
+  this.values.set(this.values.subarray(end), start);
+  this.values.set(empty, this.values.length - nValues);
+  this.update();
+  return this;
+};
+
+// do something to each element in a buffer
+GLBuffer.prototype.map = function(callback, start, end) {
+  start = start === undefined ? 0 : start;
+  end = end === undefined ? this.values.length : end;
+  for(var i = start; i < end; i++) {
+    this.values[i] = callback(this.values[i], i);
+  }
 };
 
 GLBuffer.prototype.updateBuffer = function(values) {
@@ -758,31 +793,22 @@ var GLAttribute = (function() {
     this.attributes = attributes;
     this.values = values;
     this.size = this.count = null;
-    this.validate = false;
-    this.getSize();
-    return this;
-  };
-  inherits(glAttribute, GLBuffer);
-
-  // these are float-based types only, for now.
-  glAttribute.prototype.getSize = function()
-  {
+    this._validate = false;
     this.size = 0;
-    var width = 0;
+    this.width = 0;
     for(var i = 0, a; i < this.attributes.length; i++)
     {
       a = this.attributes[i];
       this.size += 4 * a.size; // 4 because float is 4 bytes.
-      width += a.size;
+      this.width += a.size;
     }
+    return this;
   };
+  inherits(glAttribute, GLBuffer);
 
   glAttribute.prototype.validate = function() {
-    if(this.validate) {
-      var width = this.attributes.reduce(function(sum, attr){
-        return sum + attr.size;
-      }, 0);
-      if(this.values.length % width !== 0)
+    if(this._validate) {
+      if(this.values.length % this.width !== 0)
       {
         console.warn('values array length is not an even multiple of the total size of the attributes');
       }
@@ -819,6 +845,19 @@ var GLAttribute = (function() {
       s += 4 * a.size;
     }
     return this; //.unbindBuffer();  // maybe?
+  };
+
+  glAttribute.prototype.eachAttribute = function(attributeIndex, callback) {
+    var offset = 0, size, i;
+    if(attributeIndex >= 0 && attributeIndex < this.attributes.length) {
+      for(i = 0; i < attributeIndex; i++) {
+        offset += this.attributes[i].size;
+      }
+      size = this.attributes[attributeIndex].size;
+      for(i = offset; i < this.values.length; i += this.width) {
+        callback(this.values.subarray(i, i + size));
+      }
+    }
   };
 
   return glAttribute;
@@ -897,6 +936,11 @@ Texture.prototype.use = function(index)
   gl.activeTexture(gl.TEXTURE0 + index);
 };
 
+Texture.prototype.dispose = function() {
+  // TODO: Figure out when this should be called.
+  // noop;
+};
+
 imv.Texture = Texture;
 
 
@@ -918,6 +962,8 @@ var Mesh = (function() {
     this.faces = faces;
     this.lines = lines;
     this.mode = MODE_TRIANGLES;
+    this.bounds = null;
+    this.center = null;
   };
   inherits(Mesh, GLBound);
 
@@ -931,6 +977,72 @@ var Mesh = (function() {
     } else if (this.mode === MODE_LINES) {
       this.lines.draw();
     }
+  };
+
+  Mesh.prototype.boundingBox = function(coordAttribute) {
+    if(!this.bounds) {
+      coordAttribute = coordAttribute === undefined ? 0 : coordAttribute;
+      var bounds = {
+        max: null,
+        min: null
+      };
+      this.attributes.eachAttribute(coordAttribute, function(arr) {
+        if(Array.prototype.reduce.call(arr, function(s, a) { return s + a; }, 0) === 0) {
+          return;
+        }
+        if(bounds.max) {
+          bounds.max = bounds.max.map(function(e, i) {
+            return Math.max(e, arr[i]);
+          });
+        } else {
+          bounds.max = Array.prototype.slice.call(arr);
+        }
+        if(bounds.min) {
+          bounds.min = bounds.min.map(function(e, i) {
+            return Math.min(e, arr[i]);
+          });
+        } else {
+          bounds.min = Array.prototype.slice.call(arr);
+        }
+      });
+      this.bounds = bounds;
+    }
+    return this.bounds;
+  };
+
+  Mesh.prototype.centerOfMass = function(coordAttribute) {
+    if(!this.center) {
+      coordAttribute = coordAttribute === undefined ? 0 : coordAttribute;
+      var sum = null,
+        count = 0;
+      this.attributes.eachAttribute(coordAttribute, function(arr) {
+        if(Array.prototype.reduce.call(arr, function(s, a) { return s + a; }, 0) === 0) {
+          return;
+        }
+        count++;
+        if(sum) {
+          sum = sum.map(function(e, i) {
+            return e + arr[i];
+          });
+        } else {
+          sum = Array.prototype.slice.call(arr);
+        }
+      });
+      sum.map(function(e) {
+        return e / count;
+      });
+      this.center = sum;
+    }
+    return this.center;
+  };
+
+  Mesh.prototype.boundingBoxCenter = function(coordAttribute) {
+    if(!this.bounds) {
+      this.boundingBox(coordAttribute);
+    }
+    return this.bounds.max.map(function(e, i) {
+      return (e - this.bounds.min[i]) / 2;
+    }.bind(this));
   };
 
   return Mesh;
@@ -1104,6 +1216,76 @@ imv.Meshes = imv.Meshes || {};
 imv.Meshes.Sphere = SphereMesh;
 
 
+var LinkMesh = (function(){
+
+  var linkmesh = function(gl) {
+    this._attributeSize = this._attributeSize || 4096;
+    this._faceSize = this._faceSize || 2048;
+    this._attributeWidth = this._attributeWidth || 12;
+    this.attributeOffset = 0;
+    this.faceOffset = 0;
+    var attributes = [];
+    attributes.push(new VertexAttribute('a_position', 4));
+    attributes.push(new VertexAttribute('a_texCoord0', 4));
+    attributes.push(new VertexAttribute('a_color', 4));
+    var attribute = new GLAttribute(gl, attributes, new Float32Array(this._attributeSize), gl.DYNAMIC_DRAW);
+    var faces = new GLIndex(gl, new Uint16Array(this._faceSize), gl.TRIANGLES);
+    Mesh.call(this, gl, attribute, faces);
+    this.links = [];
+    this.linkId = 0;
+  };
+  inherits(linkmesh, Mesh);
+
+  linkmesh.prototype.addLink = function(linkAttributes, faces) {
+    var attributeLen = linkAttributes.length;
+    var faceLen = faces.length;
+    if(this.attributeOffset + attributeLen > this._attributeSize || this.faceOffset + faceLen > this._faceSize) {
+      throw new Error('This link system has reached capacity');
+    }
+    this.attributes.setValues(linkAttributes, this.attributeOffset);
+    this.faces.setValues(faces, this.faceOffset);
+    var link = {
+      attribute: attributeLen,
+      face: faceLen,
+      id: this.linkId++
+    };
+    this.attributeOffset += attributeLen;
+    this.faceOffset += faceLen;
+    this.links.push(link);
+    return link.id;
+  };
+
+  linkmesh.prototype.removeLink = function(linkId) {
+    var attributeOffset = 0;
+    var faceOffset = 0;
+    var link;
+    var map = function(shift, val) {
+      return val > 0 ? val + shift : val;
+    };
+    for(var i = 0; i < this.links.length; i++) {
+      if(this.links[i].id === linkId) {
+        link = this.links.splice(i, 1);
+        this.attributes.deleteWithin(attributeOffset, attributeOffset + link[0].attribute);
+        this.attributeOffset -= link[0].attribute;
+        this.faces.map(map.bind(this, -link[0].attribute / this._attributeWidth), faceOffset + link[0].face);
+        this.faces.deleteWithin(faceOffset, faceOffset + link[0].face);
+        this.faceOffset -= link[0].face;
+        return true;
+      } else {
+        attributeOffset += this.links[i].attribute;
+        faceOffset += this.links[i].face;
+      }
+    }
+    return false;
+  };
+
+  return linkmesh;
+}());
+
+imv.Meshes = imv.Meshes || {};
+imv.Meshes.Link = LinkMesh;
+
+
 var PortalLinkMesh = (function(){
 
   // TODO: Parameterize this concept a little better
@@ -1244,6 +1426,134 @@ var PortalLinkMesh = (function(){
 
 imv.Meshes = imv.Meshes || {};
 imv.Meshes.PortalLink = PortalLinkMesh;
+
+
+var ResonatorLinkMesh = (function(){
+
+  // TODO: Parameterize this concept a little better
+  // this has potential to be a really flexible and powerful way of
+  // making, essentially, extruded geometry.
+
+  // 5 sets of 4 points, breaking the link into 4 pieces, each providing 4 faces
+  // chunksize is size of each element in the packed vertex array, in bytes
+  var _len = 5, _size = _len * 4, _chunkSize = 12;
+  var j = new Array(_len),
+    k = new Array(_len),
+    l = new Array(_len);
+
+  var clampedSin = function(f)
+  {
+    return Math.sin(Math.PI * Math.max(Math.min(1.0, f), 0) / 2);
+  };
+
+  for(var i = 0; i < _len; i++)
+  {
+    var f = i / 4.0;
+    j[i] = f;
+    l[i] = 3.5 * Math.max(1.0 - Math.pow(clampedSin(2.0 * Math.abs(f - 0.5)), 4.0), 0.2);
+    k[i] = clampedSin(1.0 - 2.0 * Math.abs(f - 0.5));
+  }
+
+  var baseColor = vec4.fromValues(0.78, 0.31, 0.31, 1.0);
+  var resonatorMidOffset = 0;
+  var portalBaseOffset = 0;
+  var up = vec3.fromValues(0, 1, 0);
+
+  var fillChunk = function(buf, index, x, y, z, u, v, normal, f6, color)
+  {
+    var off = index * _chunkSize;
+    buf[off + 0] = x;
+    buf[off + 1] = y;
+    buf[off + 2] = z;
+    buf[off + 3] = f6;
+    buf[off + 4] = u;
+    buf[off + 5] = v;
+    buf[off + 6] = normal[0];
+    buf[off + 7] = normal[2];
+    buf[off + 8] = color[0];
+    buf[off + 9] = color[1];
+    buf[off + 10] = color[2];
+    buf[off + 11] = color[3];
+  };
+
+  var _generateLinkAttributes = function(portal, resonator, color, resonatorPercent) {
+    resonatorPercent = resonatorPercent === undefined ? 1 : Math.max(Math.min(resonatorPercent, 1), 0);
+    var values = new Float32Array(_size * _chunkSize);
+    var dist = Math.sqrt(
+      (resonator[0] - portal[0]) * (resonator[0] - portal[0]) +
+      (resonator[1] - portal[1]) * (resonator[1] - portal[1])
+    );
+    var f4 = (2 / 30) * dist,
+      f5 = 0.9 + 0.1 * resonatorPercent,
+      f6 = 0.65 + 0.35 * resonatorPercent,
+      f8 = 0.1 + 0.3 * resonatorPercent;
+    var cl = vec4.lerp(vec4.create(), baseColor, color, 0.1 + resonatorPercent * 0.85);
+    cl[3] = 0.75 + 0.25 * resonatorPercent * cl[3];
+    var vec = vec3.fromValues(resonator[0], 0, resonator[1]);
+    vec3.subtract(vec, vec, vec3.fromValues(portal[0], 0, portal[1]));
+    var right = vec3.cross(vec3.create(), vec, up);
+    vec3.normalize(right, right);
+    var step = _len * 2;
+    var f10 = 5.0 * ((portal[0] + portal[1]) - Math.floor(portal[0] + portal[1]));
+    for(var i = 0; i < _len; i++)
+    {
+      var f11 = j[i],
+        f12 = portal[0] + f11 * vec[0],
+        f13 = portal[1] + f11 * vec[2],
+        f14 = portalBaseOffset + f11 * (resonatorMidOffset - portalBaseOffset) + f5 * k[i],
+        f15 = f6 * l[i],
+        f16 = f11 * f4;
+      fillChunk(values, (i * 2) + 0, f12 + f15 * right[0], f14, f13 + f15 * right[2], 0.0, f16 + f10, up, f8, cl);
+      fillChunk(values, (i * 2) + 1, f12 - f15 * right[0], f14, f13 - f15 * right[2], 1.0, f16 + f10, up, f8, cl);
+      fillChunk(values, step + (i * 2) + 0, f12, f14 + f15, f13, 0.0, f16 + f10, right, f8, cl);
+      fillChunk(values, step + (i * 2) + 1, f12, f14 - f15, f13, 1.0, f16 + f10, right, f8, cl);
+    }
+    return values;
+  };
+
+  var _generateFaces = function(vertexOffset) {
+    var ind = new Uint16Array(48),
+      iOff = 0;
+
+    for(i = 0; i < 2; i++)
+    {
+      for(var i2 = 0; i2 < _len - 1; i2++)
+      {
+        ind[iOff + 0] = vertexOffset + 1;
+        ind[iOff + 1] = vertexOffset + 0;
+        ind[iOff + 2] = vertexOffset + 2;
+        ind[iOff + 3] = vertexOffset + 1;
+        ind[iOff + 4] = vertexOffset + 2;
+        ind[iOff + 5] = vertexOffset + 3;
+        vertexOffset += 2;
+        iOff += 6;
+      }
+      vertexOffset += 2;
+    }
+
+    return ind;
+  };
+
+  var linkmesh = function(gl) {
+    // make room for some max number links... though technically, since we
+    // have to rebind these every time we update them anyway, we could just
+    // grow this to whatever arbitrary limit, on the fly.
+    LinkMesh.call(this, gl);
+    this.nLinks = 0;
+  };
+  inherits(linkmesh, LinkMesh);
+
+  linkmesh.prototype.addLink = function(portal, resonator, color, resonatorPercent) {
+    var linkAttributes = _generateLinkAttributes(portal, resonator, color, resonatorPercent);
+    var ind = _generateFaces(this.attributeOffset / _chunkSize);
+    return LinkMesh.prototype.addLink.call(this, linkAttributes, ind);
+  };
+
+  return linkmesh;
+}());
+
+imv.Meshes = imv.Meshes || {};
+imv.Meshes.ResonatorLink = ResonatorLinkMesh;
 
 
 var SphericalPortalLinkMesh = (function(){
@@ -1806,7 +2116,12 @@ Drawable.prototype.updateTime = function(delta) {
   return true;
 };
 
+Drawable.prototype.dispose = function() {
+  // noop;
+};
+
 imv.Drawable = Drawable;
+
 
 var MeshDrawable = (function() {
 
@@ -2018,8 +2333,12 @@ var ShieldEffectDrawable = (function(){
   shieldEffectDrawable.prototype.updateTime = function(delta) {
     var ret = ModelDrawable.prototype.updateTime.call(this, delta);
     var inc = this.elapsed / 10000;
-    this.uniforms.u_rampTargetInvWidth[0] = (inc - Math.floor(inc)) * -2.0 + 1.0;
-    this.uniforms.u_rampTargetInvWidth[1] = (inc - Math.floor(inc)) * 2.0;
+    // this is so shitty, but again, this java decompiler really doesn't like the file.
+    // This is nothing close to what's 'supposed' to happen in these uniforms, just a hack
+    // that's kinda sorta like the actual thing.
+    this.uniforms.u_rampTargetInvWidth[0] = -(inc - Math.floor(inc));
+    this.uniforms.u_rampTargetInvWidth[1] = Math.sin((inc - Math.floor(inc)) * Math.PI / 2);
+    // u_contributionsAndAlpha?
     return ret;
   };
 
@@ -2028,6 +2347,7 @@ var ShieldEffectDrawable = (function(){
 
 imv.Drawables = imv.Drawables || {};
 imv.Drawables.ShieldEffect = ShieldEffectDrawable;
+
 
 (function() {
   var inventory = imv.Constants.Mesh.Inventory;
@@ -2312,14 +2632,12 @@ var LinkDrawable = (function(){
     return ret;
   };
 
-  linkDrawable.prototype.addLink = function(start, end, color, startPercent, endPercent) {
-    // since this doesn't need to be loaded
-    // perhaps change this behavior?
+  linkDrawable.prototype.addLink = function() {
     if(!this.mesh) {
       throw 'Mesh not ready yet!';
     }
 
-    return this.mesh.addLink(start, end, color, startPercent, endPercent);
+    this.mesh.addLink.apply(this.mesh.addLink, arguments);
   };
 
   return linkDrawable;
@@ -2378,18 +2696,24 @@ imv.Drawables = imv.Drawables || {};
 imv.Drawables.Atmosphere = AtmosphereDrawable;
 
 
-var Entity = function() {
+var Entity = function(engine) {
   this.drawables = {};
   this.transform = mat4.create();
+  this.engine = engine;
 };
 
 Entity.prototype.addDrawable = function(name, drawable) {
   // add dispose if this already exists.
+  this.removeDrawable(name);
   this.drawables[name] = drawable;
+  this.engine.objectRenderer.addDrawable(drawable);
 };
 
-Entity.prototype.removeDrawable = function(/*name*/) {
+Entity.prototype.removeDrawable = function(name, destroy) {
   // dispose stuffs.
+  if(this.drawables[name]) {
+    this.engine.objectRenderer.removeDrawable(this.drawables[name], destroy);
+  }
 };
 
 Entity.prototype.applyTransform = function() {
@@ -2420,6 +2744,7 @@ Entity.prototype.setAnimation = function(animate) {
 
 imv.Entity = Entity;
 
+
 (function(){
 
   imv.Entities = imv.Entities || {};
@@ -2440,8 +2765,8 @@ imv.Entity = Entity;
   };
 
   var createItem = function(name, color) {
-    var item = function() {
-      Entity.call(this);
+    var item = function(engine) {
+      Entity.call(this, engine);
       this.addDrawable(name, new imv.Drawables.Inventory[name]());
       this.addDrawable(name + 'Xm', new imv.Drawables.Inventory[name + 'Xm']());
       this.drawables[name].uniforms.u_color0 = vec4.clone(color);
@@ -2455,8 +2780,8 @@ imv.Entity = Entity;
     imv.Entities.Inventory[i] = createItem(i, imv.Constants.qualityColors[simple[i]]);
   }
 
-  var Ada = function() {
-    Entity.call(this);
+  var Ada = function(engine) {
+    Entity.call(this, engine);
     this.addDrawable('FlipCardAda', new imv.Drawables.Inventory.FlipCardAda());
     this.addDrawable('FlipCardXm', new imv.Drawables.Inventory.FlipCardXm());
     this.drawables.FlipCardXm.uniforms.u_teamColor = vec4.clone(imv.Constants.teamColors.RESISTANCE);
@@ -2467,8 +2792,8 @@ imv.Entity = Entity;
 
   imv.Entities.Inventory.FlipCardAda = Ada;
 
-  var Jarvis = function() {
-    Entity.call(this);
+  var Jarvis = function(engine) {
+    Entity.call(this, engine);
     this.addDrawable('FlipCardJarvis', new imv.Drawables.Inventory.FlipCardJarvis());
     this.addDrawable('FlipCardXm', new imv.Drawables.Inventory.FlipCardXm());
     this.drawables.FlipCardXm.uniforms.u_teamColor = vec4.clone(imv.Constants.teamColors.ENLIGHTENED);
@@ -2479,8 +2804,8 @@ imv.Entity = Entity;
 
   imv.Entities.Inventory.FlipCardJarvis = Jarvis;
 
-  var ExtraShield = function() {
-    Entity.call(this);
+  var ExtraShield = function(engine) {
+    Entity.call(this, engine);
     this.addDrawable('ExtraShield', new imv.Drawables.Inventory.ExtraShield());
     this.addDrawable('ResShieldXm', new imv.Drawables.Inventory.ResShieldXm());
     this.drawables.ExtraShield.uniforms.u_color0 = vec4.clone(imv.Constants.qualityColors.VERY_RARE);
@@ -2489,8 +2814,8 @@ imv.Entity = Entity;
 
   imv.Entities.Inventory.ExtraShield = ExtraShield;
 
-  var InterestCapsule = function() {
-    Entity.call(this);
+  var InterestCapsule = function(engine) {
+    Entity.call(this, engine);
     this.addDrawable('InterestCapsule', new imv.Drawables.Inventory.InterestCapsule());
     this.addDrawable('CapsuleXm', new imv.Drawables.Inventory.CapsuleXm());
     this.drawables.InterestCapsule.uniforms.u_color0 = vec4.clone(imv.Constants.qualityColors.VERY_RARE);
@@ -2501,37 +2826,100 @@ imv.Entity = Entity;
 }());
 
 
-var PortalEntity = function() {
-  Entity.call(this);
-  this.color = vec4.clone(imv.Constants.teamColors.LOKI);
+var PortalEntity = function(engine) {
+  Entity.call(this, engine);
   this.addDrawable('Portal', new imv.Drawables.World.Portal());
-  this.drawables.Portal.onUpdate = function(delta, elapsed) {
-    var inc = elapsed / 1000;
-    this.uniforms.u_baseColor[0] = Math.sin(inc);
-    this.uniforms.u_baseColor[1] = Math.sin(inc + (2 * Math.PI / 3));
-    this.uniforms.u_baseColor[2] = Math.sin(inc + (4 * Math.PI / 3));
-    return true;
-  };
+  // why 6? I dunno, ask Niantic
+  mat4.scale(this.drawables.Portal.local, this.drawables.Portal.local, vec3.fromValues(6, 6, 6));
+  this.linkMesh = new imv.Meshes.ResonatorLink(engine.gl);
+  this.links = new Array(8);
+  this.addDrawable('ResonatorLinks', new imv.Drawables.PortalLink(this.linkMesh, imv.Constants.Texture.ResonatorLink));
+  this.setColor(vec4.clone(imv.Constants.teamColors.LOKI));
 };
 inherits(PortalEntity, Entity);
 
 PortalEntity.prototype.setColor = function(color) {
   this.color = vec4.clone(color);
-  if(this.drawables.Portal) {
-    this.drawables.Portal.onUpdate = undefined;
-    this.drawables.Portal.uniforms.u_baseColor = this.color;
-  }
+  this.drawables.Portal.uniforms.u_baseColor = this.color;
   if(this.drawables.Shield) {
     this.drawables.Shield.uniforms.u_color = this.color;
   }
   if(this.drawables.ArtifactsGreenGlow) {
     this.drawables.ArtifactsGreenGlow.u_baseColor = this.color;
   }
+  for(var i = 0; i < 8; i++) {
+    this._redrawLink(i);
+  }
+};
+
+PortalEntity.prototype._addResonatorLink = function(slot, x, y) {
+  if(this.links[slot]) {
+    this.linkMesh.removeLink(this.links[slot].id);
+  }
+  this.links[slot] = {
+    x: x,
+    y: y,
+    id: this.linkMesh.addLink([0, 0], [x, y], this.color)
+  };
+};
+
+PortalEntity.prototype._removeResonatorLink = function(slot) {
+  this.linkMesh.removeLink(this.links[slot].id);
+  this.links[slot] = null;
+};
+
+PortalEntity.prototype._redrawLink = function(slot) {
+  if(this.links[slot]) {
+    this._addResonatorLink(slot, this.links[slot].x, this.links[slot].y);
+  }
+};
+
+PortalEntity.prototype.addResonator = function(level, slot, range) {
+  if(+slot < 0 || +slot > 8) {
+    throw new Error('slot out of bounds for resonator');
+  }
+  if(!(level in imv.Constants.qualityColors)) {
+    throw new Error('level must be one of ' + Object.keys(imv.Constants.qualityColors).join(' '));
+  }
+  range = range === undefined ? 40 : range;
+  var name = 'Resonator' + (+slot);
+  var theta = slot / 8 * 2 * Math.PI;
+  var drawable = new imv.Drawables.World.Resonator();
+  drawable.uniforms.u_color0 = vec4.clone(imv.Constants.qualityColors[level]);
+  drawable.local = mat4.clone(this.drawables.Portal.local);
+  var x = range * Math.cos(theta);
+  var y = range * Math.sin(theta);
+  mat4.translate(
+    drawable.local,
+    drawable.local,
+    vec3.fromValues(x / 6, 0, y / 6)
+  );
+  drawable.updateMatrix();
+  this.addDrawable(name, drawable);
+  this._addResonatorLink(slot, x, y);
+  // keep the portal sorted last (this is a terrible way of doing this.)
+  this.addDrawable('Portal', this.drawables.Portal);
+};
+
+PortalEntity.prototype.removeResonator = function(slot) {
+  if(+slot < 0 || +slot > 8) {
+    throw new Error('slot out of bounds for resonator');
+  }
+  var name = 'Resonator' + (+slot);
+  var resonator = this.drawables[name] || null;
+  if(resonator) {
+    this.removeDrawable(name);
+    this._removeResonatorLink(slot);
+    this.addDrawable('Portal', this.drawables.Portal);
+  }
 };
 
 PortalEntity.prototype.addShield = function() {
   if(!('Shield' in this.drawables)) {
     this.addDrawable('Shield', new imv.Drawables.World.Shield());
+    // why 12? I don't know.
+    mat4.scale(this.drawables.Shield.local, this.drawables.Shield.local, vec3.fromValues(12, 12, 12));
+    this.drawables.Shield.updateMatrix();
   }
   this.drawables.Shield.uniforms.u_color = this.color;
   this.applyTransform();
@@ -2855,16 +3243,21 @@ ObjectRenderer.prototype.addDrawable = function(drawable) {
   this.drawables.push(drawable);
 };
 
-ObjectRenderer.prototype.removeDrawable = function(drawable) {
+ObjectRenderer.prototype.removeDrawable = function(drawable, destroy) {
   for(var i = 0; i < this.drawables.length; i++)
   {
     if(this.drawables[i] === drawable)
     {
       this.drawables.splice(i, 1);
-      // TODO: should dispose of drawable here.
-      return;
+      if(destroy) {
+        drawable.dispose();
+        return true;
+      } else {
+        return drawable;
+      }
     }
   }
+  return false;
 };
 
 ObjectRenderer.prototype.addEntity = function(entity) {
@@ -3299,7 +3692,7 @@ Engine.prototype.demoEntities = function() {
   var x = -5, y = 0, z = 4;
   var i, item;
   for(i in imv.Entities.Inventory) {
-    item = new imv.Entities.Inventory[i]();
+    item = new imv.Entities.Inventory[i](this);
     if(item) {
       item.translate(vec3.fromValues(x, y, z));
       x++;
@@ -3307,13 +3700,11 @@ Engine.prototype.demoEntities = function() {
         x = -5;
         z--;
       }
-      this.objectRenderer.addEntity(item);
       console.log('added ' + i);
     }
   }
-  var portal = new imv.Entities.World.Portal();
+  var portal = new imv.Entities.World.Portal(this);
   portal.translate(vec3.fromValues(x, y, z));
-  this.objectRenderer.addEntity(portal);
 };
 
 Engine.prototype.demo = function() {

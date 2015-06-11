@@ -39,7 +39,16 @@ var setParams = function(base, opts, deep)
   return base;
 };
 
+var disco = function(delta, elapsed) {
+  var inc = elapsed / 1000;
+  this.uniforms.u_baseColor[0] = Math.sin(inc);
+  this.uniforms.u_baseColor[1] = Math.sin(inc + (2 * Math.PI / 3));
+  this.uniforms.u_baseColor[2] = Math.sin(inc + (4 * Math.PI / 3));
+  return true;
+};
+
 imv.Utilities = imv.Utilities || {};
 imv.Utilities.inherits = inherits;
 imv.Utilities.resetGL = resetGL;
 imv.Utilities.setParams = setParams;
+imv.Utilities.disco = disco;

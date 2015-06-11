@@ -40,7 +40,31 @@ GLBuffer.prototype.setValues = function(values, offset) {
   } else {
     this.values.set(values, offset);
   }
+  this.update();
   return this;
+};
+
+// remove a chunk of a buffer
+GLBuffer.prototype.deleteWithin = function(start, end) {
+  if(!this.values) {
+    console.warn('Trying to splice a buffer that has no values.');
+    return false;
+  }
+  var nValues = end - start;
+  var empty = new this.values.constructor(nValues);
+  this.values.set(this.values.subarray(end), start);
+  this.values.set(empty, this.values.length - nValues);
+  this.update();
+  return this;
+};
+
+// do something to each element in a buffer
+GLBuffer.prototype.map = function(callback, start, end) {
+  start = start === undefined ? 0 : start;
+  end = end === undefined ? this.values.length : end;
+  for(var i = start; i < end; i++) {
+    this.values[i] = callback(this.values[i], i);
+  }
 };
 
 GLBuffer.prototype.updateBuffer = function(values) {

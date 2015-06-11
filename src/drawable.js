@@ -46,4 +46,8 @@ Drawable.prototype.updateTime = function(delta) {
   return true;
 };
 
+Drawable.prototype.dispose = function() {
+  // noop;
+};
+
 imv.Drawable = Drawable;

@@ -18,8 +18,8 @@
   };
 
   var createItem = function(name, color) {
-    var item = function() {
-      Entity.call(this);
+    var item = function(engine) {
+      Entity.call(this, engine);
       this.addDrawable(name, new imv.Drawables.Inventory[name]());
       this.addDrawable(name + 'Xm', new imv.Drawables.Inventory[name + 'Xm']());
       this.drawables[name].uniforms.u_color0 = vec4.clone(color);
@@ -33,8 +33,8 @@
     imv.Entities.Inventory[i] = createItem(i, imv.Constants.qualityColors[simple[i]]);
   }
 
-  var Ada = function() {
-    Entity.call(this);
+  var Ada = function(engine) {
+    Entity.call(this, engine);
     this.addDrawable('FlipCardAda', new imv.Drawables.Inventory.FlipCardAda());
     this.addDrawable('FlipCardXm', new imv.Drawables.Inventory.FlipCardXm());
     this.drawables.FlipCardXm.uniforms.u_teamColor = vec4.clone(imv.Constants.teamColors.RESISTANCE);
@@ -45,8 +45,8 @@
 
   imv.Entities.Inventory.FlipCardAda = Ada;
 
-  var Jarvis = function() {
-    Entity.call(this);
+  var Jarvis = function(engine) {
+    Entity.call(this, engine);
     this.addDrawable('FlipCardJarvis', new imv.Drawables.Inventory.FlipCardJarvis());
     this.addDrawable('FlipCardXm', new imv.Drawables.Inventory.FlipCardXm());
     this.drawables.FlipCardXm.uniforms.u_teamColor = vec4.clone(imv.Constants.teamColors.ENLIGHTENED);
@@ -57,8 +57,8 @@
 
   imv.Entities.Inventory.FlipCardJarvis = Jarvis;
 
-  var ExtraShield = function() {
-    Entity.call(this);
+  var ExtraShield = function(engine) {
+    Entity.call(this, engine);
     this.addDrawable('ExtraShield', new imv.Drawables.Inventory.ExtraShield());
     this.addDrawable('ResShieldXm', new imv.Drawables.Inventory.ResShieldXm());
     this.drawables.ExtraShield.uniforms.u_color0 = vec4.clone(imv.Constants.qualityColors.VERY_RARE);
@@ -67,8 +67,8 @@
 
   imv.Entities.Inventory.ExtraShield = ExtraShield;
 
-  var InterestCapsule = function() {
-    Entity.call(this);
+  var InterestCapsule = function(engine) {
+    Entity.call(this, engine);
     this.addDrawable('InterestCapsule', new imv.Drawables.Inventory.InterestCapsule());
     this.addDrawable('CapsuleXm', new imv.Drawables.Inventory.CapsuleXm());
     this.drawables.InterestCapsule.uniforms.u_color0 = vec4.clone(imv.Constants.qualityColors.VERY_RARE);

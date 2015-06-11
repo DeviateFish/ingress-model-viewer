@@ -55,7 +55,7 @@ Engine.prototype.demoEntities = function() {
   var x = -5, y = 0, z = 4;
   var i, item;
   for(i in imv.Entities.Inventory) {
-    item = new imv.Entities.Inventory[i]();
+    item = new imv.Entities.Inventory[i](this);
     if(item) {
       item.translate(vec3.fromValues(x, y, z));
       x++;
@@ -63,13 +63,11 @@ Engine.prototype.demoEntities = function() {
         x = -5;
         z--;
       }
-      this.objectRenderer.addEntity(item);
       console.log('added ' + i);
     }
   }
-  var portal = new imv.Entities.World.Portal();
+  var portal = new imv.Entities.World.Portal(this);
   portal.translate(vec3.fromValues(x, y, z));
-  this.objectRenderer.addEntity(portal);
 };
 
 Engine.prototype.demo = function() {

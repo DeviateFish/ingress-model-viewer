@@ -25,14 +25,12 @@ var LinkDrawable = (function(){
     return ret;
   };
 
-  linkDrawable.prototype.addLink = function(start, end, color, startPercent, endPercent) {
-    // since this doesn't need to be loaded
-    // perhaps change this behavior?
+  linkDrawable.prototype.addLink = function() {
     if(!this.mesh) {
       throw 'Mesh not ready yet!';
     }
 
-    return this.mesh.addLink(start, end, color, startPercent, endPercent);
+    this.mesh.addLink.apply(this.mesh.addLink, arguments);
   };
 
   return linkDrawable;
