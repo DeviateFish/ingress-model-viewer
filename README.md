@@ -12,7 +12,20 @@ Grab the [source](https://github.com/DeviateFish/ingress-model-viewer/dist/ingre
 
 ## Usage
 
-TBD
+```
+
+# Install essentials.
+npm install -g grunt-cli
+npm install -g bower
+
+# Install modules.
+npm install
+bower install
+
+# Build and debug. Read Gruntfile.js for further information.
+grunt
+
+```
 
 ## Documentation
 
