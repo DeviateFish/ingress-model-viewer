@@ -73,7 +73,7 @@
     engine.preload(function() {
       mat4.lookAt(engine.view, [0.0, 1.5, 3], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
       engine.objectRenderer.updateView(engine.view, engine.project);
-      var ic = new IMV.Entities.Inventory.InterestCapsule();
+      var ic = new IMV.Entities.Inventory.InterestCapsule(engine);
       ic.setAnimation(rotate);
       engine.objectRenderer.addEntity(ic);
     });
