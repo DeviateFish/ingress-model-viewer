@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ingress Model Sandbox</title>
+    <script src="/bower_components/gl-matrix/dist/gl-matrix.js"></script>
+    <script src="/bower_components/java-deserializer/dist/java-deserializer.min.js"></script>
+    <script src="/bower_components/libtga/dist/libtga.min.js"></script>
+    <script src="../dist/ingress-model-viewer.js"></script>
+    <script src="https://rawgit.com/eligrey/FileSaver.js/master/FileSaver.min.js"></script>
+    <style>
+      html, body {
+        height: 100%;
+        width: 100%;
+        position: relative;
+        margin: 0;
+      }
+    </style>
+</head>
+<body>
+<canvas id="screen" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;"></canvas>
+<script type="text/javascript">
+  var canvas = document.getElementById('screen'), engine, assets = {};
+  canvas.width = document.body.offsetWidth;
+  canvas.height = document.body.offsetHeight;
+
+  var controls = new IMV.Controls.Orbit(canvas, 100, {
+        distanceMin: 1,
+        distanceMax: 150
+      });
+
+  window.addEventListener('resize', function(){
+    engine.resize(document.body.offsetWidth, document.body.offsetHeight);
+  });
+
+  var init = function(assets) {
+    engine = new IMV.Engine(canvas, assets, true);
+    engine.preload(function() {
+      console.log('ready');
+      setupScene();
+    });
+  };
+
+  var rotate = function(delta) {
+    mat4.rotateY(this.model, this.model, delta / 1000);
+    this.updateMatrix();
+    return true;
+  };
+
+  var updateCamera = function() {
+    controls.updateView(engine.view);
+    engine.updateView();
+    window.requestAnimationFrame(updateCamera);
+  };
+
+  var setupScene = function() {
+
+    mat4.lookAt(engine.view, [0.0, 50, 75], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
+    engine.far = 500;
+    engine.objectRenderer.updateView(engine.view, engine.project);
+
+    // Portal.
+
+    var portal = new IMV.Entities.World.Portal(engine);
+    portal.setColor(IMV.Constants.teamColors.RESISTANCE);
+    portal.addShield();
+
+    // Link.
+
+    var link = new IMV.Meshes.PortalLink(engine.gl);
+    //engine.assetManager.addMesh('testLink', link);
+    
+    var drawable = new IMV.Drawables.PortalLink(link, 'PortalLinkTexture');
+    engine.objectRenderer.addDrawable(drawable);
+    
+    var length = 75, num = 8;
+    for(var i = 0; i < num; i++) {
+
+      drawable.addLink([0, 0],
+        [Math.sin(i / num * 2 * Math.PI) * length, Math.cos(i / num * 2 * Math.PI) * length],
+        vec4.clone(IMV.Constants.teamColors.RESISTANCE));
+
+    }
+    
+    controls.enable();
+    window.requestAnimationFrame(updateCamera);
+    engine.render(0);
+
+  };
+
+  IMV.Utilities.loadResource('/assets.json', 'text', function(err, val) {
+    if(err) {
+      throw err;
+    }
+    assets = JSON.parse(val);
+    if(assets) {
+      init(assets);
+    }
+  });
+</script>
+</body>
+</html>

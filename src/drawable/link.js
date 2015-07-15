@@ -30,7 +30,7 @@ var LinkDrawable = (function(){
       throw 'Mesh not ready yet!';
     }
 
-    this.mesh.addLink.apply(this.mesh.addLink, arguments);
+    this.mesh.addLink.apply(this.mesh, arguments);
   };
 
   return linkDrawable;
