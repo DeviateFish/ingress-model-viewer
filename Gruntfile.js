@@ -21,7 +21,8 @@ module.exports = function (grunt) {
   var config = {
     app: 'src',
     dist: 'dist',
-    demo: 'demo'
+    demo: 'demo',
+    manifest: 'manifest'
   };
 
   grunt.initConfig({
@@ -38,6 +39,7 @@ module.exports = function (grunt) {
         },
         files: [
           './<%= paths.demo %>/*.html',
+          './<%= paths.manifest %>/*.json',
           './dist/<%= pkg.name.replace(".js", "") %>.js'
         ]
       },
@@ -104,11 +106,11 @@ module.exports = function (grunt) {
           'src/drawable/inventory.js',
           'src/drawable/resource.js',
           'src/drawable/world.js',
-          'src/drawable/artifact.js',
           'src/drawable/dynamic.js',
           'src/drawable/dynamic-model.js',
           'src/drawable/dynamic-textured.js',
           'src/drawable/link.js',
+          'src/drawable/portal-link.js',
           'src/drawable/atmosphere.js',
           'src/entity.js',
           'src/entity/inventory.js',

@@ -30,6 +30,24 @@ var AssetManager = (function() {
     };
   };
 
+  var simpleMerge = function(left, right) {
+    left = left || {};
+    for(var i in right) {
+      left[i] = right[i];
+    }
+    return left;
+  };
+
+  var mergeManifests = function(base, add) {
+    var keys = ['texture', 'mesh', 'program', 'rawProgram'];
+    keys.forEach(function(key) {
+      if (key in add) {
+        base[key] = simpleMerge(base[key], add[key]);
+      }
+    });
+    return base;
+  };
+
   var assetManager = function(gl, manifest) {
     GLBound.call(this, gl);
     this.manifest = manifest;
@@ -60,6 +78,10 @@ var AssetManager = (function() {
     {
       this.complete();
     }
+  };
+
+  assetManager.prototype.addAssets = function(manifest) {
+    this.manifest = mergeManifests(this.manifest, manifest);
   };
 
   assetManager.prototype.addTexture = function(name, texture) {

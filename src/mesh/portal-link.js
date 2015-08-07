@@ -10,8 +10,6 @@ var PortalLinkMesh = (function(){
     d = new Array(_len),
     e = new Array(_len);
 
-  var MAX_LINKS = 100; // seems reasonable.
-
   var clampedSin = function(f)
   {
     return Math.sin(Math.PI * Math.max(Math.min(1.0, f), 0) / 2);
@@ -106,32 +104,18 @@ var PortalLinkMesh = (function(){
     return ind;
   };
 
-  var linkmesh = function(gl) {
-    // make room for some max number links... though technically, since we
-    // have to rebind these every time we update them anyway, we could just
-    // grow this to whatever arbitrary limit, on the fly.
-    var buf = new Float32Array(_size * _chunkSize * MAX_LINKS);
+  var linkmesh = function(gl, start, end, color, startPercent, endPercent) {
+    var buf = _generateLinkAttributes(start, end, color, startPercent, endPercent);
+    var ind = _generateFaces(0);
     var attributes = [];
     attributes.push(new VertexAttribute('a_position', 4));
     attributes.push(new VertexAttribute('a_texCoord0', 4));
     attributes.push(new VertexAttribute('a_color', 4));
     var attribute = new GLAttribute(gl, attributes, buf, gl.DYNAMIC_DRAW);
-    var faces = new GLIndex(gl, new Uint16Array(144 * MAX_LINKS), gl.TRIANGLES);
+    var faces = new GLIndex(gl, ind, gl.TRIANGLES);
     Mesh.call(this, gl, attribute, faces);
-    this.nLinks = 0;
   };
   inherits(linkmesh, Mesh);
-
-  linkmesh.prototype.addLink = function(start, end, color, startPercent, endPercent) {
-
-    var linkAttributes = _generateLinkAttributes(start, end, color, startPercent, endPercent);
-    var vertexOffset = this.nLinks * _size;
-    var ind = _generateFaces(vertexOffset);
-    this.attributes.setValues(linkAttributes, vertexOffset * _chunkSize);
-    this.faces.setValues(ind, this.nLinks * 144);
-    this.nFaces += 144;
-    return this.nLinks++;
-  };
 
   return linkmesh;
 }());

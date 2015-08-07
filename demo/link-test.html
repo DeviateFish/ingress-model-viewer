@@ -60,34 +60,26 @@
 
     // Portal.
 
-    var portal = new IMV.Entities.World.Portal(engine);
+    /*var portal = new IMV.Entities.World.Portal(engine);
     portal.setColor(IMV.Constants.teamColors.RESISTANCE);
-    portal.addShield();
+    portal.addShield();*/
 
-    // Link.
-
-    var link = new IMV.Meshes.PortalLink(engine.gl);
-    //engine.assetManager.addMesh('testLink', link);
-    
-    var drawable = new IMV.Drawables.PortalLink(link, 'PortalLinkTexture');
-    engine.objectRenderer.addDrawable(drawable);
-    
     var length = 75, num = 8;
     for(var i = 0; i < num; i++) {
-
-      drawable.addLink([0, 0],
+      var drawable = new IMV.Drawables.PortalLink([0, 0],
         [Math.sin(i / num * 2 * Math.PI) * length, Math.cos(i / num * 2 * Math.PI) * length],
-        vec4.clone(IMV.Constants.teamColors.RESISTANCE));
-
+        vec4.clone(IMV.Constants.teamColors.RESISTANCE)
+      );
+      engine.objectRenderer.addDrawable(drawable);
     }
-    
+
     controls.enable();
     window.requestAnimationFrame(updateCamera);
     engine.render(0);
 
   };
 
-  IMV.Utilities.loadResource('/assets.json', 'text', function(err, val) {
+  IMV.Utilities.loadResource('/manifest/assets.json', 'text', function(err, val) {
     if(err) {
       throw err;
     }

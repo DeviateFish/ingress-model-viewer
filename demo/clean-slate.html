@@ -31,11 +31,10 @@
     engine = new IMV.Engine(canvas, assets, true);
     engine.preload(function() {
       console.log('ready');
-      setupScene();
     });
   };
 
-  IMV.Utilities.loadResource('/assets.json', 'text', function(err, val) {
+  IMV.Utilities.loadResource('/manifest/assets.json', 'text', function(err, val) {
     if(err) {
       throw err;
     }

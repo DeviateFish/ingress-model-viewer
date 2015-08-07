@@ -20,7 +20,6 @@
 <canvas id="screen" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;"></canvas>
 <script type="text/javascript">
   var canvas = document.getElementById('screen'), engine,
-      assets = {},
       radius = 100,
       artifactInfos = null,
       controls = new IMV.Controls.Orbit(canvas, radius * 3, {
@@ -51,7 +50,7 @@
       shardDrawables = [];
 
     shards.forEach(function(el) {
-      var shard = new IMV.Drawables.Artifact.Shonin['Shonin'+el]();
+      var shard = new IMV.Drawables.Artifact.Shonin[el]();
       addRotatingDrawable(shard, lat, lng);
     });
 
@@ -94,8 +93,10 @@
     window.requestAnimationFrame(updateCamera);
   };
 
-  var init = function(assets) {
+  var init = function(assets, shonin) {
     engine = new IMV.Engine(canvas, assets, true);
+    engine.assetManager.addAssets(shonin);
+    IMV.Utilities.generateArtifacts('Shonin', 31, true);
     mat4.lookAt(engine.view, [radius * 3, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
     engine.hFoV = Math.PI / 3;
     engine.far = radius * 5;
@@ -139,21 +140,29 @@
     return true;
   };
 
-  IMV.Utilities.loadResource('/assets.json', 'text', function(err, val) {
+  IMV.Utilities.loadResource('/manifest/assets.json', 'text', function(err, val) {
     if(err) {
       throw err;
     }
-    assets = JSON.parse(val);
+    var assets = JSON.parse(val);
     if(assets) {
-      IMV.Utilities.loadResource('/snapshot.json', 'text', function(err, val) {
+      IMV.Utilities.loadResource('/manifest/shonin.json', 'text', function(err, val) {
         if(err) {
           throw err;
         }
-        artifactInfos = JSON.parse(val);
-        init(assets);
-        engine.draw(0);
-      });
+        var shonin = JSON.parse(val);
+        if(assets) {
+          IMV.Utilities.loadResource('/snapshot.json', 'text', function(err, val) {
+            if(err) {
+              throw err;
+            }
+            artifactInfos = JSON.parse(val);
+            init(assets, shonin);
+            engine.draw(0);
+          });
 
+        }
+      });
     }
   });
 </script>

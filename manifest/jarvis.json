@@ -1,0 +1,20 @@
+{
+    "texture": {
+        "ArtifactJarvisTexture": { "path": "scanner/artifacts/artifact_jarvis.png", "minFilter": "Linear", "magFilter": "Linear", "wrapS": "ClampToEdge", "wrapT": "ClampToEdge" }
+    },
+    "mesh": {
+        "Jarvis1": { "path": "scanner/artifacts/artifact_jarvis_fragment_1.obj" },
+        "Jarvis2": { "path": "scanner/artifacts/artifact_jarvis_fragment_2.obj" },
+        "Jarvis3": { "path": "scanner/artifacts/artifact_jarvis_fragment_3.obj" },
+        "Jarvis4": { "path": "scanner/artifacts/artifact_jarvis_fragment_4.obj" },
+        "Jarvis5": { "path": "scanner/artifacts/artifact_jarvis_fragment_5.obj" },
+        "Jarvis6": { "path": "scanner/artifacts/artifact_jarvis_fragment_6.obj" },
+        "Jarvis7": { "path": "scanner/artifacts/artifact_jarvis_fragment_7.obj" },
+        "Jarvis8": { "path": "scanner/artifacts/artifact_jarvis_fragment_8.obj" },
+        "Jarvis9": { "path": "scanner/artifacts/artifact_jarvis_fragment_9.obj" },
+        "Jarvis10": { "path": "scanner/artifacts/artifact_jarvis_fragment_10.obj" },
+        "Jarvis11": { "path": "scanner/artifacts/artifact_jarvis_fragment_11.obj" },
+        "Jarvis12": { "path": "scanner/artifacts/artifact_jarvis_fragment_12.obj" },
+        "Jarvis13": { "path": "scanner/artifacts/artifact_jarvis_fragment_13.obj" }
+    }
+}

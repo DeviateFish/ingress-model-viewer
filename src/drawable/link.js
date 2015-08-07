@@ -1,11 +1,11 @@
 var LinkDrawable = (function(){
 
-  var linkDrawable = function(programName, mesh, textureName) {
-    DynamicTexturedDrawable.call(this, programName, mesh, textureName);
+  var linkDrawable = function(programName, textureName) {
+    TexturedDrawable.call(this, programName, null, textureName);
     this.uniforms.u_cameraFwd = vec3.fromValues(0, 0, -1);
     this.uniforms.u_elapsedTime = 0;
   };
-  inherits(linkDrawable, DynamicTexturedDrawable);
+  inherits(linkDrawable, TexturedDrawable);
 
   // TODO: needs a camera class:
   linkDrawable.prototype.updateView = function(viewProject, view, project) {
@@ -25,21 +25,8 @@ var LinkDrawable = (function(){
     return ret;
   };
 
-  linkDrawable.prototype.addLink = function() {
-    if(!this.mesh) {
-      throw 'Mesh not ready yet!';
-    }
-
-    this.mesh.addLink.apply(this.mesh, arguments);
-  };
-
   return linkDrawable;
 }());
-
-var PortalLinkDrawable = function(mesh, textureName) {
-  LinkDrawable.call(this, 'LinkShader', mesh, textureName);
-};
-inherits(PortalLinkDrawable, LinkDrawable);
 
 var SphericalLinkDrawable = function(mesh, textureName) {
   LinkDrawable.call(this, 'link3d', mesh, textureName);
@@ -53,5 +40,4 @@ SphericalLinkDrawable.prototype.updateView = function(viewProject, view, project
 
 imv.Drawables = imv.Drawables || {};
 imv.Drawables.Link = LinkDrawable;
-imv.Drawables.PortalLink = PortalLinkDrawable;
 imv.Drawables.SphericalLink = SphericalLinkDrawable;
