@@ -28,16 +28,5 @@ var LinkDrawable = (function(){
   return linkDrawable;
 }());
 
-var SphericalLinkDrawable = function(mesh, textureName) {
-  LinkDrawable.call(this, 'link3d', mesh, textureName);
-};
-inherits(SphericalLinkDrawable, LinkDrawable);
-
-SphericalLinkDrawable.prototype.updateView = function(viewProject, view, project) {
-  LinkDrawable.prototype.updateView.call(this, viewProject, view, project);
-  this.uniforms.u_model = this.model;
-};
-
 imv.Drawables = imv.Drawables || {};
 imv.Drawables.Link = LinkDrawable;
-imv.Drawables.SphericalLink = SphericalLinkDrawable;

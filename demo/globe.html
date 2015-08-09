@@ -126,6 +126,14 @@
                 (arr[1] === 'E' ? 'ENLIGHTENED' : 'NEUTRAL');
           addShardPortal(arr[2] / 1E6, arr[3] / 1E6, team, obj.fragments);
         });
+        var testLink = new IMV.Drawables.SphericalPortalLink(
+          radius,
+          [artifactInfos[0].targetInfos[0].portalInfo[2] / 1E6, artifactInfos[0].targetInfos[0].portalInfo[3] / 1E6],
+          [artifactInfos[0].targetInfos[1].portalInfo[2] / 1E6, artifactInfos[0].targetInfos[1].portalInfo[3] / 1E6],
+          vec4.clone(IMV.Constants.teamColors.LOKI)
+        )
+        testLink.onUpdate = rotate;
+        engine.objectRenderer.addDrawable(testLink);
       }
       engine.render(0);
       controls.enable();

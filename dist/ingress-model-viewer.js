@@ -179,289 +179,6 @@ var constants = {
       Cluster: 'OrnamentClusterMesh',
       Volatile: 'OrnamentVolatileMesh'
     },
-    Artifact: {
-      Helios: {
-        Helios1: 'Helios1',
-        HeliosFrozen1: 'HeliosFrozen1',
-        Helios2: 'Helios2',
-        HeliosFrozen2: 'HeliosFrozen2',
-        Helios3: 'Helios3',
-        HeliosFrozen3: 'HeliosFrozen3',
-        Helios4: 'Helios4',
-        HeliosFrozen4: 'HeliosFrozen4',
-        Helios5: 'Helios5',
-        HeliosFrozen5: 'HeliosFrozen5',
-        Helios6: 'Helios6',
-        HeliosFrozen6: 'HeliosFrozen6',
-        Helios7: 'Helios7',
-        HeliosFrozen7: 'HeliosFrozen7',
-        Helios8: 'Helios8',
-        HeliosFrozen8: 'HeliosFrozen8',
-        Helios9: 'Helios9',
-        HeliosFrozen9: 'HeliosFrozen9',
-        Helios10: 'Helios10',
-        HeliosFrozen10: 'HeliosFrozen10',
-        Helios11: 'Helios11',
-        HeliosFrozen11: 'HeliosFrozen11',
-        Helios12: 'Helios12',
-        HeliosFrozen12: 'HeliosFrozen12',
-        Helios13: 'Helios13',
-        HeliosFrozen13: 'HeliosFrozen13',
-        Helios14: 'Helios14',
-        HeliosFrozen14: 'HeliosFrozen14',
-        Helios15: 'Helios15',
-        HeliosFrozen15: 'HeliosFrozen15',
-        Helios16: 'Helios16',
-        HeliosFrozen16: 'HeliosFrozen16',
-        Helios17: 'Helios17',
-        HeliosFrozen17: 'HeliosFrozen17',
-        Helios18: 'Helios18',
-        HeliosFrozen18: 'HeliosFrozen18',
-        Helios19: 'Helios19',
-        HeliosFrozen19: 'HeliosFrozen19',
-        Helios20: 'Helios20',
-        HeliosFrozen20: 'HeliosFrozen20',
-        Helios21: 'Helios21',
-        HeliosFrozen21: 'HeliosFrozen21',
-        Helios22: 'Helios22',
-        HeliosFrozen22: 'HeliosFrozen22',
-        Helios23: 'Helios23',
-        HeliosFrozen23: 'HeliosFrozen23',
-        Helios24: 'Helios24',
-        HeliosFrozen24: 'HeliosFrozen24',
-        Helios25: 'Helios25',
-        HeliosFrozen25: 'HeliosFrozen25',
-        Helios26: 'Helios26',
-        HeliosFrozen26: 'HeliosFrozen26',
-        Helios27: 'Helios27',
-        HeliosFrozen27: 'HeliosFrozen27',
-        Helios28: 'Helios28',
-        HeliosFrozen28: 'HeliosFrozen28',
-        Helios29: 'Helios29',
-        HeliosFrozen29: 'HeliosFrozen29',
-        Helios30: 'Helios30',
-        HeliosFrozen30: 'HeliosFrozen30',
-        Helios31: 'Helios31',
-        HeliosFrozen31: 'HeliosFrozen31',
-        Helios32: 'Helios32',
-        HeliosFrozen32: 'HeliosFrozen32',
-        Helios33: 'Helios33',
-        HeliosFrozen33: 'HeliosFrozen33',
-        Helios34: 'Helios34',
-        HeliosFrozen34: 'HeliosFrozen34',
-        Helios35: 'Helios35',
-        HeliosFrozen35: 'HeliosFrozen35',
-        Helios36: 'Helios36',
-        HeliosFrozen36: 'HeliosFrozen36',
-        Helios37: 'Helios37',
-        HeliosFrozen37: 'HeliosFrozen37',
-        Helios38: 'Helios38',
-        HeliosFrozen38: 'HeliosFrozen38',
-        Helios39: 'Helios39',
-        HeliosFrozen39: 'HeliosFrozen39',
-        Helios40: 'Helios40',
-        HeliosFrozen40: 'HeliosFrozen40'
-      },
-      Amar: {
-        Amar1: 'Amar1',
-        AmarFrozen1: 'AmarFrozen1',
-        Amar2: 'Amar2',
-        AmarFrozen2: 'AmarFrozen2',
-        Amar3: 'Amar3',
-        AmarFrozen3: 'AmarFrozen3',
-        Amar4: 'Amar4',
-        AmarFrozen4: 'AmarFrozen4',
-        Amar5: 'Amar5',
-        AmarFrozen5: 'AmarFrozen5',
-        Amar6: 'Amar6',
-        AmarFrozen6: 'AmarFrozen6',
-        Amar7: 'Amar7',
-        AmarFrozen7: 'AmarFrozen7',
-        Amar8: 'Amar8',
-        AmarFrozen8: 'AmarFrozen8',
-        Amar9: 'Amar9',
-        AmarFrozen9: 'AmarFrozen9',
-        Amar10: 'Amar10',
-        AmarFrozen10: 'AmarFrozen10',
-        Amar11: 'Amar11',
-        AmarFrozen11: 'AmarFrozen11',
-        Amar12: 'Amar12',
-        AmarFrozen12: 'AmarFrozen12',
-        Amar13: 'Amar13',
-        AmarFrozen13: 'AmarFrozen13',
-        Amar14: 'Amar14',
-        AmarFrozen14: 'AmarFrozen14',
-        Amar15: 'Amar15',
-        AmarFrozen15: 'AmarFrozen15',
-        Amar16: 'Amar16',
-        AmarFrozen16: 'AmarFrozen16',
-        Amar17: 'Amar17',
-        AmarFrozen17: 'AmarFrozen17'
-      },
-      Jarvis: {
-        Jarvis1: 'Jarvis1',
-        Jarvis2: 'Jarvis2',
-        Jarvis3: 'Jarvis3',
-        Jarvis4: 'Jarvis4',
-        Jarvis5: 'Jarvis5',
-        Jarvis6: 'Jarvis6',
-        Jarvis7: 'Jarvis7',
-        Jarvis8: 'Jarvis8',
-        Jarvis9: 'Jarvis9',
-        Jarvis10: 'Jarvis10',
-        Jarvis11: 'Jarvis11',
-        Jarvis12: 'Jarvis12',
-        Jarvis13: 'Jarvis13'
-      },
-      Shonin: {
-        Shonin1: "Shonin1",
-        ShoninFrozen1: "ShoninFrozen1",
-        Shonin2: "Shonin2",
-        ShoninFrozen2: "ShoninFrozen2",
-        Shonin3: "Shonin3",
-        ShoninFrozen3: "ShoninFrozen3",
-        Shonin4: "Shonin4",
-        ShoninFrozen4: "ShoninFrozen4",
-        Shonin5: "Shonin5",
-        ShoninFrozen5: "ShoninFrozen5",
-        Shonin6: "Shonin6",
-        ShoninFrozen6: "ShoninFrozen6",
-        Shonin7: "Shonin7",
-        ShoninFrozen7: "ShoninFrozen7",
-        Shonin8: "Shonin8",
-        ShoninFrozen8: "ShoninFrozen8",
-        Shonin9: "Shonin9",
-        ShoninFrozen9: "ShoninFrozen9",
-        Shonin10: "Shonin10",
-        ShoninFrozen10: "ShoninFrozen10",
-        Shonin11: "Shonin11",
-        ShoninFrozen11: "ShoninFrozen11",
-        Shonin12: "Shonin12",
-        ShoninFrozen12: "ShoninFrozen12",
-        Shonin13: "Shonin13",
-        ShoninFrozen13: "ShoninFrozen13",
-        Shonin14: "Shonin14",
-        ShoninFrozen14: "ShoninFrozen14",
-        Shonin15: "Shonin15",
-        ShoninFrozen15: "ShoninFrozen15",
-        Shonin16: "Shonin16",
-        ShoninFrozen16: "ShoninFrozen16",
-        Shonin17: "Shonin17",
-        ShoninFrozen17: "ShoninFrozen17",
-        Shonin18: "Shonin18",
-        ShoninFrozen18: "ShoninFrozen18",
-        Shonin19: "Shonin19",
-        ShoninFrozen19: "ShoninFrozen19",
-        Shonin20: "Shonin20",
-        ShoninFrozen20: "ShoninFrozen20",
-        Shonin21: "Shonin21",
-        ShoninFrozen21: "ShoninFrozen21",
-        Shonin22: "Shonin22",
-        ShoninFrozen22: "ShoninFrozen22",
-        Shonin23: "Shonin23",
-        ShoninFrozen23: "ShoninFrozen23",
-        Shonin24: "Shonin24",
-        ShoninFrozen24: "ShoninFrozen24",
-        Shonin25: "Shonin25",
-        ShoninFrozen25: "ShoninFrozen25",
-        Shonin26: "Shonin26",
-        ShoninFrozen26: "ShoninFrozen26",
-        Shonin27: "Shonin27",
-        ShoninFrozen27: "ShoninFrozen27",
-        Shonin28: "Shonin28",
-        ShoninFrozen28: "ShoninFrozen28",
-        Shonin29: "Shonin29",
-        ShoninFrozen29: "ShoninFrozen29",
-        Shonin30: "Shonin30",
-        ShoninFrozen30: "ShoninFrozen30",
-        Shonin31: "Shonin31",
-        ShoninFrozen31: "ShoninFrozen31"
-      },
-      Lightman: {
-        Lightman1: "Lightman1",
-        LightmanFrozen1: "LightmanFrozen1",
-        Lightman2: "Lightman2",
-        LightmanFrozen2: "LightmanFrozen2",
-        Lightman3: "Lightman3",
-        LightmanFrozen3: "LightmanFrozen3",
-        Lightman4: "Lightman4",
-        LightmanFrozen4: "LightmanFrozen4",
-        Lightman5: "Lightman5",
-        LightmanFrozen5: "LightmanFrozen5",
-        Lightman6: "Lightman6",
-        LightmanFrozen6: "LightmanFrozen6",
-        Lightman7: "Lightman7",
-        LightmanFrozen7: "LightmanFrozen7",
-        Lightman8: "Lightman8",
-        LightmanFrozen8: "LightmanFrozen8",
-        Lightman9: "Lightman9",
-        LightmanFrozen9: "LightmanFrozen9",
-        Lightman10: "Lightman10",
-        LightmanFrozen10: "LightmanFrozen10",
-        Lightman11: "Lightman11",
-        LightmanFrozen11: "LightmanFrozen11",
-        Lightman12: "Lightman12",
-        LightmanFrozen12: "LightmanFrozen12",
-        Lightman13: "Lightman13",
-        LightmanFrozen13: "LightmanFrozen13",
-        Lightman14: "Lightman14",
-        LightmanFrozen14: "LightmanFrozen14",
-        Lightman15: "Lightman15",
-        LightmanFrozen15: "LightmanFrozen15",
-        Lightman16: "Lightman16",
-        LightmanFrozen16: "LightmanFrozen16",
-        Lightman17: "Lightman17",
-        LightmanFrozen17: "LightmanFrozen17",
-        Lightman18: "Lightman18",
-        LightmanFrozen18: "LightmanFrozen18",
-        Lightman19: "Lightman19",
-        LightmanFrozen19: "LightmanFrozen19",
-        Lightman20: "Lightman20",
-        LightmanFrozen20: "LightmanFrozen20",
-        Lightman21: "Lightman21",
-        LightmanFrozen21: "LightmanFrozen21",
-        Lightman22: "Lightman22",
-        LightmanFrozen22: "LightmanFrozen22",
-        Lightman23: "Lightman23",
-        LightmanFrozen23: "LightmanFrozen23",
-        Lightman24: "Lightman24",
-        LightmanFrozen24: "LightmanFrozen24",
-        Lightman25: "Lightman25",
-        LightmanFrozen25: "LightmanFrozen25",
-        Lightman26: "Lightman26",
-        LightmanFrozen26: "LightmanFrozen26",
-        Lightman27: "Lightman27",
-        LightmanFrozen27: "LightmanFrozen27",
-        Lightman28: "Lightman28",
-        LightmanFrozen28: "LightmanFrozen28",
-        Lightman29: "Lightman29",
-        LightmanFrozen29: "LightmanFrozen29",
-        Lightman30: "Lightman30",
-        LightmanFrozen30: "LightmanFrozen30",
-        Lightman31: "Lightman31",
-        LightmanFrozen31: "LightmanFrozen31",
-        Lightman32: "Lightman32",
-        LightmanFrozen32: "LightmanFrozen32",
-        Lightman33: "Lightman33",
-        LightmanFrozen33: "LightmanFrozen33",
-        Lightman34: "Lightman34",
-        LightmanFrozen34: "LightmanFrozen34",
-        Lightman35: "Lightman35",
-        LightmanFrozen35: "LightmanFrozen35",
-        Lightman36: "Lightman36",
-        LightmanFrozen36: "LightmanFrozen36",
-        Lightman37: "Lightman37",
-        LightmanFrozen37: "LightmanFrozen37",
-        Lightman38: "Lightman38",
-        LightmanFrozen38: "LightmanFrozen38",
-        Lightman39: "Lightman39",
-        LightmanFrozen39: "LightmanFrozen39",
-        Lightman40: "Lightman40",
-        LightmanFrozen40: "LightmanFrozen40",
-        Lightman41: "Lightman41",
-        LightmanFrozen41: "LightmanFrozen41"
-      }
-    },
     World: {
       Shield: 'PortalShieldMesh',
       Portal: 'TexturedPortalMesh',
@@ -483,7 +200,9 @@ var constants = {
     Glowramp: 'portal_scanner',
     Xm: 'xm',
     ShieldEffect: 'shield',
-    Atmosphere: 'atmosphere'
+    Atmosphere: 'atmosphere',
+    Link: 'LinkShader',
+    SphericalLink: 'link3d'
   },
   Texture: {
     FlipCard: 'FlipCardTexture',
@@ -494,11 +213,6 @@ var constants = {
     ShieldEffect: 'PortalShieldTexture',
     ColorGlow: 'ColorGlowTexture',
     TargetGlow: 'TargetGlowTexture',
-    ArtifactHelios: 'ArtifactHeliosTexture',
-    ArtifactAmar: 'ArtifactAmarTexture',
-    ArtifactJarvis: 'ArtifactJarvisTexture',
-    ArtifactShonin: 'ArtifactShoninTexture',
-    ArtifactLightman: 'ArtifactLightmanTexture',
     PortalLink: 'PortalLinkTexture',
     ResonatorLink: 'ResonatorLinkTexture'
   }
@@ -556,11 +270,42 @@ var disco = function(delta, elapsed) {
   return true;
 };
 
+var generateArtifacts = (function() {
+  var makeArtifact = function(meshName, textureName) {
+    var artifact = function() {
+      TexturedDrawable.call(this, imv.Constants.Program.Textured, meshName, textureName);
+    };
+    inherits(artifact, TexturedDrawable);
+
+    return artifact;
+  };
+
+  return function(series, num, hasFrozen) {
+    var i, meshName, textureName = 'Artifact' + series + 'Texture';
+
+    imv.Drawables = imv.Drawables || {};
+    imv.Drawables.Artifact = imv.Drawables.Artifact || {};
+    imv.Drawables.Artifact[series] = imv.Drawables.Artifact[series] || {};
+
+    for(i = 1; i <= num; i++) {
+      meshName = series + i;
+      imv.Drawables.Artifact[series]['' + i] = makeArtifact(meshName, textureName);
+    }
+    if(hasFrozen) {
+      for(i = 1; i <= num; i++) {
+        meshName = series + 'Frozen' + i;
+        imv.Drawables.Artifact[series]['Frozen' + i] = makeArtifact(meshName, textureName);
+      }
+    }
+  };
+}());
+
 imv.Utilities = imv.Utilities || {};
 imv.Utilities.inherits = inherits;
 imv.Utilities.resetGL = resetGL;
 imv.Utilities.setParams = setParams;
 imv.Utilities.disco = disco;
+imv.Utilities.generateArtifacts = generateArtifacts;
 
 
 var loadResource = function(url, type, callback)
@@ -1298,8 +1043,6 @@ var PortalLinkMesh = (function(){
     d = new Array(_len),
     e = new Array(_len);
 
-  var MAX_LINKS = 100; // seems reasonable.
-
   var clampedSin = function(f)
   {
     return Math.sin(Math.PI * Math.max(Math.min(1.0, f), 0) / 2);
@@ -1394,32 +1137,18 @@ var PortalLinkMesh = (function(){
     return ind;
   };
 
-  var linkmesh = function(gl) {
-    // make room for some max number links... though technically, since we
-    // have to rebind these every time we update them anyway, we could just
-    // grow this to whatever arbitrary limit, on the fly.
-    var buf = new Float32Array(_size * _chunkSize * MAX_LINKS);
+  var linkmesh = function(gl, start, end, color, startPercent, endPercent) {
+    var buf = _generateLinkAttributes(start, end, color, startPercent, endPercent);
+    var ind = _generateFaces(0);
     var attributes = [];
     attributes.push(new VertexAttribute('a_position', 4));
     attributes.push(new VertexAttribute('a_texCoord0', 4));
     attributes.push(new VertexAttribute('a_color', 4));
     var attribute = new GLAttribute(gl, attributes, buf, gl.DYNAMIC_DRAW);
-    var faces = new GLIndex(gl, new Uint16Array(144 * MAX_LINKS), gl.TRIANGLES);
+    var faces = new GLIndex(gl, ind, gl.TRIANGLES);
     Mesh.call(this, gl, attribute, faces);
-    this.nLinks = 0;
   };
   inherits(linkmesh, Mesh);
-
-  linkmesh.prototype.addLink = function(start, end, color, startPercent, endPercent) {
-
-    var linkAttributes = _generateLinkAttributes(start, end, color, startPercent, endPercent);
-    var vertexOffset = this.nLinks * _size;
-    var ind = _generateFaces(vertexOffset);
-    this.attributes.setValues(linkAttributes, vertexOffset * _chunkSize);
-    this.faces.setValues(ind, this.nLinks * 144);
-    this.nFaces += 144;
-    return this.nLinks++;
-  };
 
   return linkmesh;
 }());
@@ -1534,20 +1263,22 @@ var ResonatorLinkMesh = (function(){
     return ind;
   };
 
-  var linkmesh = function(gl) {
-    // make room for some max number links... though technically, since we
-    // have to rebind these every time we update them anyway, we could just
-    // grow this to whatever arbitrary limit, on the fly.
-    LinkMesh.call(this, gl);
-    this.nLinks = 0;
+  var linkmesh = function(gl, portalPosition, slot, distance, color, resonatorPercent) {
+    var theta = slot / 8 * 2 * Math.PI;
+    var end = vec2.create();
+    var relative = vec2.fromValues(distance * Math.cos(theta), distance * Math.sin(theta));
+    vec2.add(end, portalPosition, relative);
+    var buf = _generateLinkAttributes(portalPosition, end, color, resonatorPercent);
+    var ind = _generateFaces(0);
+    var attributes = [];
+    attributes.push(new VertexAttribute('a_position', 4));
+    attributes.push(new VertexAttribute('a_texCoord0', 4));
+    attributes.push(new VertexAttribute('a_color', 4));
+    var attribute = new GLAttribute(gl, attributes, buf, gl.DYNAMIC_DRAW);
+    var faces = new GLIndex(gl, ind, gl.TRIANGLES);
+    Mesh.call(this, gl, attribute, faces);
   };
-  inherits(linkmesh, LinkMesh);
-
-  linkmesh.prototype.addLink = function(portal, resonator, color, resonatorPercent) {
-    var linkAttributes = _generateLinkAttributes(portal, resonator, color, resonatorPercent);
-    var ind = _generateFaces(this.attributeOffset / _chunkSize);
-    return LinkMesh.prototype.addLink.call(this, linkAttributes, ind);
-  };
+  inherits(linkmesh, Mesh);
 
   return linkmesh;
 }());
@@ -1559,8 +1290,6 @@ imv.Meshes.ResonatorLink = ResonatorLinkMesh;
 var SphericalPortalLinkMesh = (function(){
 
   var _chunkSize = 13;
-  var MAX_LINKS = 50; // seems reasonable.
-  var EST_CHUNKS = 50; // half a hemisphere
 
   var clampedSin = function(f)
   {
@@ -1740,34 +1469,21 @@ var SphericalPortalLinkMesh = (function(){
     return ind;
   };
 
-  var linkmesh = function(gl, sphereRadius) {
-    var buf = new Float32Array(EST_CHUNKS * _chunkSize * MAX_LINKS);
+  var linkmesh = function(gl, sphereRadius, start, end, color, startPercent, endPercent) {
+    var buf = _generateLinkAttributes(sphereRadius, start, end, color, startPercent, endPercent);
+    var len = buf.length, segments = Math.floor(len / _chunkSize / 6);
+    var ind = _generateFaces(0, segments);
     var attributes = [];
     attributes.push(new VertexAttribute('a_position', 4));
     attributes.push(new VertexAttribute('a_texCoord0', 2));
     attributes.push(new VertexAttribute('a_normal', 3));
     attributes.push(new VertexAttribute('a_color', 4));
     var attribute = new GLAttribute(gl, attributes, buf, gl.DYNAMIC_DRAW);
-    var faces = new GLIndex(gl, new Uint16Array(EST_CHUNKS * 18 * MAX_LINKS), gl.TRIANGLES);
-    this.radius = sphereRadius;
-    this.vertexOffset = 0;
-    this.faceOffset = 0;
+    var faces = new GLIndex(gl, ind, gl.TRIANGLES);
     Mesh.call(this, gl, attribute, faces);
     return this;
   };
   inherits(linkmesh, Mesh);
-
-  linkmesh.prototype.addLink = function(start, end, color, startPercent, endPercent) {
-
-    var linkAttributes = _generateLinkAttributes(this.radius, start, end, color, startPercent, endPercent);
-    var len = linkAttributes.length, segments = Math.floor(len / _chunkSize / 6);
-    var ind = _generateFaces(this.vertexOffset / _chunkSize, segments);
-    this.attributes.setValues(linkAttributes, this.vertexOffset);
-    this.vertexOffset += len;
-    this.faces.setValues(ind, this.faceOffset);
-    this.faceOffset += ind.length;
-    return this;
-  };
 
   return linkmesh;
 }());
@@ -2149,10 +1865,12 @@ var MeshDrawable = (function() {
 
   meshDrawable.prototype.init = function(manager)
   {
-    this.mesh = manager.getMesh(this.meshName);
-    if(!this.mesh) {
-      console.warn('missing mesh ' + this.meshName);
-      return false;
+    if(this.meshName) {
+      this.mesh = manager.getMesh(this.meshName);
+      if(!this.mesh) {
+        console.warn('missing mesh ' + this.meshName);
+        return false;
+      }
     }
     return Drawable.prototype.init.call(this, manager);
   };
@@ -2162,6 +1880,7 @@ var MeshDrawable = (function() {
 
 imv.Drawables = imv.Drawables || {};
 imv.Drawables.Mesh = MeshDrawable;
+
 
 var ModelDrawable = (function() {
 
@@ -2214,16 +1933,19 @@ TexturedDrawable.prototype.draw = function()
 
 TexturedDrawable.prototype.init = function(manager)
 {
-  this.texture = manager.getTexture(this.textureName);
-  if(!this.texture) {
-    console.warn('missing texture ' + this.textureName);
-    return false;
+  if(this.textureName) {
+    this.texture = manager.getTexture(this.textureName);
+    if(!this.texture) {
+      console.warn('missing texture ' + this.textureName);
+      return false;
+    }
   }
   return ModelDrawable.prototype.init.call(this, manager);
 };
 
 imv.Drawables = imv.Drawables || {};
 imv.Drawables.Textured = TexturedDrawable;
+
 
 var BicoloredDrawable = (function(){
 
@@ -2487,33 +2209,6 @@ imv.Drawables.ShieldEffect = ShieldEffectDrawable;
   imv.Drawables.World.ArtifactsTargetGlow = artifactsTargetGlow;
 }());
 
-(function(){
-  var meshes = imv.Constants.Mesh.Artifact;
-  var textures = imv.Constants.Texture;
-  var i, j;
-
-  imv.Drawables = imv.Drawables || {};
-  imv.Drawables.Artifact = imv.Drawables.Artifact || {};
-
-  var makeArtifact = function(series, name) {
-    var artifact = function() {
-      TexturedDrawable.call(this, imv.Constants.Program.Textured, name, textures['Artifact' + series]);
-    };
-    inherits(artifact, TexturedDrawable);
-
-    return artifact;
-  };
-
-  for(i in meshes) {
-    var series = meshes[i];
-    imv.Drawables.Artifact[i] = imv.Drawables.Artifact[i] || {};
-    for(j in series) {
-      imv.Drawables.Artifact[i][j] = makeArtifact(i, j);
-    }
-  }
-
-}());
-
 var DynamicDrawable = (function() {
 
   // private function ;)
@@ -2607,12 +2302,12 @@ imv.Drawables.DynamicTextured = DynamicTexturedDrawable;
 
 var LinkDrawable = (function(){
 
-  var linkDrawable = function(programName, mesh, textureName) {
-    DynamicTexturedDrawable.call(this, programName, mesh, textureName);
+  var linkDrawable = function(programName, textureName) {
+    TexturedDrawable.call(this, programName, null, textureName);
     this.uniforms.u_cameraFwd = vec3.fromValues(0, 0, -1);
     this.uniforms.u_elapsedTime = 0;
   };
-  inherits(linkDrawable, DynamicTexturedDrawable);
+  inherits(linkDrawable, TexturedDrawable);
 
   // TODO: needs a camera class:
   linkDrawable.prototype.updateView = function(viewProject, view, project) {
@@ -2632,36 +2327,97 @@ var LinkDrawable = (function(){
     return ret;
   };
 
-  linkDrawable.prototype.addLink = function() {
-    if(!this.mesh) {
-      throw 'Mesh not ready yet!';
-    }
-
-    this.mesh.addLink.apply(this.mesh.addLink, arguments);
-  };
-
   return linkDrawable;
 }());
 
-var PortalLinkDrawable = function(mesh, textureName) {
-  LinkDrawable.call(this, 'LinkShader', mesh, textureName);
-};
-inherits(PortalLinkDrawable, LinkDrawable);
+imv.Drawables = imv.Drawables || {};
+imv.Drawables.Link = LinkDrawable;
 
-var SphericalLinkDrawable = function(mesh, textureName) {
-  LinkDrawable.call(this, 'link3d', mesh, textureName);
-};
-inherits(SphericalLinkDrawable, LinkDrawable);
 
-SphericalLinkDrawable.prototype.updateView = function(viewProject, view, project) {
+var PortalLinkDrawable = (function() {
+  var portalLink = function(start, end, color, startPercent, endPercent) {
+    this.start = start;
+    this.end = end;
+    this.color = color;
+    this.startPercent = startPercent;
+    this.endPercent = endPercent;
+    LinkDrawable.call(this, imv.Constants.Program.Link, imv.Constants.Texture.PortalLink);
+  };
+  inherits(portalLink, LinkDrawable);
+
+  portalLink.prototype.init = function(manager) {
+    this.mesh = new PortalLinkMesh(manager._gl, this.start, this.end, this.color, this.startPercent, this.endPercent);
+    return TexturedDrawable.prototype.init.call(this, manager);
+  };
+
+  return portalLink;
+}());
+
+imv.Drawables = imv.Drawables || {};
+imv.Drawables.PortalLink = PortalLinkDrawable;
+
+
+var ResonatorLinkDrawable = (function() {
+  var portalLink = function(portalPosition, slot, distance, color, resonatorPercent) {
+    this.portalPosition = portalPosition;
+    this.slot = slot;
+    this.distance = distance;
+    this.color = color;
+    this.resonatorPercent = resonatorPercent;
+    LinkDrawable.call(this, imv.Constants.Program.Link, imv.Constants.Texture.ResonatorLink);
+  };
+  inherits(portalLink, LinkDrawable);
+
+  portalLink.prototype.init = function(manager) {
+    this.mesh = new ResonatorLinkMesh(
+      manager._gl,
+      this.portalPosition,
+      this.slot,
+      this.distance,
+      this.color,
+      this.resonatorPercent
+    );
+    return TexturedDrawable.prototype.init.call(this, manager);
+  };
+
+  return portalLink;
+}());
+
+imv.Drawables = imv.Drawables || {};
+imv.Drawables.ResonatorLink = ResonatorLinkDrawable;
+
+
+var SphericalPortalLinkDrawable = function(sphereRadius, start, end, color, startPercent, endPercent) {
+  this.radius = sphereRadius;
+  this.start = start;
+  this.end = end;
+  this.color = color;
+  this.startPercent = startPercent;
+  this.endPercent = endPercent;
+  LinkDrawable.call(this, imv.Constants.Program.SphericalLink, imv.Constants.Texture.PortalLink);
+};
+inherits(SphericalPortalLinkDrawable, LinkDrawable);
+
+SphericalPortalLinkDrawable.prototype.init = function(manager) {
+  this.mesh = new SphericalPortalLinkMesh(
+    manager._gl,
+    this.radius,
+    this.start,
+    this.end,
+    this.color,
+    this.startPercent,
+    this.endPercent
+  );
+  return TexturedDrawable.prototype.init.call(this, manager);
+};
+
+SphericalPortalLinkDrawable.prototype.updateView = function(viewProject, view, project) {
   LinkDrawable.prototype.updateView.call(this, viewProject, view, project);
   this.uniforms.u_model = this.model;
 };
 
 imv.Drawables = imv.Drawables || {};
-imv.Drawables.Link = LinkDrawable;
-imv.Drawables.PortalLink = PortalLinkDrawable;
-imv.Drawables.SphericalLink = SphericalLinkDrawable;
+imv.Drawables.SphericalPortalLink = SphericalPortalLinkDrawable;
 
 
 var AtmosphereDrawable = (function(){
@@ -2831,9 +2587,6 @@ var PortalEntity = function(engine) {
   this.addDrawable('Portal', new imv.Drawables.World.Portal());
   // why 6? I dunno, ask Niantic
   mat4.scale(this.drawables.Portal.local, this.drawables.Portal.local, vec3.fromValues(6, 6, 6));
-  this.linkMesh = new imv.Meshes.ResonatorLink(engine.gl);
-  this.links = new Array(8);
-  this.addDrawable('ResonatorLinks', new imv.Drawables.PortalLink(this.linkMesh, imv.Constants.Texture.ResonatorLink));
   this.setColor(vec4.clone(imv.Constants.teamColors.LOKI));
 };
 inherits(PortalEntity, Entity);
@@ -2847,34 +2600,15 @@ PortalEntity.prototype.setColor = function(color) {
   if(this.drawables.ArtifactsGreenGlow) {
     this.drawables.ArtifactsGreenGlow.u_baseColor = this.color;
   }
-  for(var i = 0; i < 8; i++) {
+  /*for(var i = 0; i < 8; i++) {
     this._redrawLink(i);
+  }*/
+};
+
+PortalEntity.prototype.addResonator = function(level, slot, range, percent) {
+  if(percent === undefined) {
+    percent = 1.0;
   }
-};
-
-PortalEntity.prototype._addResonatorLink = function(slot, x, y) {
-  if(this.links[slot]) {
-    this.linkMesh.removeLink(this.links[slot].id);
-  }
-  this.links[slot] = {
-    x: x,
-    y: y,
-    id: this.linkMesh.addLink([0, 0], [x, y], this.color)
-  };
-};
-
-PortalEntity.prototype._removeResonatorLink = function(slot) {
-  this.linkMesh.removeLink(this.links[slot].id);
-  this.links[slot] = null;
-};
-
-PortalEntity.prototype._redrawLink = function(slot) {
-  if(this.links[slot]) {
-    this._addResonatorLink(slot, this.links[slot].x, this.links[slot].y);
-  }
-};
-
-PortalEntity.prototype.addResonator = function(level, slot, range) {
   if(+slot < 0 || +slot > 8) {
     throw new Error('slot out of bounds for resonator');
   }
@@ -2882,22 +2616,32 @@ PortalEntity.prototype.addResonator = function(level, slot, range) {
     throw new Error('level must be one of ' + Object.keys(imv.Constants.qualityColors).join(' '));
   }
   range = range === undefined ? 40 : range;
-  var name = 'Resonator' + (+slot);
+  var resonatorName = 'Resonator' + (+slot);
+  var linkName = 'Link' + (+slot);
   var theta = slot / 8 * 2 * Math.PI;
-  var drawable = new imv.Drawables.World.Resonator();
-  drawable.uniforms.u_color0 = vec4.clone(imv.Constants.qualityColors[level]);
-  drawable.local = mat4.clone(this.drawables.Portal.local);
+  var resonator = new imv.Drawables.World.Resonator();
   var x = range * Math.cos(theta);
   var y = range * Math.sin(theta);
+  var link = new imv.Drawables.ResonatorLink(
+    [0,0],
+    slot,
+    range,
+    vec4.clone(this.color),
+    1.0
+  );
+  resonator.uniforms.u_color0 = vec4.clone(imv.Constants.qualityColors[level]);
+  resonator.local = mat4.clone(this.drawables.Portal.local);
+  //link.local = mat4.clone(this.drawables.Portal.local);
   mat4.translate(
-    drawable.local,
-    drawable.local,
+    resonator.local,
+    resonator.local,
     vec3.fromValues(x / 6, 0, y / 6)
   );
-  drawable.updateMatrix();
-  this.addDrawable(name, drawable);
-  this._addResonatorLink(slot, x, y);
+  resonator.updateMatrix();
+  link.updateMatrix();
   // keep the portal sorted last (this is a terrible way of doing this.)
+  this.addDrawable(linkName, link);
+  this.addDrawable(resonatorName, resonator);
   this.addDrawable('Portal', this.drawables.Portal);
 };
 
@@ -2985,6 +2729,24 @@ var AssetManager = (function() {
     };
   };
 
+  var simpleMerge = function(left, right) {
+    left = left || {};
+    for(var i in right) {
+      left[i] = right[i];
+    }
+    return left;
+  };
+
+  var mergeManifests = function(base, add) {
+    var keys = ['texture', 'mesh', 'program', 'rawProgram'];
+    keys.forEach(function(key) {
+      if (key in add) {
+        base[key] = simpleMerge(base[key], add[key]);
+      }
+    });
+    return base;
+  };
+
   var assetManager = function(gl, manifest) {
     GLBound.call(this, gl);
     this.manifest = manifest;
@@ -3015,6 +2777,10 @@ var AssetManager = (function() {
     {
       this.complete();
     }
+  };
+
+  assetManager.prototype.addAssets = function(manifest) {
+    this.manifest = mergeManifests(this.manifest, manifest);
   };
 
   assetManager.prototype.addTexture = function(name, texture) {
@@ -3814,7 +3580,7 @@ Engine.prototype.preload = function(callback) {
 imv.Engine = Engine;
 
 
-  imv.VERSION = '0.15.0';
+  imv.VERSION = '0.16.0';
 
   root.IMV = imv;
 
