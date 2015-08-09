@@ -58,17 +58,11 @@
     engine.far = 500;
     engine.objectRenderer.updateView(engine.view, engine.project);
 
-    // Portal.
-
-    /*var portal = new IMV.Entities.World.Portal(engine);
-    portal.setColor(IMV.Constants.teamColors.RESISTANCE);
-    portal.addShield();*/
-
-    var length = 75, num = 8;
+    var length = 75, num = 50;
     for(var i = 0; i < num; i++) {
       var drawable = new IMV.Drawables.PortalLink([0, 0],
         [Math.sin(i / num * 2 * Math.PI) * length, Math.cos(i / num * 2 * Math.PI) * length],
-        vec4.clone(IMV.Constants.teamColors.RESISTANCE)
+        vec4.clone(IMV.Constants.teamColors.LOKI)
       );
       engine.objectRenderer.addDrawable(drawable);
     }

@@ -111,6 +111,7 @@ module.exports = function (grunt) {
           'src/drawable/dynamic-textured.js',
           'src/drawable/link.js',
           'src/drawable/portal-link.js',
+          'src/drawable/resonator-link.js',
           'src/drawable/atmosphere.js',
           'src/entity.js',
           'src/entity/inventory.js',
