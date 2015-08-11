@@ -99,6 +99,7 @@ module.exports = function (grunt) {
           'src/drawable/mesh.js',
           'src/drawable/model.js',
           'src/drawable/textured.js',
+          'src/drawable/textured-sphere.js',
           'src/drawable/bicolored.js',
           'src/drawable/glowramp.js',
           'src/drawable/xm.js',

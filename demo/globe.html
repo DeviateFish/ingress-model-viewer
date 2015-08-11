@@ -104,13 +104,11 @@
     engine.preload(function() {
       var globe, atmosphere, world;
 
-      world = new IMV.Meshes.Sphere(engine.gl, radius, 50, 50);
-
-      globe = new IMV.Drawables.DynamicTextured('textured', world, 'WorldTexture');
-      atmosphere = new IMV.Drawables.Atmosphere(world);
+      globe = new IMV.Drawables.TexturedSphere('WorldTexture', radius, 50, 50);
+      atmosphere = new IMV.Drawables.Atmosphere(radius, 50, 50);
 
       engine.objectRenderer.addDrawable(globe);
-      engine.objectRenderer.addDrawable(atmosphere);
+
       globe.onUpdate = rotate;
       atmosphere.onUpdate = rotate;
 
@@ -135,6 +133,7 @@
         testLink.onUpdate = rotate;
         engine.objectRenderer.addDrawable(testLink);
       }
+      engine.objectRenderer.addDrawable(atmosphere);
       engine.render(0);
       controls.enable();
       window.requestAnimationFrame(updateCamera);

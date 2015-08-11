@@ -9,7 +9,7 @@ var LinkDrawable = (function(){
 
   // TODO: needs a camera class:
   linkDrawable.prototype.updateView = function(viewProject, view, project) {
-    DynamicTexturedDrawable.prototype.updateView.call(this, viewProject, view, project);
+    TexturedDrawable.prototype.updateView.call(this, viewProject, view, project);
     if(view) {
       var rot = mat3.fromMat4(mat3.create(), view);
       var q = quat.fromMat3(quat.create(), rot);
@@ -20,7 +20,7 @@ var LinkDrawable = (function(){
   };
 
   linkDrawable.prototype.updateTime = function(delta) {
-    var ret = DynamicTexturedDrawable.prototype.updateTime.call(this, delta);
+    var ret = TexturedDrawable.prototype.updateTime.call(this, delta);
     this.uniforms.u_elapsedTime = ((this.elapsed / 1000) % 300.0) * 0.1;
     return ret;
   };
