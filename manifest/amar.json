@@ -1,0 +1,41 @@
+{
+    "texture": {
+        "ArtifactAmarTexture": { "path": "scanner/artifacts/artifact_amar.png", "minFilter": "Linear", "magFilter": "Linear", "wrapS": "ClampToEdge", "wrapT": "ClampToEdge" }
+    },
+    "mesh": {
+        "Amar1": { "path": "scanner/artifacts/artifact_amar_fragment_1.obj" },
+        "AmarFrozen1": { "path": "scanner/artifacts/artifact_frozen_amar_fragment_1.obj" },
+        "Amar2": { "path": "scanner/artifacts/artifact_amar_fragment_2.obj" },
+        "AmarFrozen2": { "path": "scanner/artifacts/artifact_frozen_amar_fragment_2.obj" },
+        "Amar3": { "path": "scanner/artifacts/artifact_amar_fragment_3.obj" },
+        "AmarFrozen3": { "path": "scanner/artifacts/artifact_frozen_amar_fragment_3.obj" },
+        "Amar4": { "path": "scanner/artifacts/artifact_amar_fragment_4.obj" },
+        "AmarFrozen4": { "path": "scanner/artifacts/artifact_frozen_amar_fragment_4.obj" },
+        "Amar5": { "path": "scanner/artifacts/artifact_amar_fragment_5.obj" },
+        "AmarFrozen5": { "path": "scanner/artifacts/artifact_frozen_amar_fragment_5.obj" },
+        "Amar6": { "path": "scanner/artifacts/artifact_amar_fragment_6.obj" },
+        "AmarFrozen6": { "path": "scanner/artifacts/artifact_frozen_amar_fragment_6.obj" },
+        "Amar7": { "path": "scanner/artifacts/artifact_amar_fragment_7.obj" },
+        "AmarFrozen7": { "path": "scanner/artifacts/artifact_frozen_amar_fragment_7.obj" },
+        "Amar8": { "path": "scanner/artifacts/artifact_amar_fragment_8.obj" },
+        "AmarFrozen8": { "path": "scanner/artifacts/artifact_frozen_amar_fragment_8.obj" },
+        "Amar9": { "path": "scanner/artifacts/artifact_amar_fragment_9.obj" },
+        "AmarFrozen9": { "path": "scanner/artifacts/artifact_frozen_amar_fragment_9.obj" },
+        "Amar10": { "path": "scanner/artifacts/artifact_amar_fragment_10.obj" },
+        "AmarFrozen10": { "path": "scanner/artifacts/artifact_frozen_amar_fragment_10.obj" },
+        "Amar11": { "path": "scanner/artifacts/artifact_amar_fragment_11.obj" },
+        "AmarFrozen11": { "path": "scanner/artifacts/artifact_frozen_amar_fragment_11.obj" },
+        "Amar12": { "path": "scanner/artifacts/artifact_amar_fragment_12.obj" },
+        "AmarFrozen12": { "path": "scanner/artifacts/artifact_frozen_amar_fragment_12.obj" },
+        "Amar13": { "path": "scanner/artifacts/artifact_amar_fragment_13.obj" },
+        "AmarFrozen13": { "path": "scanner/artifacts/artifact_frozen_amar_fragment_13.obj" },
+        "Amar14": { "path": "scanner/artifacts/artifact_amar_fragment_14.obj" },
+        "AmarFrozen14": { "path": "scanner/artifacts/artifact_frozen_amar_fragment_14.obj" },
+        "Amar15": { "path": "scanner/artifacts/artifact_amar_fragment_15.obj" },
+        "AmarFrozen15": { "path": "scanner/artifacts/artifact_frozen_amar_fragment_15.obj" },
+        "Amar16": { "path": "scanner/artifacts/artifact_amar_fragment_16.obj" },
+        "AmarFrozen16": { "path": "scanner/artifacts/artifact_frozen_amar_fragment_16.obj" },
+        "Amar17": { "path": "scanner/artifacts/artifact_amar_fragment_17.obj" },
+        "AmarFrozen17": { "path": "scanner/artifacts/artifact_frozen_amar_fragment_17.obj" }
+    }
+}

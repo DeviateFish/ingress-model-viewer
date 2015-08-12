@@ -47,8 +47,39 @@ var disco = function(delta, elapsed) {
   return true;
 };
 
+var generateArtifacts = (function() {
+  var makeArtifact = function(meshName, textureName) {
+    var artifact = function() {
+      TexturedDrawable.call(this, imv.Constants.Program.Textured, meshName, textureName);
+    };
+    inherits(artifact, TexturedDrawable);
+
+    return artifact;
+  };
+
+  return function(series, num, hasFrozen) {
+    var i, meshName, textureName = 'Artifact' + series + 'Texture';
+
+    imv.Drawables = imv.Drawables || {};
+    imv.Drawables.Artifact = imv.Drawables.Artifact || {};
+    imv.Drawables.Artifact[series] = imv.Drawables.Artifact[series] || {};
+
+    for(i = 1; i <= num; i++) {
+      meshName = series + i;
+      imv.Drawables.Artifact[series]['' + i] = makeArtifact(meshName, textureName);
+    }
+    if(hasFrozen) {
+      for(i = 1; i <= num; i++) {
+        meshName = series + 'Frozen' + i;
+        imv.Drawables.Artifact[series]['Frozen' + i] = makeArtifact(meshName, textureName);
+      }
+    }
+  };
+}());
+
 imv.Utilities = imv.Utilities || {};
 imv.Utilities.inherits = inherits;
 imv.Utilities.resetGL = resetGL;
 imv.Utilities.setParams = setParams;
 imv.Utilities.disco = disco;
+imv.Utilities.generateArtifacts = generateArtifacts;

@@ -20,7 +20,6 @@
 <canvas id="screen" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;"></canvas>
 <script type="text/javascript">
   var canvas = document.getElementById('screen'), engine,
-      assets = {},
       radius = 100,
       artifactInfos = null,
       controls = new IMV.Controls.Orbit(canvas, radius * 3, {
@@ -51,7 +50,7 @@
       shardDrawables = [];
 
     shards.forEach(function(el) {
-      var shard = new IMV.Drawables.Artifact.Shonin['Shonin'+el]();
+      var shard = new IMV.Drawables.Artifact.Shonin[el]();
       addRotatingDrawable(shard, lat, lng);
     });
 
@@ -94,8 +93,10 @@
     window.requestAnimationFrame(updateCamera);
   };
 
-  var init = function(assets) {
+  var init = function(assets, shonin) {
     engine = new IMV.Engine(canvas, assets, true);
+    engine.assetManager.addAssets(shonin);
+    IMV.Utilities.generateArtifacts('Shonin', 31, true);
     mat4.lookAt(engine.view, [radius * 3, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
     engine.hFoV = Math.PI / 3;
     engine.far = radius * 5;
@@ -103,13 +104,11 @@
     engine.preload(function() {
       var globe, atmosphere, world;
 
-      world = new IMV.Meshes.Sphere(engine.gl, radius, 50, 50);
-
-      globe = new IMV.Drawables.DynamicTextured('textured', world, 'WorldTexture');
-      atmosphere = new IMV.Drawables.Atmosphere(world);
+      globe = new IMV.Drawables.TexturedSphere('WorldTexture', radius, 50, 50);
+      atmosphere = new IMV.Drawables.Atmosphere(radius, 50, 50);
 
       engine.objectRenderer.addDrawable(globe);
-      engine.objectRenderer.addDrawable(atmosphere);
+
       globe.onUpdate = rotate;
       atmosphere.onUpdate = rotate;
 
@@ -125,7 +124,16 @@
                 (arr[1] === 'E' ? 'ENLIGHTENED' : 'NEUTRAL');
           addShardPortal(arr[2] / 1E6, arr[3] / 1E6, team, obj.fragments);
         });
+        var testLink = new IMV.Drawables.SphericalPortalLink(
+          radius,
+          [artifactInfos[0].targetInfos[0].portalInfo[2] / 1E6, artifactInfos[0].targetInfos[0].portalInfo[3] / 1E6],
+          [artifactInfos[0].targetInfos[1].portalInfo[2] / 1E6, artifactInfos[0].targetInfos[1].portalInfo[3] / 1E6],
+          vec4.clone(IMV.Constants.teamColors.LOKI)
+        )
+        testLink.onUpdate = rotate;
+        engine.objectRenderer.addDrawable(testLink);
       }
+      engine.objectRenderer.addDrawable(atmosphere);
       engine.render(0);
       controls.enable();
       window.requestAnimationFrame(updateCamera);
@@ -139,21 +147,29 @@
     return true;
   };
 
-  IMV.Utilities.loadResource('/assets.json', 'text', function(err, val) {
+  IMV.Utilities.loadResource('/manifest/assets.json', 'text', function(err, val) {
     if(err) {
       throw err;
     }
-    assets = JSON.parse(val);
+    var assets = JSON.parse(val);
     if(assets) {
-      IMV.Utilities.loadResource('/snapshot.json', 'text', function(err, val) {
+      IMV.Utilities.loadResource('/manifest/shonin.json', 'text', function(err, val) {
         if(err) {
           throw err;
         }
-        artifactInfos = JSON.parse(val);
-        init(assets);
-        engine.draw(0);
-      });
+        var shonin = JSON.parse(val);
+        if(assets) {
+          IMV.Utilities.loadResource('/snapshot.json', 'text', function(err, val) {
+            if(err) {
+              throw err;
+            }
+            artifactInfos = JSON.parse(val);
+            init(assets, shonin);
+            engine.draw(0);
+          });
 
+        }
+      });
     }
   });
 </script>

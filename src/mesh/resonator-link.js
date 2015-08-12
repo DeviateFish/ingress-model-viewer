@@ -104,20 +104,22 @@ var ResonatorLinkMesh = (function(){
     return ind;
   };
 
-  var linkmesh = function(gl) {
-    // make room for some max number links... though technically, since we
-    // have to rebind these every time we update them anyway, we could just
-    // grow this to whatever arbitrary limit, on the fly.
-    LinkMesh.call(this, gl);
-    this.nLinks = 0;
+  var linkmesh = function(gl, portalPosition, slot, distance, color, resonatorPercent) {
+    var theta = slot / 8 * 2 * Math.PI;
+    var end = vec2.create();
+    var relative = vec2.fromValues(distance * Math.cos(theta), distance * Math.sin(theta));
+    vec2.add(end, portalPosition, relative);
+    var buf = _generateLinkAttributes(portalPosition, end, color, resonatorPercent);
+    var ind = _generateFaces(0);
+    var attributes = [];
+    attributes.push(new VertexAttribute('a_position', 4));
+    attributes.push(new VertexAttribute('a_texCoord0', 4));
+    attributes.push(new VertexAttribute('a_color', 4));
+    var attribute = new GLAttribute(gl, attributes, buf, gl.DYNAMIC_DRAW);
+    var faces = new GLIndex(gl, ind, gl.TRIANGLES);
+    Mesh.call(this, gl, attribute, faces);
   };
-  inherits(linkmesh, LinkMesh);
-
-  linkmesh.prototype.addLink = function(portal, resonator, color, resonatorPercent) {
-    var linkAttributes = _generateLinkAttributes(portal, resonator, color, resonatorPercent);
-    var ind = _generateFaces(this.attributeOffset / _chunkSize);
-    return LinkMesh.prototype.addLink.call(this, linkAttributes, ind);
-  };
+  inherits(linkmesh, Mesh);
 
   return linkmesh;
 }());

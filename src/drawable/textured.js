@@ -14,10 +14,12 @@ TexturedDrawable.prototype.draw = function()
 
 TexturedDrawable.prototype.init = function(manager)
 {
-  this.texture = manager.getTexture(this.textureName);
-  if(!this.texture) {
-    console.warn('missing texture ' + this.textureName);
-    return false;
+  if(this.textureName) {
+    this.texture = manager.getTexture(this.textureName);
+    if(!this.texture) {
+      console.warn('missing texture ' + this.textureName);
+      return false;
+    }
   }
   return ModelDrawable.prototype.init.call(this, manager);
 };

@@ -24,10 +24,12 @@ var MeshDrawable = (function() {
 
   meshDrawable.prototype.init = function(manager)
   {
-    this.mesh = manager.getMesh(this.meshName);
-    if(!this.mesh) {
-      console.warn('missing mesh ' + this.meshName);
-      return false;
+    if(this.meshName) {
+      this.mesh = manager.getMesh(this.meshName);
+      if(!this.mesh) {
+        console.warn('missing mesh ' + this.meshName);
+        return false;
+      }
     }
     return Drawable.prototype.init.call(this, manager);
   };

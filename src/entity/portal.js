@@ -3,9 +3,6 @@ var PortalEntity = function(engine) {
   this.addDrawable('Portal', new imv.Drawables.World.Portal());
   // why 6? I dunno, ask Niantic
   mat4.scale(this.drawables.Portal.local, this.drawables.Portal.local, vec3.fromValues(6, 6, 6));
-  this.linkMesh = new imv.Meshes.ResonatorLink(engine.gl);
-  this.links = new Array(8);
-  this.addDrawable('ResonatorLinks', new imv.Drawables.PortalLink(this.linkMesh, imv.Constants.Texture.ResonatorLink));
   this.setColor(vec4.clone(imv.Constants.teamColors.LOKI));
 };
 inherits(PortalEntity, Entity);
@@ -19,34 +16,15 @@ PortalEntity.prototype.setColor = function(color) {
   if(this.drawables.ArtifactsGreenGlow) {
     this.drawables.ArtifactsGreenGlow.u_baseColor = this.color;
   }
-  for(var i = 0; i < 8; i++) {
+  /*for(var i = 0; i < 8; i++) {
     this._redrawLink(i);
+  }*/
+};
+
+PortalEntity.prototype.addResonator = function(level, slot, range, percent) {
+  if(percent === undefined) {
+    percent = 1.0;
   }
-};
-
-PortalEntity.prototype._addResonatorLink = function(slot, x, y) {
-  if(this.links[slot]) {
-    this.linkMesh.removeLink(this.links[slot].id);
-  }
-  this.links[slot] = {
-    x: x,
-    y: y,
-    id: this.linkMesh.addLink([0, 0], [x, y], this.color)
-  };
-};
-
-PortalEntity.prototype._removeResonatorLink = function(slot) {
-  this.linkMesh.removeLink(this.links[slot].id);
-  this.links[slot] = null;
-};
-
-PortalEntity.prototype._redrawLink = function(slot) {
-  if(this.links[slot]) {
-    this._addResonatorLink(slot, this.links[slot].x, this.links[slot].y);
-  }
-};
-
-PortalEntity.prototype.addResonator = function(level, slot, range) {
   if(+slot < 0 || +slot > 8) {
     throw new Error('slot out of bounds for resonator');
   }
@@ -54,22 +32,32 @@ PortalEntity.prototype.addResonator = function(level, slot, range) {
     throw new Error('level must be one of ' + Object.keys(imv.Constants.qualityColors).join(' '));
   }
   range = range === undefined ? 40 : range;
-  var name = 'Resonator' + (+slot);
+  var resonatorName = 'Resonator' + (+slot);
+  var linkName = 'Link' + (+slot);
   var theta = slot / 8 * 2 * Math.PI;
-  var drawable = new imv.Drawables.World.Resonator();
-  drawable.uniforms.u_color0 = vec4.clone(imv.Constants.qualityColors[level]);
-  drawable.local = mat4.clone(this.drawables.Portal.local);
+  var resonator = new imv.Drawables.World.Resonator();
   var x = range * Math.cos(theta);
   var y = range * Math.sin(theta);
+  var link = new imv.Drawables.ResonatorLink(
+    [0,0],
+    slot,
+    range,
+    vec4.clone(this.color),
+    1.0
+  );
+  resonator.uniforms.u_color0 = vec4.clone(imv.Constants.qualityColors[level]);
+  resonator.local = mat4.clone(this.drawables.Portal.local);
+  //link.local = mat4.clone(this.drawables.Portal.local);
   mat4.translate(
-    drawable.local,
-    drawable.local,
+    resonator.local,
+    resonator.local,
     vec3.fromValues(x / 6, 0, y / 6)
   );
-  drawable.updateMatrix();
-  this.addDrawable(name, drawable);
-  this._addResonatorLink(slot, x, y);
+  resonator.updateMatrix();
+  link.updateMatrix();
   // keep the portal sorted last (this is a terrible way of doing this.)
+  this.addDrawable(linkName, link);
+  this.addDrawable(resonatorName, resonator);
   this.addDrawable('Portal', this.drawables.Portal);
 };
 

@@ -1,8 +1,6 @@
 var SphericalPortalLinkMesh = (function(){
 
   var _chunkSize = 13;
-  var MAX_LINKS = 50; // seems reasonable.
-  var EST_CHUNKS = 50; // half a hemisphere
 
   var clampedSin = function(f)
   {
@@ -182,34 +180,21 @@ var SphericalPortalLinkMesh = (function(){
     return ind;
   };
 
-  var linkmesh = function(gl, sphereRadius) {
-    var buf = new Float32Array(EST_CHUNKS * _chunkSize * MAX_LINKS);
+  var linkmesh = function(gl, sphereRadius, start, end, color, startPercent, endPercent) {
+    var buf = _generateLinkAttributes(sphereRadius, start, end, color, startPercent, endPercent);
+    var len = buf.length, segments = Math.floor(len / _chunkSize / 6);
+    var ind = _generateFaces(0, segments);
     var attributes = [];
     attributes.push(new VertexAttribute('a_position', 4));
     attributes.push(new VertexAttribute('a_texCoord0', 2));
     attributes.push(new VertexAttribute('a_normal', 3));
     attributes.push(new VertexAttribute('a_color', 4));
     var attribute = new GLAttribute(gl, attributes, buf, gl.DYNAMIC_DRAW);
-    var faces = new GLIndex(gl, new Uint16Array(EST_CHUNKS * 18 * MAX_LINKS), gl.TRIANGLES);
-    this.radius = sphereRadius;
-    this.vertexOffset = 0;
-    this.faceOffset = 0;
+    var faces = new GLIndex(gl, ind, gl.TRIANGLES);
     Mesh.call(this, gl, attribute, faces);
     return this;
   };
   inherits(linkmesh, Mesh);
-
-  linkmesh.prototype.addLink = function(start, end, color, startPercent, endPercent) {
-
-    var linkAttributes = _generateLinkAttributes(this.radius, start, end, color, startPercent, endPercent);
-    var len = linkAttributes.length, segments = Math.floor(len / _chunkSize / 6);
-    var ind = _generateFaces(this.vertexOffset / _chunkSize, segments);
-    this.attributes.setValues(linkAttributes, this.vertexOffset);
-    this.vertexOffset += len;
-    this.faces.setValues(ind, this.faceOffset);
-    this.faceOffset += ind.length;
-    return this;
-  };
 
   return linkmesh;
 }());
