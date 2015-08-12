@@ -1947,6 +1947,35 @@ imv.Drawables = imv.Drawables || {};
 imv.Drawables.Textured = TexturedDrawable;
 
 
+var TexturedSphereDrawable = (function() {
+
+  var PROGRAM = imv.Constants.Program.Textured;
+
+  var texturedSphere = function(textureName, radius, vSlices, hSlices) {
+    this.radius = radius;
+    this.vSlices = vSlices;
+    this.hSlices = hSlices;
+    TexturedDrawable.call(this, PROGRAM, null, textureName);
+  };
+  inherits(texturedSphere, TexturedDrawable);
+
+  texturedSphere.prototype.init = function(manager) {
+    this.mesh = new SphereMesh(
+      manager._gl,
+      this.radius,
+      this.vSlices,
+      this.hSlices
+    );
+    return TexturedDrawable.prototype.init.call(this, manager);
+  };
+
+  return texturedSphere;
+}());
+
+imv.Drawables = imv.Drawables || {};
+imv.Drawables.TexturedSphere = TexturedSphereDrawable;
+
+
 var BicoloredDrawable = (function(){
 
   // TODO: make constants for these,
@@ -2209,97 +2238,6 @@ imv.Drawables.ShieldEffect = ShieldEffectDrawable;
   imv.Drawables.World.ArtifactsTargetGlow = artifactsTargetGlow;
 }());
 
-var DynamicDrawable = (function() {
-
-  // private function ;)
-  var _draw = function(locations, uniforms)
-  {
-    for(var i in this.uniforms)
-    {
-      if(this.uniforms.hasOwnProperty(i) && (i in uniforms))
-      {
-        uniforms[i](this.uniforms[i]);
-      }
-    }
-    this.mesh.draw(locations);
-  };
-
-  var dynamic = function(programName, mesh) {
-    Drawable.call(this, programName);
-    this.mesh = mesh;
-    this.drawfn = _draw.bind(this);
-  };
-  inherits(dynamic, Drawable);
-
-  return dynamic;
-}());
-
-imv.Drawables = imv.Drawables || {};
-imv.Drawables.Dynamic = DynamicDrawable;
-
-
-var DynamicModelDrawable = (function() {
-
-  var modelDrawable = function(programName, mesh) {
-    DynamicDrawable.call(this, programName, mesh);
-    this.viewProject = mat4.create();
-    this.model = mat4.create();
-    this.local = mat4.create();
-    this.world = mat4.create();
-  };
-  inherits(modelDrawable, DynamicDrawable);
-
-  modelDrawable.prototype.updateMatrix = function() {
-    var mvp = mat4.create();
-    mat4.multiply(this.model, this.world, this.local);
-    mat4.multiply(mvp, this.viewProject, this.model);
-    this.uniforms.u_modelViewProject = mvp;
-  };
-
-  modelDrawable.prototype.updateView = function(viewProject) {
-    this.viewProject = viewProject;
-    this.updateMatrix();
-  };
-
-  modelDrawable.prototype.setMatrix = function(mat) {
-    this.model = mat;
-    this.updateMatrix();
-  };
-
-  return modelDrawable;
-}());
-
-imv.Drawables = imv.Drawables || {};
-imv.Drawables.DynamicModel = DynamicModelDrawable;
-
-
-var DynamicTexturedDrawable = function(programName, mesh, textureName) {
-  DynamicModelDrawable.call(this, programName, mesh);
-  this.textureName = textureName;
-  this.texture = null;
-};
-inherits(DynamicTexturedDrawable, DynamicModelDrawable);
-
-DynamicTexturedDrawable.prototype.draw = function()
-{
-  this.texture.use(0);
-  this.uniforms.u_texture = 0;
-  DynamicModelDrawable.prototype.draw.call(this);
-};
-
-DynamicTexturedDrawable.prototype.init = function(manager)
-{
-  this.texture = manager.getTexture(this.textureName);
-  if(!this.texture) {
-    console.warn('missing texture ' + this.textureName);
-    return false;
-  }
-  return DynamicModelDrawable.prototype.init.call(this, manager);
-};
-
-imv.Drawables = imv.Drawables || {};
-imv.Drawables.DynamicTextured = DynamicTexturedDrawable;
-
 var LinkDrawable = (function(){
 
   var linkDrawable = function(programName, textureName) {
@@ -2311,7 +2249,7 @@ var LinkDrawable = (function(){
 
   // TODO: needs a camera class:
   linkDrawable.prototype.updateView = function(viewProject, view, project) {
-    DynamicTexturedDrawable.prototype.updateView.call(this, viewProject, view, project);
+    TexturedDrawable.prototype.updateView.call(this, viewProject, view, project);
     if(view) {
       var rot = mat3.fromMat4(mat3.create(), view);
       var q = quat.fromMat3(quat.create(), rot);
@@ -2322,7 +2260,7 @@ var LinkDrawable = (function(){
   };
 
   linkDrawable.prototype.updateTime = function(delta) {
-    var ret = DynamicTexturedDrawable.prototype.updateTime.call(this, delta);
+    var ret = TexturedDrawable.prototype.updateTime.call(this, delta);
     this.uniforms.u_elapsedTime = ((this.elapsed / 1000) % 300.0) * 0.1;
     return ret;
   };
@@ -2430,19 +2368,32 @@ var AtmosphereDrawable = (function(){
   // this current expects a SphereMesh, but what that really
   // means is that it's expecting a mesh that provides
   // a_postion, a_texCoord0 and a_normal attributes.
-  var atmosphereDrawable = function(mesh, scaleFactor) {
-    DynamicModelDrawable.call(this, PROGRAM, mesh);
+  var atmosphereDrawable = function(radius, vSlices, hSlices, scaleFactor) {
+    this.radius = radius;
+    this.vSlices = vSlices;
+    this.hSlices = hSlices;
+    ModelDrawable.call(this, PROGRAM, null);
     this.uniforms.u_normalMatrix = mat3.create();
     this.scaleFactor = scaleFactor || 1.1;
     mat4.scale(this.local, this.local, [this.scaleFactor, this.scaleFactor, this.scaleFactor]);
   };
-  inherits(atmosphereDrawable, DynamicModelDrawable);
+  inherits(atmosphereDrawable, ModelDrawable);
 
   atmosphereDrawable.prototype.updateView = function(viewProject) {
-    DynamicModelDrawable.prototype.updateView.call(this, viewProject);
+    ModelDrawable.prototype.updateView.call(this, viewProject);
      var invert = mat4.invert(mat4.create(), viewProject),
          transpose = mat4.transpose(mat4.create(), invert);
     this.uniforms.u_normalMatrix = mat3.fromMat4(mat3.create(), transpose);
+  };
+
+  atmosphereDrawable.prototype.init = function(manager) {
+    this.mesh = new SphereMesh(
+      manager._gl,
+      this.radius,
+      this.vSlices,
+      this.hSlices
+    );
+    return ModelDrawable.prototype.init.call(this, manager);
   };
 
   return atmosphereDrawable;
