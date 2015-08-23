@@ -1,6 +1,7 @@
 import Constants from '../constants';
 import GlowrampDrawable from './glowramp';
 import BicoloredDrawable from './bicolored';
+import ShieldEffect from './shield-effect';
 
 var World = {};
 var meshes = Constants.Mesh.World;
@@ -26,6 +27,16 @@ function makeBicolored(mesh, texture) {
   return bicoloredbase;
 }
 
+function makeShieldEffect(mesh, texture) {
+  class shieldeffectbase extends ShieldEffect {
+    constructor() {
+      super(mesh, texture);
+    }
+  }
+
+  return shieldeffectbase;
+}
+
 World.Portal = makeGlowramp(meshes.Portal, textures.Glowramp);
 World.Waypoint = makeGlowramp(meshes.Waypoint, textures.Waypoint);
 World.ArtifactsRedGlow = makeGlowramp(meshes.ArtifactsRedGlow, textures.ColorGlow);
@@ -33,7 +44,7 @@ World.ArtifactsGreenGlow = makeGlowramp(meshes.ArtifactsGreenGlow, textures.Colo
 World.ArtifactsPurpleGlow = makeGlowramp(meshes.ArtifactsPurpleGlow, textures.ColorGlow);
 World.ArtifactsTargetGlow = makeGlowramp(meshes.ArtifactsTargetGlow, textures.TargetGlow);
 
-World.Shield = makeBicolored(meshes.Shield, textures.ShieldEffect);
+World.Shield = makeShieldEffect(meshes.Shield, textures.ShieldEffect);
 World.Resonator = makeBicolored(meshes.Resonator, textures.FlipCard);
 
 export default World;

@@ -8,9 +8,9 @@ const PROGRAM = Constants.Program.ShieldEffect;
 // functions used to update these, too
 // As of 1.62.0, that was in ...ingress.common.scanner.b.a.d
 // The baksmali is a little jacked up, though.
-const defaultColor = vec4.clone(Constants.teamColors.NEUTRAL);
-const defaultRampTargetInv = vec2.fromValues(0.5, 1.3);
-const defaultContributions = vec3.fromValues(0.5, 0.5, 0.5);
+var defaultColor = vec4.clone(Constants.teamColors.NEUTRAL);
+var defaultRampTargetInv = vec2.fromValues(0.5, 1.3);
+var defaultContributions = vec3.fromValues(0.5, 0.5, 0.5);
 
 class ShieldEffectDrawable extends TexturedDrawable {
 
