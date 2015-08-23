@@ -1,31 +1,29 @@
-var Mesh = (function() {
-  var MODE_TRIANGLES = 'triangles',
-      MODE_LINES = 'lines';
+import GLBound from './gl-bound';
 
-  var Mesh = function(gl, attributes, faces, lines) {
-    GLBound.call(this, gl);
+const MODE_TRIANGLES = 'triangles';
+const MODE_LINES = 'lines';
+
+class Mesh extends GLBound {
+  constructor(gl, attributes, faces, lines) {
+    super(gl);
     this.attributes = attributes;
     this.faces = faces;
     this.lines = lines;
     this.mode = MODE_TRIANGLES;
     this.bounds = null;
     this.center = null;
-  };
-  inherits(Mesh, GLBound);
+  }
 
-  Mesh.MODE_LINES = MODE_LINES;
-  Mesh.MODE_TRIANGLES = MODE_TRIANGLES;
-
-  Mesh.prototype.draw = function(locations) {
+  draw(locations) {
     this.attributes.draw(locations);
     if(this.mode === MODE_TRIANGLES) {
       this.faces.draw();
     } else if (this.mode === MODE_LINES) {
       this.lines.draw();
     }
-  };
+  }
 
-  Mesh.prototype.boundingBox = function(coordAttribute) {
+  boundingBox(coordAttribute) {
     if(!this.bounds) {
       coordAttribute = coordAttribute === undefined ? 0 : coordAttribute;
       var bounds = {
@@ -54,9 +52,9 @@ var Mesh = (function() {
       this.bounds = bounds;
     }
     return this.bounds;
-  };
+  }
 
-  Mesh.prototype.centerOfMass = function(coordAttribute) {
+  centerOfMass(coordAttribute) {
     if(!this.center) {
       coordAttribute = coordAttribute === undefined ? 0 : coordAttribute;
       var sum = null,
@@ -80,18 +78,19 @@ var Mesh = (function() {
       this.center = sum;
     }
     return this.center;
-  };
+  }
 
-  Mesh.prototype.boundingBoxCenter = function(coordAttribute) {
+  boundingBoxCenter(coordAttribute) {
     if(!this.bounds) {
       this.boundingBox(coordAttribute);
     }
     return this.bounds.max.map(function(e, i) {
       return (e - this.bounds.min[i]) / 2;
     }.bind(this));
-  };
+  }
+}
 
-  return Mesh;
-}());
+Mesh.MODE_LINES = MODE_LINES;
+Mesh.MODE_TRIANGLES = MODE_TRIANGLES;
 
-imv.Mesh = Mesh;
+export default Mesh;

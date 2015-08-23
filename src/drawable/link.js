@@ -1,15 +1,17 @@
-var LinkDrawable = (function(){
+import TexturedDrawable from './textured';
+import { vec3, mat3, quat } from 'gl-matrix';
 
-  var linkDrawable = function(programName, textureName) {
-    TexturedDrawable.call(this, programName, null, textureName);
+class LinkDrawable extends TexturedDrawable {
+
+  constructor(programName, textureName) {
+    super(programName, null, textureName);
     this.uniforms.u_cameraFwd = vec3.fromValues(0, 0, -1);
     this.uniforms.u_elapsedTime = 0;
-  };
-  inherits(linkDrawable, TexturedDrawable);
+  }
 
   // TODO: needs a camera class:
-  linkDrawable.prototype.updateView = function(viewProject, view, project) {
-    TexturedDrawable.prototype.updateView.call(this, viewProject, view, project);
+  updateView(viewProject, view, project) {
+    super.updateView(viewProject, view, project);
     if(view) {
       var rot = mat3.fromMat4(mat3.create(), view);
       var q = quat.fromMat3(quat.create(), rot);
@@ -17,16 +19,13 @@ var LinkDrawable = (function(){
       vec3.normalize(fwd, fwd);
       this.uniforms.u_cameraFwd = fwd;
     }
-  };
+  }
 
-  linkDrawable.prototype.updateTime = function(delta) {
-    var ret = TexturedDrawable.prototype.updateTime.call(this, delta);
+  updateTime(delta) {
+    var ret = super.updateTime(delta);
     this.uniforms.u_elapsedTime = ((this.elapsed / 1000) % 300.0) * 0.1;
     return ret;
-  };
+  }
+}
 
-  return linkDrawable;
-}());
-
-imv.Drawables = imv.Drawables || {};
-imv.Drawables.Link = LinkDrawable;
+export default LinkDrawable;

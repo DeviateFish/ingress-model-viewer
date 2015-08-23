@@ -1,25 +1,29 @@
-var Renderer = function(gl, manager) {
-  GLBound.call(this, gl);
-  this.manager = manager;
-  this.viewProject = mat4.create();
-  this.view = mat4.create();
-  this.project = mat4.create();
-  this.elapsed = 0;
-};
-inherits(Renderer, GLBound);
+import GLBound from './gl-bound';
+import { mat4 } from 'gl-matrix';
 
-Renderer.prototype.updateView = function(view, project) {
-  this.view = view;
-  this.project = project;
-  mat4.multiply(this.viewProject, project, view);
-};
+class Renderer extends GLBound {
+  constructor(gl, manager) {
+    super(gl);
+    this.manager = manager;
+    this.viewProject = mat4.create();
+    this.view = mat4.create();
+    this.project = mat4.create();
+    this.elapsed = 0;
+  }
 
-Renderer.prototype.render = function() {
-  console.warn("base class renders nothing.");
-};
+  updateView(view, project) {
+    this.view = view;
+    this.project = project;
+    mat4.multiply(this.viewProject, project, view);
+  }
 
-Renderer.prototype.updateTime = function(delta) {
-  this.elapsed += delta;
-};
+  render() {
+    console.warn("base class renders nothing.");
+  }
 
-imv.Renderer = Renderer;
+  updateTime(delta) {
+    this.elapsed += delta;
+  }
+}
+
+export default Renderer;

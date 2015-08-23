@@ -1,28 +1,28 @@
-var TexturedDrawable = function(programName, meshName, textureName) {
-  ModelDrawable.call(this, programName, meshName);
-  this.textureName = textureName;
-  this.texture = null;
-};
-inherits(TexturedDrawable, ModelDrawable);
+import ModelDrawable from './model';
 
-TexturedDrawable.prototype.draw = function()
-{
-  this.texture.use(0);
-  this.uniforms.u_texture = 0;
-  ModelDrawable.prototype.draw.call(this);
-};
-
-TexturedDrawable.prototype.init = function(manager)
-{
-  if(this.textureName) {
-    this.texture = manager.getTexture(this.textureName);
-    if(!this.texture) {
-      console.warn('missing texture ' + this.textureName);
-      return false;
-    }
+class TexturedDrawable extends ModelDrawable {
+  constructor(programName, meshName, textureName) {
+    super(programName, meshName);
+    this.textureName = textureName;
+    this.texture = null;
   }
-  return ModelDrawable.prototype.init.call(this, manager);
-};
 
-imv.Drawables = imv.Drawables || {};
-imv.Drawables.Textured = TexturedDrawable;
+  draw() {
+    this.texture.use(0);
+    this.uniforms.u_texture = 0;
+    super.draw();
+  }
+
+  init(manager) {
+    if(this.textureName) {
+      this.texture = manager.getTexture(this.textureName);
+      if(!this.texture) {
+        console.warn('missing texture ' + this.textureName);
+        return false;
+      }
+    }
+    return super.init(manager);
+  }
+}
+
+export default TexturedDrawable;

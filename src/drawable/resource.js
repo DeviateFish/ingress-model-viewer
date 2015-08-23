@@ -1,19 +1,21 @@
-(function() {
-  var resource = imv.Constants.Mesh.Resource;
+import Constants from '../constants';
+import BicoloredDrawable from './bicolored';
 
-  imv.Drawables = imv.Drawables || {};
-  imv.Drawables.Resource = imv.Drawables.Resource || {};
+var Resource = {};
+var meshes = Constants.Mesh.Resource;
 
-  var createResource = function(name) {
-    var itembase = function() {
-      BicoloredDrawable.call(this, resource[name], imv.Constants.Texture.FlipCard);
-    };
-    inherits(itembase, BicoloredDrawable);
-    imv.Drawables.Resource[name] = itembase;
-  };
-
-  for(var i in resource) {
-    createResource(i);
+function createResource(name) {
+  class itembase extends BicoloredDrawable {
+    constructor() {
+      super(meshes[name], Constants.Texture.FlipCard);
+    }
   }
 
-}());
+  return itembase;
+}
+
+for(var i in meshes) {
+  Resource[name] = createResource(i);
+}
+
+export default Resource;

@@ -1,55 +1,67 @@
-var AssetManager = (function() {
+import GLBound from './gl-bound';
+import AssetLoader from './asset-loader';
+import FileMesh from './mesh/file';
+import Texture from './texture';
+import Program from './program';
+import GlowrampProgram from './program/glowramp';
+import OpaqueProgram from './program/opaque';
 
-  var areLoading = function(n, e) {
-    if(e === 0) {
-      n++;
+var _programs = {
+  'Glowramp': GlowrampProgram,
+  'Opaque': OpaqueProgram
+};
+
+function areLoading(n, e) {
+  if(e === 0) {
+    n++;
+  }
+  return n;
+}
+
+function areLoaded(n, e) {
+  if(e > 0) {
+    n++;
+  }
+  return n;
+}
+
+function areError(n, e) {
+  if(e < 0) {
+    n++;
+  }
+  return n;
+}
+
+function summarize(queue) {
+  return {
+    total: queue.length,
+    loading: queue.reduce(areLoading, 0),
+    loaded: queue.reduce(areLoaded, 0),
+    error: queue.reduce(areError, 0)
+  };
+}
+
+function simpleMerge(left, right) {
+  left = left || {};
+  for(var i in right) {
+    left[i] = right[i];
+  }
+  return left;
+}
+
+function mergeManifests(base, add) {
+  var keys = ['texture', 'mesh', 'program', 'rawProgram'];
+  keys.forEach(function(key) {
+    if (key in add) {
+      base[key] = simpleMerge(base[key], add[key]);
     }
-    return n;
-  };
+  });
+  return base;
+}
 
-  var areLoaded = function(n, e) {
-    if(e > 0) {
-      n++;
-    }
-    return n;
-  };
-
-  var areError = function(n, e) {
-    if(e < 0) {
-      n++;
-    }
-    return n;
-  };
-
-  var summarize = function(queue) {
-    return {
-      total: queue.length,
-      loading: queue.reduce(areLoading, 0),
-      loaded: queue.reduce(areLoaded, 0),
-      error: queue.reduce(areError, 0)
-    };
-  };
-
-  var simpleMerge = function(left, right) {
-    left = left || {};
-    for(var i in right) {
-      left[i] = right[i];
-    }
-    return left;
-  };
-
-  var mergeManifests = function(base, add) {
-    var keys = ['texture', 'mesh', 'program', 'rawProgram'];
-    keys.forEach(function(key) {
-      if (key in add) {
-        base[key] = simpleMerge(base[key], add[key]);
-      }
-    });
-    return base;
-  };
-
-  var assetManager = function(gl, manifest) {
-    GLBound.call(this, gl);
+class AssetManager extends GLBound {
+  constructor(gl, manifest) {
+    super(gl);
     this.manifest = manifest;
     this.loader = new AssetLoader();
     this.textures = {};
@@ -68,35 +80,34 @@ var AssetManager = (function() {
     };
     this.complete = null;
     this.path = '/assets/';
-  };
-  inherits(assetManager, GLBound);
+  }
 
-  var _isComplete = function() {
+  _isComplete() {
     var status = this.getStatus();
     if(this.complete && status.texture.loading === 0 &&
        status.mesh.loading === 0 && status.program.loading === 0)
     {
       this.complete();
     }
-  };
+  }
 
-  assetManager.prototype.addAssets = function(manifest) {
+  addAssets(manifest) {
     this.manifest = mergeManifests(this.manifest, manifest);
-  };
+  }
 
-  assetManager.prototype.addTexture = function(name, texture) {
+  addTexture(name, texture) {
     this.textures[name] = texture;
-  };
+  }
 
-  assetManager.prototype.addMesh = function(name, mesh) {
+  addMesh(name, mesh) {
     this.meshes[name] = mesh;
-  };
+  }
 
-  assetManager.prototype.addProgram = function(name, program) {
+  addProgram(name, program) {
     this.programs[name] = program;
-  };
+  }
 
-  assetManager.prototype.handleTexture = function(idx, name, info, err, value) {
+  handleTexture(idx, name, info, err, value) {
     if(err)
     {
       this.queues.texture[idx] = -1;
@@ -106,11 +117,10 @@ var AssetManager = (function() {
 
     this.addTexture(name, new Texture(this._gl, info, value));
     this.queues.texture[idx] = 1;
-    console.info('loaded texture ' + name);
-    _isComplete.call(this);
-  };
+    this._isComplete();
+  }
 
-  assetManager.prototype.handleMesh = function(idx, name, info, err, value) {
+  handleMesh(idx, name, info, err, value) {
     if(err)
     {
       this.queues.mesh[idx] = -1;
@@ -120,21 +130,19 @@ var AssetManager = (function() {
 
     this.addMesh(name, new FileMesh(this._gl, value));
     this.queues.mesh[idx] = 1;
-    console.info('loaded mesh ' + name);
-    _isComplete.call(this);
-  };
+    this._isComplete();
+  }
 
-  assetManager.prototype.createProgram = function(name, info) {
-    var klass = Program;
-    if(info.program in imv.Programs)
+  createProgram(name, info) {
+    var Klass = Program;
+    if(info.program in _programs)
     {
-      klass = imv.Programs[info.program];
+      Klass = _programs[info.program];
     }
-    this.addProgram(name, new klass(this._gl, info.vertex, info.fragment));
-    console.log('created program ' + name);
-  };
+    this.addProgram(name, new Klass(this._gl, info.vertex, info.fragment));
+  }
 
-  assetManager.prototype.handleProgram = function(idx, name, info, err, vals) {
+  handleProgram(idx, name, info, err, vals) {
     if(err)
     {
       this.queues.program[idx] = -1;
@@ -142,34 +150,34 @@ var AssetManager = (function() {
       throw 'Could not load ' + name;
     }
 
-    var klass = Program;
-    if(info.program in imv.Programs)
+    var Klass = Program;
+    if(info.program in _programs)
     {
-      klass = imv.Programs[info.program];
+      Klass = _programs[info.program];
     }
-    this.addProgram(name, new klass(this._gl, vals[0], vals[1]));
+    this.addProgram(name, new Klass(this._gl, vals[0], vals[1]));
     this.queues.program[idx] = 1;
     console.info('loaded program ' + name);
-    _isComplete.call(this);
-  };
+    this._isComplete();
+  }
 
-  assetManager.prototype.getTexture = function(name) {
+  getTexture(name) {
     var texture = this.textures[name];
     if(texture) {
       this.stats.texture[name] = (this.stats.texture[name] || 0) + 1;
     }
     return texture;
-  };
+  }
 
-  assetManager.prototype.getMesh = function(name) {
+  getMesh(name) {
     var mesh = this.meshes[name];
     if(mesh) {
       this.stats.mesh[name] = (this.stats.mesh[name] || 0) + 1;
     }
     return mesh;
-  };
+  }
 
-  assetManager.prototype.getProgram = function(name) {
+  getProgram(name) {
     var prog = this.programs[name];
     if(prog) {
       if(this.stats.rawProgram.hasOwnProperty(name)) {
@@ -180,9 +188,9 @@ var AssetManager = (function() {
       }
     }
     return prog;
-  };
+  }
 
-  assetManager.prototype.loadAll = function(callback) {
+  loadAll(callback) {
     var i, asset, manifest = this.manifest;
     this.complete = callback;
     for(i in manifest.texture) {
@@ -232,17 +240,17 @@ var AssetManager = (function() {
     }
 
     return this.getStatus.bind(this);
-  };
+  }
 
-  assetManager.prototype.getStatus = function() {
+  getStatus() {
     return {
       texture: summarize(this.queues.texture),
       mesh: summarize(this.queues.mesh),
       program: summarize(this.queues.program)
     };
-  };
+  }
 
-  assetManager.prototype.generateManifest = function() {
+  generateManifest() {
     var manifest = {}, keys = ['texture', 'mesh', 'rawProgram', 'program'];
     keys.forEach(function(section) {
       manifest[section] = {};
@@ -253,9 +261,7 @@ var AssetManager = (function() {
       }
     }.bind(this));
     return manifest;
-  };
+  }
+}
 
-  return assetManager;
-}());
-
-imv.AssetManager = AssetManager;
+export default AssetManager;

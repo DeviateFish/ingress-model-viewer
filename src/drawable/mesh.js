@@ -1,28 +1,27 @@
-var MeshDrawable = (function() {
+import Drawable from '../drawable';
 
-  // private function ;)
-  var _draw = function(locations, uniforms)
+function _draw(locations, uniforms)
+{
+  for(var i in this.uniforms)
   {
-    for(var i in this.uniforms)
+    if(this.uniforms.hasOwnProperty(i) && (i in uniforms))
     {
-      if(this.uniforms.hasOwnProperty(i) && (i in uniforms))
-      {
-        uniforms[i](this.uniforms[i]);
-      }
+      uniforms[i](this.uniforms[i]);
     }
-    this.mesh.draw(locations);
-  };
+  }
+  this.mesh.draw(locations);
+}
 
-  var meshDrawable = function(programName, meshName)
-  {
-    Drawable.call(this, programName);
+class MeshDrawable extends Drawable {
+
+  constructor(programName, meshName) {
+    super(programName);
     this.meshName = meshName;
     this.mesh = null;
     this.drawfn = _draw.bind(this);
-  };
-  inherits(meshDrawable, Drawable);
+  }
 
-  meshDrawable.prototype.init = function(manager)
+  init(manager)
   {
     if(this.meshName) {
       this.mesh = manager.getMesh(this.meshName);
@@ -31,11 +30,8 @@ var MeshDrawable = (function() {
         return false;
       }
     }
-    return Drawable.prototype.init.call(this, manager);
-  };
+    return super.init(manager);
+  }
+}
 
-  return meshDrawable;
-}());
-
-imv.Drawables = imv.Drawables || {};
-imv.Drawables.Mesh = MeshDrawable;
+export default MeshDrawable;

@@ -1,6 +1,6 @@
 {
   "name": "ingress-model-viewer",
-  "version": "0.16.0",
+  "version": "0.18.0",
   "main": "dist/ingress-model-viewer.min.js",
   "description": "Rendering engine for Ingress game models",
   "repository": {
@@ -11,16 +11,22 @@
   "author": "Daniel Benton",
   "license": "MIT",
   "readmeFilename": "README.md",
-  "dependencies": {},
+  "dependencies": {
+    "java-deserializer": "git://github.com/DeviateFish/java-deserializer.git#v0.2.0",
+    "libtga": "git://github.com/DeviateFish/libtga#v0.3.1",
+    "gl-matrix": "~2.2.1"
+  },
   "devDependencies": {
-    "grunt": "~0.4.1",
-    "grunt-contrib-concat": "~0.5.0",
-    "grunt-contrib-uglify": "~0.5.0",
-    "grunt-contrib-jshint": "~0.10.0",
-    "grunt-contrib-watch": "~0.6.1",
-    "time-grunt": "~0.4.0",
+    "babelify": "^6.1.3",
     "connect-livereload": "~0.4.0",
+    "grunt": "~0.4.1",
+    "grunt-babel": "^5.0.1",
+    "grunt-browserify": "^4.0.0",
     "grunt-contrib-connect": "0.8.0",
-    "load-grunt-tasks": "~0.6.0"
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-contrib-uglify": "~0.5.0",
+    "grunt-contrib-watch": "~0.6.1",
+    "load-grunt-tasks": "~0.6.0",
+    "time-grunt": "~0.4.0"
   }
 }
