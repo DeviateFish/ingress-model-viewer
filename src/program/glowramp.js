@@ -1,12 +1,12 @@
-var GlowrampProgram = (function(){
+import Program from '../program';
+import { resetGL } from '../utils';
 
-  var glowramp = function(gl, vertex, fragment) {
-    Program.call(this, gl, vertex, fragment);
-  };
-  inherits(glowramp, Program);
+class GlowrampProgram extends Program {
+  constructor(gl, vertex, fragment) {
+    super(gl, vertex, fragment);
+  }
 
-  glowramp.prototype.use = function(fn)
-  {
+  use(fn) {
     if(!this.program)
     {
       this.init();
@@ -25,10 +25,7 @@ var GlowrampProgram = (function(){
 
     resetGL(gl);
     //gl.useProgram(0);
-  };
+  }
+}
 
-  return glowramp;
-}());
-
-imv.Programs = imv.Programs || {};
-imv.Programs.Glowramp = GlowrampProgram;
+export default GlowrampProgram;

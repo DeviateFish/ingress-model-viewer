@@ -2,9 +2,7 @@
 <html>
 <head>
     <title>Ingress Model Sandbox</title>
-    <script src="/bower_components/gl-matrix/dist/gl-matrix.js"></script>
-    <script src="/bower_components/java-deserializer/dist/java-deserializer.min.js"></script>
-    <script src="/bower_components/libtga/dist/libtga.min.js"></script>
+    <script src="../node_modules/gl-matrix/dist/gl-matrix.js"></script>
     <script src="../dist/ingress-model-viewer.js"></script>
     <script src="https://rawgit.com/eligrey/FileSaver.js/master/FileSaver.min.js"></script>
     <style>
@@ -25,7 +23,8 @@
       controls = new IMV.Controls.Orbit(canvas, radius * 3, {
         distanceMin: radius,
         distanceMax: 5 * radius
-      });
+      }),
+      shoninShards = null;
   canvas.width = document.body.offsetWidth;
   canvas.height = document.body.offsetHeight;
 
@@ -50,7 +49,7 @@
       shardDrawables = [];
 
     shards.forEach(function(el) {
-      var shard = new IMV.Drawables.Artifact.Shonin[el]();
+      var shard = new shoninShards[el]();
       addRotatingDrawable(shard, lat, lng);
     });
 
@@ -96,7 +95,7 @@
   var init = function(assets, shonin) {
     engine = new IMV.Engine(canvas, assets, true);
     engine.assetManager.addAssets(shonin);
-    IMV.Utilities.generateArtifacts('Shonin', 31, true);
+    shoninShards = IMV.Utilities.generateArtifacts('Shonin', 31, true);
     mat4.lookAt(engine.view, [radius * 3, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
     engine.hFoV = Math.PI / 3;
     engine.far = radius * 5;

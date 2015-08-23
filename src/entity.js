@@ -1,47 +1,52 @@
-var Entity = function(engine) {
-  this.drawables = {};
-  this.transform = mat4.create();
-  this.engine = engine;
-};
+import { mat4 } from 'gl-matrix';
 
-Entity.prototype.addDrawable = function(name, drawable) {
-  // add dispose if this already exists.
-  this.removeDrawable(name);
-  this.drawables[name] = drawable;
-  this.engine.objectRenderer.addDrawable(drawable);
-};
-
-Entity.prototype.removeDrawable = function(name, destroy) {
-  // dispose stuffs.
-  if(this.drawables[name]) {
-    this.engine.objectRenderer.removeDrawable(this.drawables[name], destroy);
+// TODO: Deprecate
+class Entity {
+  constructor(engine) {
+    this.drawables = {};
+    this.transform = mat4.create();
+    this.engine = engine;
   }
-};
 
-Entity.prototype.applyTransform = function() {
-  for(var i in this.drawables)
-  {
-    this.drawables[i].setMatrix(this.transform);
+  addDrawable(name, drawable) {
+    // add dispose if this already exists.
+    this.removeDrawable(name);
+    this.drawables[name] = drawable;
+    this.engine.objectRenderer.addDrawable(drawable);
   }
-};
 
-Entity.prototype.translate = function(vec) {
-  mat4.translate(this.transform, this.transform, vec);
-  this.applyTransform();
-};
-
-Entity.prototype.rotate = function(quat) {
-  var rotate = mat4.create();
-  mat4.fromQuat(rotate, quat);
-  mat4.multiply(this.transform, this.transform, rotate);
-  this.applyTransform();
-};
-
-Entity.prototype.setAnimation = function(animate) {
-  for(var i in this.drawables)
-  {
-    this.drawables[i].onUpdate = animate;
+  removeDrawable(name, destroy) {
+    // dispose stuffs.
+    if(this.drawables[name]) {
+      this.engine.objectRenderer.removeDrawable(this.drawables[name], destroy);
+    }
   }
-};
 
-imv.Entity = Entity;
+  applyTransform() {
+    for(var i in this.drawables)
+    {
+      this.drawables[i].setMatrix(this.transform);
+    }
+  }
+
+  translate(vec) {
+    mat4.translate(this.transform, this.transform, vec);
+    this.applyTransform();
+  }
+
+  rotate(quat) {
+    var rotate = mat4.create();
+    mat4.fromQuat(rotate, quat);
+    mat4.multiply(this.transform, this.transform, rotate);
+    this.applyTransform();
+  }
+
+  setAnimation(animate) {
+    for(var i in this.drawables)
+    {
+      this.drawables[i].onUpdate = animate;
+    }
+  }
+}
+
+export default Entity;

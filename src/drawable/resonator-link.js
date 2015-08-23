@@ -1,15 +1,18 @@
-var ResonatorLinkDrawable = (function() {
-  var portalLink = function(portalPosition, slot, distance, color, resonatorPercent) {
+import Constants from '../constants';
+import LinkDrawable from './link';
+import ResonatorLinkMesh from '../mesh/resonator-link';
+
+class ResonatorLinkDrawable extends LinkDrawable {
+  constructor(portalPosition, slot, distance, color, resonatorPercent) {
+    super(Constants.Program.Link, Constants.Texture.ResonatorLink);
     this.portalPosition = portalPosition;
     this.slot = slot;
     this.distance = distance;
     this.color = color;
     this.resonatorPercent = resonatorPercent;
-    LinkDrawable.call(this, imv.Constants.Program.Link, imv.Constants.Texture.ResonatorLink);
-  };
-  inherits(portalLink, LinkDrawable);
+  }
 
-  portalLink.prototype.init = function(manager) {
+  init(manager) {
     this.mesh = new ResonatorLinkMesh(
       manager._gl,
       this.portalPosition,
@@ -18,11 +21,8 @@ var ResonatorLinkDrawable = (function() {
       this.color,
       this.resonatorPercent
     );
-    return TexturedDrawable.prototype.init.call(this, manager);
-  };
+    return super.init(manager);
+  }
+}
 
-  return portalLink;
-}());
-
-imv.Drawables = imv.Drawables || {};
-imv.Drawables.ResonatorLink = ResonatorLinkDrawable;
+export default ResonatorLinkDrawable;

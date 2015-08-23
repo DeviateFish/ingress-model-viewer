@@ -1,31 +1,36 @@
-var SphericalPortalLinkDrawable = function(sphereRadius, start, end, color, startPercent, endPercent) {
-  this.radius = sphereRadius;
-  this.start = start;
-  this.end = end;
-  this.color = color;
-  this.startPercent = startPercent;
-  this.endPercent = endPercent;
-  LinkDrawable.call(this, imv.Constants.Program.SphericalLink, imv.Constants.Texture.PortalLink);
-};
-inherits(SphericalPortalLinkDrawable, LinkDrawable);
+import Constants from '../constants';
+import LinkDrawable from './link';
+import SphericalPortalLinkMesh from '../mesh/spherical-portal-link';
 
-SphericalPortalLinkDrawable.prototype.init = function(manager) {
-  this.mesh = new SphericalPortalLinkMesh(
-    manager._gl,
-    this.radius,
-    this.start,
-    this.end,
-    this.color,
-    this.startPercent,
-    this.endPercent
-  );
-  return TexturedDrawable.prototype.init.call(this, manager);
-};
 
-SphericalPortalLinkDrawable.prototype.updateView = function(viewProject, view, project) {
-  LinkDrawable.prototype.updateView.call(this, viewProject, view, project);
-  this.uniforms.u_model = this.model;
-};
+class SphericalPortalLinkDrawable extends LinkDrawable {
+  constructor(sphereRadius, start, end, color, startPercent, endPercent) {
+    super(Constants.Program.SphericalLink, Constants.Texture.PortalLink);
+    this.radius = sphereRadius;
+    this.start = start;
+    this.end = end;
+    this.color = color;
+    this.startPercent = startPercent;
+    this.endPercent = endPercent;
+  }
 
-imv.Drawables = imv.Drawables || {};
-imv.Drawables.SphericalPortalLink = SphericalPortalLinkDrawable;
+  init(manager) {
+    this.mesh = new SphericalPortalLinkMesh(
+      manager._gl,
+      this.radius,
+      this.start,
+      this.end,
+      this.color,
+      this.startPercent,
+      this.endPercent
+    );
+    return super.init(manager);
+  }
+
+  updateView(viewProject, view, project) {
+    super.updateView(viewProject, view, project);
+    this.uniforms.u_model = this.model;
+  }
+}
+
+export default SphericalPortalLinkDrawable;

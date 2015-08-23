@@ -1,12 +1,12 @@
-var OpaqueProgram = (function(){
+import Program from '../program';
+import { resetGL } from '../utils';
 
-  var opaque = function(gl, vertex, fragment) {
-    Program.call(this, gl, vertex, fragment);
-  };
-  inherits(opaque, Program);
+class OpaqueProgram extends Program {
+  constructor(gl, vertex, fragment) {
+    super(gl, vertex, fragment);
+  }
 
-  opaque.prototype.use = function(fn)
-  {
+  use(fn) {
     if(!this.program)
     {
       this.init();
@@ -24,10 +24,7 @@ var OpaqueProgram = (function(){
 
     resetGL(gl);
     //gl.useProgram(0);
-  };
+  }
+}
 
-  return opaque;
-}());
-
-imv.Programs = imv.Programs || {};
-imv.Programs.Opaque = OpaqueProgram;
+export default OpaqueProgram;

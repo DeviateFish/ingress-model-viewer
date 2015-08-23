@@ -1,27 +1,26 @@
-var TexturedSphereDrawable = (function() {
+import Constants from '../constants';
+import TexturedDrawable from './textured';
+import SphereMesh from '../mesh/sphere';
 
-  var PROGRAM = imv.Constants.Program.Textured;
+const PROGRAM = Constants.Program.Textured;
 
-  var texturedSphere = function(textureName, radius, vSlices, hSlices) {
+class TexturedSphereDrawable extends TexturedDrawable {
+  constructor(textureName, radius, vSlices, hSlices) {
+    super(PROGRAM, null, textureName);
     this.radius = radius;
     this.vSlices = vSlices;
     this.hSlices = hSlices;
-    TexturedDrawable.call(this, PROGRAM, null, textureName);
-  };
-  inherits(texturedSphere, TexturedDrawable);
+  }
 
-  texturedSphere.prototype.init = function(manager) {
+  init(manager) {
     this.mesh = new SphereMesh(
       manager._gl,
       this.radius,
       this.vSlices,
       this.hSlices
     );
-    return TexturedDrawable.prototype.init.call(this, manager);
-  };
+    return super.init(manager);
+  }
+}
 
-  return texturedSphere;
-}());
-
-imv.Drawables = imv.Drawables || {};
-imv.Drawables.TexturedSphere = TexturedSphereDrawable;
+export default TexturedSphereDrawable;

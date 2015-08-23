@@ -1,6 +1,7 @@
-var GLBound = function(gl)
-{
-  this._gl = gl;
-};
+class GLBound {
+  constructor(gl) {
+    this._gl = gl;
+  }
+}
 
-imv.GLBound = GLBound;
+export default GLBound;

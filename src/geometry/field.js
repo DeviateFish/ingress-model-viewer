@@ -1,3 +1,4 @@
+/* jshint ignore:start */
 var FieldGeometry = (function(){
 
   // 5 sets of 4 points, breaking the link into 4 pieces, each providing 4 faces
@@ -101,3 +102,5 @@ var FieldGeometry = (function(){
 
 imv.Geometries = imv.Geometries || {};
 imv.Geometries.Field = FieldGeometry;
+
+/* jshint ignore:end */

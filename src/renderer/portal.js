@@ -1,42 +1,44 @@
-var PortalRenderer = function(gl, manager) {
-  Renderer.call(this, gl, manager);
-  this.portals = [];
-  this.links = null;
-  this.particles = null;
-};
-inherits(PortalRenderer, Renderer);
+import Renderer from '../renderer';
 
-PortalRenderer.prototype.updateView = function(view, project) {
-  Renderer.prototype.updateView.call(this, view, project);
-  var i, len = this.portals.length;
-  for(i = 0; i < len; i++)
-  {
-    this.portals[i].updateView(this.viewProject, view, project);
+class PortalRenderer extends Renderer {
+  constructor(gl, manager) {
+    super(gl, manager);
+    this.portals = [];
+    this.links = null;
+    this.particles = null;
   }
-};
 
-PortalRenderer.prototype.render = function() {
-  var i, len = this.portals.length;
-  for(i = 0; i < len; i++)
-  {
-    this.portals[i].draw();
-  }
-};
-
-PortalRenderer.prototype.updateTime = function(delta) {
-  Renderer.prototype.updateTime.call(this, delta);
-  var i, len = this.portals.length;
-  for(i = 0; i < len; i++)
-  {
-    // if these return false, remove them from the render loop:
-    if(!this.portals[i].updateTime(delta))
+  updateView(view, project) {
+    super.updateView(view, project);
+    var i, len = this.portals.length;
+    for(i = 0; i < len; i++)
     {
-      this.portals.splice(i, 1);
-      i--;
-      len--;
+      this.portals[i].updateView(this.viewProject, view, project);
     }
   }
-};
 
-imv.Renderers = imv.Renderers || {};
-imv.Renderers.Portal = PortalRenderer;
+  render() {
+    var i, len = this.portals.length;
+    for(i = 0; i < len; i++)
+    {
+      this.portals[i].draw();
+    }
+  }
+
+  updateTime(delta) {
+    super.updateTime(delta);
+    var i, len = this.portals.length;
+    for(i = 0; i < len; i++)
+    {
+      // if these return false, remove them from the render loop:
+      if(!this.portals[i].updateTime(delta))
+      {
+        this.portals.splice(i, 1);
+        i--;
+        len--;
+      }
+    }
+  }
+}
+
+export default PortalRenderer;

@@ -1,4 +1,6 @@
-var constants = {
+import { vec4 } from 'gl-matrix';
+
+var Constants = {
   teamColors: {
     RESISTANCE: vec4.fromValues(0, 0.7607843137254902, 1, 1.0),
     ENLIGHTENED: vec4.fromValues(0.1568627450980392, 0.9568627450980393, 0.1568627450980392, 1.0),
@@ -167,4 +169,4 @@ var constants = {
   }
 };
 
-imv.Constants = constants;
+export default Constants;

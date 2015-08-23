@@ -1,62 +1,61 @@
-var FileMesh = (function(){
+import Mesh from '../mesh';
+import VertexAttribute from '../vertex-attribute';
+import GLIndex from '../gl/gl-index';
+import GLAttribute from '../gl/gl-attribute';
+import JavaDeserializer from 'java-deserializer';
 
-  var parseAttributes = function(buf)
+function parseAttributes(buf)
+{
+  var v = new DataView(buf.buffer, buf.byteOffset, buf.byteLength), c = 0;
+  var n = v.getUint32(c), type, size, len, j, name;
+  c += 4;
+  var attributes = [];
+  for(var i = 0; i < n; i++)
   {
-    var v = new DataView(buf), c = 0;
-    var n = v.getUint32(c), type, size, len, j, name;
-    c += 4;
-    var attributes = [];
-    for(var i = 0; i < n; i++)
+    type = v.getUint32(c);
+    if(type != 0x01 && type != 0x10)
     {
-      type = v.getUint32(c);
-      if(type != 0x01 && type != 0x10)
-      {
-        console.warn('unknown type ' + type);
-      }
-      c += 4;
-      size = v.getUint32(c);
-      c += 4;
-      len = v.getUint16(c);
-      c += 2;
-      name = '';
-      for(j = 0; j < len; j++)
-      {
-        name += String.fromCharCode(v.getUint8(c+j));
-      }
-      c += len;
-      attributes.push(new VertexAttribute(name, size));
+      console.warn('unknown type ' + type);
     }
-    return attributes;
-  };
+    c += 4;
+    size = v.getUint32(c);
+    c += 4;
+    len = v.getUint16(c);
+    c += 2;
+    name = '';
+    for(j = 0; j < len; j++)
+    {
+      name += String.fromCharCode(v.getUint8(c+j));
+    }
+    c += len;
+    attributes.push(new VertexAttribute(name, size));
+  }
+  return attributes;
+}
 
-  var fileMesh = function(gl, arraybuf)
-  {
+class FileMesh extends Mesh {
+  constructor(gl, arraybuf) {
     var jd = new JavaDeserializer(arraybuf);
-    var stream = jd.getStream();
-    var blocks = stream.getContents();
+    var blocks = jd.getContents();
 
     // should be Float32Array
-    var values = blocks[0].contents.toArray();
+    var values = blocks[0].elements;
 
     // should be ArrayBuffer
-    var attributeData = blocks[3].contents.toArray();
+    var attributeData = blocks[3];
 
     // array of VertexAttributes
     var spec = parseAttributes(attributeData);
 
     // should be Uint16Array
-    var faces = new GLIndex(gl, blocks[1].contents.toArray(), gl.TRIANGLES);
+    var faces = new GLIndex(gl, blocks[1].elements, gl.TRIANGLES);
     var attributes = new GLAttribute(gl, spec, values);
 
     // should be Uint16Array
-    var lines = new GLIndex(gl, blocks[2].contents.toArray(), gl.LINES);
+    var lines = new GLIndex(gl, blocks[2].elements, gl.LINES);
 
-    Mesh.call(this, gl, attributes, faces, lines);
-  };
-  inherits(fileMesh, Mesh);
+    super(gl, attributes, faces, lines);
+  }
+}
 
-  return fileMesh;
-}());
-
-imv.Meshes = imv.Meshes || {};
-imv.Meshes.File = FileMesh;
+export default FileMesh;

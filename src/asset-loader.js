@@ -1,5 +1,6 @@
-var loadResource = function(url, type, callback)
-{
+import libtga from 'libtga';
+
+export function loadResource(url, type, callback) {
   if(type === 'image' || type === 'image.co')
   {
     if(/\.tga$/.test(url))
@@ -60,42 +61,42 @@ var loadResource = function(url, type, callback)
 
     xhr.send();
   }
-};
+}
 
-var AssetLoader = function()
-{
-  var _callbacks = {};
-  var _assets = {};
+class AssetLoader {
 
-  this.loadAsset = function(url, type, callback)
-  {
+  constructor() {
+    this._callbacks = {};
+    this._assets = {};
+  }
+
+  loadAsset(url, type, callback) {
     var name = '_' + encodeURIComponent(url);
-    if(_assets[name])
+    if(this._assets[name])
     {
-      callback(null, _assets[name]);
+      callback(null, this._assets[name]);
       return;
     }
-    _callbacks[name] = _callbacks[name] || [];
-    _callbacks[name].push(callback);
-    if(!_assets.hasOwnProperty(name))
+    this._callbacks[name] = this._callbacks[name] || [];
+    this._callbacks[name].push(callback);
+    if(!this._assets.hasOwnProperty(name))
     {
-      _assets[name] = false;
-      loadResource(url, type, function(err, value) {
+      this._assets[name] = false;
+      loadResource(url, type, (err, value) => {
         if(!err)
         {
-          _assets[name] = value;
+          this._assets[name] = value;
         }
         var cb;
-        while((cb = _callbacks[name].shift()))
+        while((cb = this._callbacks[name].shift()))
         {
           cb(err, value);
         }
       });
     }
-  };
+  }
 
-  this.loadAssetGroup = function(urls, types, callback)
-  {
+  loadAssetGroup(urls, types, callback) {
     if(urls.length !== types.length)
     {
       throw 'Incompatible types: types.length = ' + types.length + '; urls.length = ' + urls.length;
@@ -121,14 +122,11 @@ var AssetLoader = function()
     {
       this.loadAsset(urls[i], types[i], onEach.bind(undefined, i));
     }
-  };
+  }
 
-  this.getAsset = function(name)
-  {
-    return _assets[name];
-  };
-};
+  getAsset(name) {
+    return this._assets[name];
+  }
+}
 
-imv.AssetLoader = AssetLoader;
-imv.Utilities = imv.Utilities || {};
-imv.Utilities.loadResource = loadResource;
+export default AssetLoader;

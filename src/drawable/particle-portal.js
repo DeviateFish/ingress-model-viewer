@@ -1,4 +1,8 @@
- var ParticlePortalsDrawable = (function(){
+/* jshint ignore:start */
+
+// TODO: fix this.
+
+var ParticlePortalsDrawable = (function(){
 
   var MAX_SYSTEMS = 40;
 
@@ -90,3 +94,5 @@
 
 imv.Drawables = imv.Drawables || {};
 imv.Drawables.ParticlePortals = ParticlePortalsDrawable;
+
+/* jshint ignore:end */

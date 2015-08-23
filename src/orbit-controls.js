@@ -1,26 +1,29 @@
-var OrbitControls = (function() {
+import { setParams } from './utils';
+import { vec3, mat4 } from 'gl-matrix';
 
-  var PI_HALF = Math.PI / 2.0;
-  var MIN_LOG_DIST = 5.0;
+const PI_HALF = Math.PI / 2.0;
+const MIN_LOG_DIST = 5.0;
 
-  var cloneTouch = function(touch)
+function cloneTouch(touch)
+{
+  return {identifier: touch.identifier, x: touch.clientX, y: touch.clientY};
+}
+
+function getTouchIndex(touches, touch)
+{
+  for(var i = 0; i < touches.length; i++)
   {
-    return {identifier: touch.identifier, x: touch.clientX, y: touch.clientY};
-  };
-
-  var getTouchIndex = function(touches, touch)
-  {
-    for(var i = 0; i < touches.length; i++)
+    if(touches[i].identifier == touch.identifier)
     {
-      if(touches[i].identifier == touch.identifier)
-      {
-        return i;
-      }
+      return i;
     }
-    return -1;
-  };
+  }
+  return -1;
+}
 
-  var controls = function(canvas, distance, options)
+class OrbitControls {
+
+  constructor(canvas, distance, options)
   {
     options = options || {};
     this.canvas = canvas;
@@ -59,9 +62,9 @@ var OrbitControls = (function() {
     this.mouseOver = function() { this.overRenderer = true; }.bind(this);
     this.mouseOut = function() { this.overRenderer = false; }.bind(this);
     this.enabled = false;
-  };
+  }
 
-  controls.prototype.disable = function() {
+  disable() {
     this.canvas.removeEventListener('mousedown', this.mouseDown, false);
     this.canvas.removeEventListener('mousemove', this.mouseMove, false);
     this.canvas.removeEventListener('mouseup', this.mouseUp, false);
@@ -74,9 +77,9 @@ var OrbitControls = (function() {
     this.canvas.removeEventListener('mouseover', this.mouseOver, false);
     this.canvas.removeEventListener('mouseout', this.mouseOut, false);
     this.enabled = false;
-  };
+  }
 
-  controls.prototype.enable = function() {
+  enable() {
     this.canvas.addEventListener('mousedown', this.onMouseDown.bind(this), false);
     if(this.options.allowZoom)
     {
@@ -86,9 +89,9 @@ var OrbitControls = (function() {
     this.canvas.addEventListener('mouseover', this.mouseOver, false);
     this.canvas.addEventListener('mouseout', this.mouseOut, false);
     this.enabled = true;
-  };
+  }
 
-  controls.prototype.updateTargets = function()
+  updateTargets()
   {
     var scale = this.distance < MIN_LOG_DIST ? this.distance : Math.log(this.distance);
     var zoomDamp = scale / this.options.zoomDamp;
@@ -98,9 +101,9 @@ var OrbitControls = (function() {
 
     this.target.y = this.target.y > PI_HALF ? PI_HALF : this.target.y;
     this.target.y = this.target.y < - PI_HALF ? - PI_HALF : this.target.y;
-  };
+  }
 
-  controls.prototype.onMouseDown = function(ev)
+  onMouseDown(ev)
   {
     ev.preventDefault();
     this.canvas.addEventListener('mousemove', this.mouseMove, false);
@@ -113,29 +116,29 @@ var OrbitControls = (function() {
     this.targetOnDown.y = this.target.y;
 
     this.canvas.style.cursor = 'move';
-  };
+  }
 
-  controls.prototype.onMouseMove = function(ev)
+  onMouseMove(ev)
   {
     this.mouse.x = -ev.clientX;
     this.mouse.y = ev.clientY;
     this.updateTargets();
-  };
+  }
 
-  controls.prototype.onMouseUp = function(ev)
+  onMouseUp(ev)
   {
     this.onMouseOut(ev);
     this.canvas.style.cursor = 'auto';
-  };
+  }
 
-  controls.prototype.onMouseOut = function()
+  onMouseOut()
   {
     this.canvas.removeEventListener('mousemove', this.mouseMove, false);
     this.canvas.removeEventListener('mouseup', this.mouseUp, false);
     this.canvas.removeEventListener('mouseout', this.mouseOut, false);
-  };
+  }
 
-  controls.prototype.updateView = function(view)
+  updateView(view)
   {
     var dx = this.target.x - this.rotation.x,
       dy = this.target.y - this.rotation.y,
@@ -153,17 +156,17 @@ var OrbitControls = (function() {
 
       mat4.lookAt(view, cameraPosition, this.options.target, [0, 1, 0]);
     }
-  };
+  }
 
-  controls.prototype.onMouseWheel = function(ev)
+  onMouseWheel(ev)
   {
     if (this.overRenderer) {
       this.zoom(ev.wheelDeltaY * this.options.wheelScale * (this.distance < MIN_LOG_DIST ? this.distance : Math.log(this.distance)));
     }
     return true;
-  };
+  }
 
-  controls.prototype.onTouchStart = function(ev)
+  onTouchStart(ev)
   {
     ev.preventDefault();
     if(this.touches.length === 0)
@@ -195,9 +198,9 @@ var OrbitControls = (function() {
     }
 
     this.canvas.style.cursor = 'move';
-  };
+  }
 
-  controls.prototype.onTouchMove = function(ev) {
+  onTouchMove(ev) {
     var changed = ev.changedTouches, l = changed.length;
     for(var i = 0; i < l; i++)
     {
@@ -227,9 +230,9 @@ var OrbitControls = (function() {
       this.zoom((newDelta - this.touchDelta) * this.options.touchScale);
       this.touchDelta = newDelta;
     }
-  };
+  }
 
-  controls.prototype.removeTouches = function (ev) {
+  removeTouches(ev) {
     var changed = ev.changedTouches, l = changed.length;
     for(var i = 0; i < l; i++)
     {
@@ -253,34 +256,31 @@ var OrbitControls = (function() {
       this.targetOnDown.x = this.target.x;
       this.targetOnDown.y = this.target.y;
     }
-  };
+  }
 
-  controls.prototype.onTouchEnd = function(ev)
+  onTouchEnd(ev)
   {
     this.removeTouches(ev);
     this.canvas.style.cursor = 'auto';
-  };
+  }
 
-  controls.prototype.onTouchLeave = function(ev)
+  onTouchLeave(ev)
   {
     this.removeTouches(ev);
-  };
+  }
 
   //?
-  controls.prototype.onTouchCancel = function(ev)
+  onTouchCancel(ev)
   {
     this.removeTouches(ev);
-  };
+  }
 
-  controls.prototype.zoom = function(delta)
+  zoom(delta)
   {
     this.distanceTarget -= delta;
     this.distanceTarget = Math.min(this.distanceTarget, this.options.distanceMax);
     this.distanceTarget = Math.max(this.distanceTarget, this.options.distanceMin);
-  };
+  }
+}
 
-  return controls;
-}());
-
-imv.Controls = imv.Controls || {};
-imv.Controls.Orbit = OrbitControls;
+export default OrbitControls;

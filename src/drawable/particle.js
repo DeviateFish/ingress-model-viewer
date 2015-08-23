@@ -1,3 +1,7 @@
+/* jshint ignore:start */
+
+// TODO: fix this.
+
 var ParticleDrawable = (function(){
 
   var particleDrawable = function(texture) {
@@ -34,3 +38,5 @@ var ParticleDrawable = (function(){
 
 imv.Drawables = imv.Drawables || {};
 imv.Drawables.Particle = ParticleDrawable;
+
+/* jshint ignore:end */
