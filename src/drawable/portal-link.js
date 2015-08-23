@@ -4,12 +4,12 @@ import PortalLinkMesh from '../mesh/portal-link';
 
 class PortalLinkDrawable extends LinkDrawable {
   constructor(start, end, color, startPercent, endPercent) {
+    super(Constants.Program.Link, Constants.Texture.PortalLink);
     this.start = start;
     this.end = end;
     this.color = color;
     this.startPercent = startPercent;
     this.endPercent = endPercent;
-    super(Constants.Program.Link, Constants.Texture.PortalLink);
   }
 
   init(manager) {

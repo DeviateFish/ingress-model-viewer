@@ -10,10 +10,10 @@ const PROGRAM = Constants.Program.Atmosphere;
 // https://github.com/dataarts/webgl-globe/blob/master/globe/globe.js
 class AtmosphereDrawable extends ModelDrawable {
   constructor(radius, vSlices, hSlices, scaleFactor) {
+    super(PROGRAM, null);
     this.radius = radius;
     this.vSlices = vSlices;
     this.hSlices = hSlices;
-    super(PROGRAM, null);
     this.uniforms.u_normalMatrix = mat3.create();
     this.scaleFactor = scaleFactor || 1.1;
     mat4.scale(this.local, this.local, [this.scaleFactor, this.scaleFactor, this.scaleFactor]);

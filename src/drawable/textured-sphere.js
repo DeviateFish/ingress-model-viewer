@@ -6,10 +6,10 @@ const PROGRAM = Constants.Program.Textured;
 
 class TexturedSphereDrawable extends TexturedDrawable {
   constructor(textureName, radius, vSlices, hSlices) {
+    super(PROGRAM, null, textureName);
     this.radius = radius;
     this.vSlices = vSlices;
     this.hSlices = hSlices;
-    super(PROGRAM, null, textureName);
   }
 
   init(manager) {

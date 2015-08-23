@@ -5,13 +5,13 @@ import SphericalPortalLinkMesh from '../mesh/spherical-portal-link';
 
 class SphericalPortalLinkDrawable extends LinkDrawable {
   constructor(sphereRadius, start, end, color, startPercent, endPercent) {
+    super(Constants.Program.SphericalLink, Constants.Texture.PortalLink);
     this.radius = sphereRadius;
     this.start = start;
     this.end = end;
     this.color = color;
     this.startPercent = startPercent;
     this.endPercent = endPercent;
-    super(Constants.Program.SphericalLink, Constants.Texture.PortalLink);
   }
 
   init(manager) {

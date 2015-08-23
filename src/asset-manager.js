@@ -157,7 +157,6 @@ class AssetManager extends GLBound {
     }
     this.addProgram(name, new Klass(this._gl, vals[0], vals[1]));
     this.queues.program[idx] = 1;
-    console.info('loaded program ' + name);
     this._isComplete();
   }
 
