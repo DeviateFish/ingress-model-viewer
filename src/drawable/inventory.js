@@ -3,6 +3,11 @@ import BicoloredDrawable from './bicolored';
 import XmDrawable from './xm';
 import TexturedDrawable from './textured';
 
+
+/**
+ * This file constructs the drawable primitives for many of the inventory items.
+ */
+
 var Inventory = {};
 var meshes = Constants.Mesh.Inventory;
 var textures = Constants.Texture;
