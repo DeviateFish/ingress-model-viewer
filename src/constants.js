@@ -1,12 +1,24 @@
 import { vec4 } from 'gl-matrix';
 
+/**
+ * A bunch of useful constants.
+ * @type {Object}
+ */
 var Constants = {
+  /**
+   * Short list of team colors by internal name.
+   * @type {Object}
+   */
   teamColors: {
     RESISTANCE: vec4.fromValues(0, 0.7607843137254902, 1, 1.0),
     ENLIGHTENED: vec4.fromValues(0.1568627450980392, 0.9568627450980393, 0.1568627450980392, 1.0),
     NEUTRAL: vec4.fromValues(0.9764705882352941, 0.9764705882352941, 0.9764705882352941, 1.0),
     LOKI: vec4.fromValues(1, 0.1568627450980392, 0.1568627450980392, 1.0)
   },
+  /**
+   * Quality and level colors, by internal name.
+   * @type {Object}
+   */
   qualityColors: {
     EXTREMELY_RARE: vec4.fromValues(0.9803921568627451, 0.39215686274509803, 0.39215686274509803, 1.0),
     VERY_RARE: vec4.fromValues(0.9568627450980393, 0.5215686274509804, 0.9254901960784314, 1.0),
@@ -24,6 +36,10 @@ var Constants = {
     L7: vec4.fromValues(0.7568627450980392, 0.1411764705882353, 0.8784313725490196, 1.0),
     L8: vec4.fromValues(0.5882352941176471, 0.15294117647058825, 0.9568627450980393, 1.0)
   },
+  /**
+   * Color constants for anomaly markers.
+   * @type {Object}
+   */
   anomalyColors: {
     1: vec4.fromValues(1.0, 0.5686274509803921, 0.21176470588235294, 1.0),
     2: vec4.fromValues(1.0, 0.3215686274509804, 0.9058823529411765, 1.0),
@@ -33,6 +49,11 @@ var Constants = {
     6: vec4.fromValues(0.6509803921568628, 1.0, 0.9019607843137255, 1.0),
     7: vec4.fromValues(0.5725490196078431, 0.5803921568627451, 0.592156862745098, 1.0)
   },
+  /**
+   * Glow colors for the various artifact<color>Glow decorations for shard portals and
+   * target portals, by series.
+   * @type {Object}
+   */
   artifactGlowColors: {
     Helios: {
       Red: vec4.fromValues(0.92, 0.51, 0.14, 1.0),
@@ -60,12 +81,20 @@ var Constants = {
       Target: vec4.fromValues(0.74, 0.0, 0.02, 1.0)
     }
   },
+  /**
+   * Constants for xm glow colors (for item xm cores)
+   * @type {Object}
+   */
   xmColors: {
     coreGlow: vec4.fromValues(0.92, 0.7, 0.89, 1.0),
     coreGlowAlt: vec4.fromValues(0.6, 0.4, 0.6, 0.8),
     coreGlowAda: vec4.fromValues(0, 0.7607843137254902, 1, 1.0),
     coreGlowJarvis: vec4.fromValues(0.1568627450980392, 0.9568627450980393, 0.1568627450980392, 1.0)
   },
+  /**
+   * Mesh internal name constants.
+   * @type {Object}
+   */
   Mesh: {
     Inventory: {
       Xmp: 'XmpMesh',
@@ -145,6 +174,10 @@ var Constants = {
       SingleResonator: 'SingleResonatorMesh'
     }
   },
+  /**
+   * Program internal name constants.
+   * @type {Object}
+   */
   Program: {
     Bicolored: 'bicolor_textured',
     Textured: 'textured',
@@ -155,6 +188,10 @@ var Constants = {
     Link: 'LinkShader',
     SphericalLink: 'link3d'
   },
+  /**
+   * Texture internal name constants.
+   * @type {Object}
+   */
   Texture: {
     FlipCard: 'FlipCardTexture',
     Xm: 'ObjectXMTexture',
