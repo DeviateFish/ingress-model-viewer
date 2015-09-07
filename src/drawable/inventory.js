@@ -12,6 +12,12 @@ var Inventory = {};
 var meshes = Constants.Mesh.Inventory;
 var textures = Constants.Texture;
 
+/**
+ * Creates the outer "shell" for an xm item.
+ * @param  {String} name Internal name of the mesh
+ * @return {itembase}    A BicoloredDrawable with the specified mesh name
+ *                       and the flipcard texture
+ */
 function createShell(name) {
   class itembase extends BicoloredDrawable {
     constructor() {
@@ -22,6 +28,12 @@ function createShell(name) {
   return itembase;
 }
 
+/**
+ * Creates the xm "core" of an item
+ * @param  {String} name Internal name of the xm mesh
+ * @return {xmbase}      An XmDrawable with the specified mesh name
+ *                       and the Xm texture.
+ */
 function createCore(name) {
   class xmbase extends XmDrawable {
     constructor() {
@@ -32,6 +44,12 @@ function createCore(name) {
   return xmbase;
 }
 
+/**
+ * Creates a media item
+ * @param  {String} name Media mesh internal name
+ * @return {media}       A TexturedDrawable with the Textured program,
+ *                       the specified mesh, and the flipcard texture.
+ */
 function createMedia(name) {
   class media extends TexturedDrawable {
     constructor() {
