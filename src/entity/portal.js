@@ -4,6 +4,8 @@ import World from '../drawable/world';
 import ResonatorLink from '../drawable/resonator-link';
 import { vec3, vec4, mat4 } from 'gl-matrix';
 
+
+// TODO: Deprecate in favor of a proper scene graph
 class PortalEntity extends Entity {
   constructor(engine) {
     super(engine);

@@ -88,7 +88,21 @@ function createSphere(radius, phiSlices, thetaSlices) {
   };
 }
 
+/**
+ * A SphereMesh is a Mesh that is a sphere, made of a number of quads determined
+ * by the number of horizontal and vertical slices involved in its construction
+ *
+ * @extends {Mesh}
+ */
 class SphereMesh extends Mesh {
+
+  /**
+   * Construct a sphere
+   * @param  {context} gl     WebGL context
+   * @param  {Number} radius  Radius of the sphere
+   * @param  {Number} vSlices Number of vertical slices
+   * @param  {Number} hSlices Number of horizontal slices
+   */
   constructor(gl, radius, vSlices, hSlices) {
     var parsed = createSphere(radius, vSlices, hSlices);
     var attributes = new GLAttribute(gl, parsed.attributes, parsed.values);

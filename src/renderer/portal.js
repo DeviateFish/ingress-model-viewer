@@ -1,5 +1,6 @@
 import Renderer from '../renderer';
 
+// TODO: rework this.
 class PortalRenderer extends Renderer {
   constructor(gl, manager) {
     super(gl, manager);

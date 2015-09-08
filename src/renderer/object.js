@@ -1,6 +1,7 @@
 import Renderer from '../renderer';
 import Drawable from '../drawable';
 
+// TODO rework this.
 class ObjectRenderer extends Renderer {
   constructor(gl, manager) {
     super(gl, manager);

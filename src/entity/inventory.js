@@ -3,6 +3,7 @@ import Entity from '../entity';
 import Inventory from '../drawable/inventory';
 import { vec4 } from 'gl-matrix';
 
+// TODO: Deprecate in favor of a proper scene graph
 var InventoryItems = {};
 
 var simple = {

@@ -21,12 +21,23 @@ function getTouchIndex(touches, touch)
   return -1;
 }
 
+/**
+ * Camera controls for controlling a camera that orbits a fixed point,
+ * with variable position and depth.
+ *
+ * This is a port of the THREE.js OrbitControls found with the webgl globe.
+ */
 class OrbitControls {
 
-  constructor(canvas, distance, options)
-  {
+  /**
+   * Constructs an orbiting camera control.
+   * @param  {HTMLElement} element  Target element to bind listeners to
+   * @param  {Number} distance Starting distance from origin
+   * @param  {Object} options  Hash of options for configuration
+   */
+  constructor(element, distance, options) {
     options = options || {};
-    this.canvas = canvas;
+    this.element = element;
     this.distance = distance || 2;
     this.distanceTarget = this.distance;
     var params = {
@@ -47,99 +58,62 @@ class OrbitControls {
     this.target = {x: Math.PI * 3 / 2, y: Math.PI / 6.0};
     this.targetOnDown = {x: 0, y: 0};
     this.overRenderer = false;
-    this.mouseMove = this.onMouseMove.bind(this);
-    this.mouseUp = this.onMouseUp.bind(this);
-    this.mouseOut = this.onMouseOut.bind(this);
-    this.mouseDown = this.onMouseDown.bind(this);
-    this.mouseWheel = this.onMouseWheel.bind(this);
+    // Pre-bind all these handlers so we can unbind the listeners later.
+    this.mouseMove = this._onMouseMove.bind(this);
+    this.mouseUp = this._onMouseUp.bind(this);
+    this.mouseOut = this._onMouseOut.bind(this);
+    this.mouseDown = this._onMouseDown.bind(this);
+    this.mouseWheel = this._onMouseWheel.bind(this);
 
     this.touches = [];
     this.touchDelta = 0;
-    this.touchMove = this.onTouchMove.bind(this);
-    this.touchEnd = this.onTouchEnd.bind(this);
-    this.touchLeave = this.onTouchLeave.bind(this);
-    this.touchStart = this.onTouchStart.bind(this);
+    this.touchMove = this._onTouchMove.bind(this);
+    this.touchEnd = this._onTouchEnd.bind(this);
+    this.touchLeave = this._onTouchLeave.bind(this);
+    this.touchStart = this._onTouchStart.bind(this);
     this.mouseOver = function() { this.overRenderer = true; }.bind(this);
     this.mouseOut = function() { this.overRenderer = false; }.bind(this);
     this.enabled = false;
   }
 
+  /**
+   * Unbinds all listeners and disables the controls
+   */
   disable() {
-    this.canvas.removeEventListener('mousedown', this.mouseDown, false);
-    this.canvas.removeEventListener('mousemove', this.mouseMove, false);
-    this.canvas.removeEventListener('mouseup', this.mouseUp, false);
-    this.canvas.removeEventListener('mouseout', this.mouseOut, false);
-    this.canvas.removeEventListener('touchstart', this.touchStart, false);
-    this.canvas.removeEventListener('touchmove', this.touchMove, false);
-    this.canvas.removeEventListener('touchend', this.touchEnd, false);
-    this.canvas.removeEventListener('touchleave', this.touchLeave, false);
-    this.canvas.removeEventListener('mousewheel', this.mouseWheel, false);
-    this.canvas.removeEventListener('mouseover', this.mouseOver, false);
-    this.canvas.removeEventListener('mouseout', this.mouseOut, false);
+    this.element.removeEventListener('mousedown', this.mouseDown, false);
+    this.element.removeEventListener('mousemove', this.mouseMove, false);
+    this.element.removeEventListener('mouseup', this.mouseUp, false);
+    this.element.removeEventListener('mouseout', this.mouseOut, false);
+    this.element.removeEventListener('touchstart', this.touchStart, false);
+    this.element.removeEventListener('touchmove', this.touchMove, false);
+    this.element.removeEventListener('touchend', this.touchEnd, false);
+    this.element.removeEventListener('touchleave', this.touchLeave, false);
+    this.element.removeEventListener('mousewheel', this.mouseWheel, false);
+    this.element.removeEventListener('mouseover', this.mouseOver, false);
+    this.element.removeEventListener('mouseout', this.mouseOut, false);
     this.enabled = false;
   }
 
+  /**
+   * Binds all listeners and enables the controls
+   */
   enable() {
-    this.canvas.addEventListener('mousedown', this.onMouseDown.bind(this), false);
+    this.element.addEventListener('mousedown', this.mouseDown, false);
     if(this.options.allowZoom)
     {
-      this.canvas.addEventListener('mousewheel', this.mouseWheel, false);
+      this.element.addEventListener('mousewheel', this.mouseWheel, false);
     }
-    this.canvas.addEventListener('touchstart', this.touchStart, false);
-    this.canvas.addEventListener('mouseover', this.mouseOver, false);
-    this.canvas.addEventListener('mouseout', this.mouseOut, false);
+    this.element.addEventListener('touchstart', this.touchStart, false);
+    this.element.addEventListener('mouseover', this.mouseOver, false);
+    this.element.addEventListener('mouseout', this.mouseOut, false);
     this.enabled = true;
   }
 
-  updateTargets()
-  {
-    var scale = this.distance < MIN_LOG_DIST ? this.distance : Math.log(this.distance);
-    var zoomDamp = scale / this.options.zoomDamp;
-
-    this.target.x = this.targetOnDown.x + (this.mouse.x - this.mouseOnDown.x) * 0.005 * zoomDamp;
-    this.target.y = this.targetOnDown.y + (this.mouse.y - this.mouseOnDown.y) * 0.005 * zoomDamp;
-
-    this.target.y = this.target.y > PI_HALF ? PI_HALF : this.target.y;
-    this.target.y = this.target.y < - PI_HALF ? - PI_HALF : this.target.y;
-  }
-
-  onMouseDown(ev)
-  {
-    ev.preventDefault();
-    this.canvas.addEventListener('mousemove', this.mouseMove, false);
-    this.canvas.addEventListener('mouseup', this.mouseUp, false);
-    this.canvas.addEventListener('mouseout', this.mouseOut, false);
-
-    this.mouseOnDown.x = -ev.clientX;
-    this.mouseOnDown.y = ev.clientY;
-    this.targetOnDown.x = this.target.x;
-    this.targetOnDown.y = this.target.y;
-
-    this.canvas.style.cursor = 'move';
-  }
-
-  onMouseMove(ev)
-  {
-    this.mouse.x = -ev.clientX;
-    this.mouse.y = ev.clientY;
-    this.updateTargets();
-  }
-
-  onMouseUp(ev)
-  {
-    this.onMouseOut(ev);
-    this.canvas.style.cursor = 'auto';
-  }
-
-  onMouseOut()
-  {
-    this.canvas.removeEventListener('mousemove', this.mouseMove, false);
-    this.canvas.removeEventListener('mouseup', this.mouseUp, false);
-    this.canvas.removeEventListener('mouseout', this.mouseOut, false);
-  }
-
-  updateView(view)
-  {
+  /**
+   * Update the given camera matrix with new position information, etc
+   * @param  {mat4} view   A view matrix
+   */
+  updateView(view) {
     var dx = this.target.x - this.rotation.x,
       dy = this.target.y - this.rotation.y,
       dz = this.distanceTarget - this.distance,
@@ -158,22 +132,62 @@ class OrbitControls {
     }
   }
 
-  onMouseWheel(ev)
-  {
+  _updateTargets() {
+    var scale = this.distance < MIN_LOG_DIST ? this.distance : Math.log(this.distance);
+    var zoomDamp = scale / this.options.zoomDamp;
+
+    this.target.x = this.targetOnDown.x + (this.mouse.x - this.mouseOnDown.x) * 0.005 * zoomDamp;
+    this.target.y = this.targetOnDown.y + (this.mouse.y - this.mouseOnDown.y) * 0.005 * zoomDamp;
+
+    this.target.y = this.target.y > PI_HALF ? PI_HALF : this.target.y;
+    this.target.y = this.target.y < - PI_HALF ? - PI_HALF : this.target.y;
+  }
+
+  _onMouseDown(ev) {
+    ev.preventDefault();
+    this.element.addEventListener('mousemove', this.mouseMove, false);
+    this.element.addEventListener('mouseup', this.mouseUp, false);
+    this.element.addEventListener('mouseout', this.mouseOut, false);
+
+    this.mouseOnDown.x = -ev.clientX;
+    this.mouseOnDown.y = ev.clientY;
+    this.targetOnDown.x = this.target.x;
+    this.targetOnDown.y = this.target.y;
+
+    this.element.style.cursor = 'move';
+  }
+
+  _onMouseMove(ev) {
+    this.mouse.x = -ev.clientX;
+    this.mouse.y = ev.clientY;
+    this._updateTargets();
+  }
+
+  _onMouseUp(ev) {
+    this._onMouseOut(ev);
+    this.element.style.cursor = 'auto';
+  }
+
+  _onMouseOut() {
+    this.element.removeEventListener('mousemove', this.mouseMove, false);
+    this.element.removeEventListener('mouseup', this.mouseUp, false);
+    this.element.removeEventListener('mouseout', this.mouseOut, false);
+  }
+
+  _onMouseWheel(ev) {
     if (this.overRenderer) {
-      this.zoom(ev.wheelDeltaY * this.options.wheelScale * (this.distance < MIN_LOG_DIST ? this.distance : Math.log(this.distance)));
+      this._zoom(ev.wheelDeltaY * this.options.wheelScale * (this.distance < MIN_LOG_DIST ? this.distance : Math.log(this.distance)));
     }
     return true;
   }
 
-  onTouchStart(ev)
-  {
+  _onTouchStart(ev) {
     ev.preventDefault();
     if(this.touches.length === 0)
     {
-      this.canvas.addEventListener('touchmove', this.touchMove, false);
-      this.canvas.addEventListener('touchend', this.touchEnd, false);
-      this.canvas.addEventListener('touchleave', this.touchLeave, false);
+      this.element.addEventListener('touchmove', this.touchMove, false);
+      this.element.addEventListener('touchend', this.touchEnd, false);
+      this.element.addEventListener('touchleave', this.touchLeave, false);
     }
 
     for(var i = 0; i < ev.changedTouches.length; i++)
@@ -197,10 +211,10 @@ class OrbitControls {
       this.touchDelta = Math.sqrt(x * x + y * y);
     }
 
-    this.canvas.style.cursor = 'move';
+    this.element.style.cursor = 'move';
   }
 
-  onTouchMove(ev) {
+  _onTouchMove(ev) {
     var changed = ev.changedTouches, l = changed.length;
     for(var i = 0; i < l; i++)
     {
@@ -227,12 +241,12 @@ class OrbitControls {
       var y = this.touches[0].y - this.touches[1].y;
 
       var newDelta = Math.sqrt(x * x + y * y);
-      this.zoom((newDelta - this.touchDelta) * this.options.touchScale);
+      this._zoom((newDelta - this.touchDelta) * this.options.touchScale);
       this.touchDelta = newDelta;
     }
   }
 
-  removeTouches(ev) {
+  _removeTouches(ev) {
     var changed = ev.changedTouches, l = changed.length;
     for(var i = 0; i < l; i++)
     {
@@ -244,9 +258,9 @@ class OrbitControls {
     }
     if(this.touches.length === 0)
     {
-      this.canvas.removeEventListener('touchmove', this.touchMove, false);
-      this.canvas.removeEventListener('touchend', this.touchEnd, false);
-      this.canvas.removeEventListener('touchleave', this.touchLeave, false);
+      this.element.removeEventListener('touchmove', this.touchMove, false);
+      this.element.removeEventListener('touchend', this.touchEnd, false);
+      this.element.removeEventListener('touchleave', this.touchLeave, false);
     }
     else if(this.touches.length === 1)
     {
@@ -258,25 +272,21 @@ class OrbitControls {
     }
   }
 
-  onTouchEnd(ev)
-  {
-    this.removeTouches(ev);
-    this.canvas.style.cursor = 'auto';
+  _onTouchEnd(ev) {
+    this._removeTouches(ev);
+    this.element.style.cursor = 'auto';
   }
 
-  onTouchLeave(ev)
-  {
-    this.removeTouches(ev);
+  _onTouchLeave(ev) {
+    this._removeTouches(ev);
   }
 
   //?
-  onTouchCancel(ev)
-  {
-    this.removeTouches(ev);
+  _onTouchCancel(ev) {
+    this._removeTouches(ev);
   }
 
-  zoom(delta)
-  {
+  _zoom(delta) {
     this.distanceTarget -= delta;
     this.distanceTarget = Math.min(this.distanceTarget, this.options.distanceMax);
     this.distanceTarget = Math.max(this.distanceTarget, this.options.distanceMin);

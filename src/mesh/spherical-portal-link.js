@@ -182,8 +182,24 @@ function _generateFaces(vertexOffset, segments) {
   return ind;
 }
 
+/**
+ * A SphereicalPortalLinkMesh is a Mesh that represents a portal link betwen two portals
+ * on the surface of a sphere
+ *
+ * @extends {Mesh}
+ */
 class SphericalPortalLinkMesh extends Mesh {
 
+  /**
+   * Construct a spherical portal link
+   * @param  {context} gl          WebGL context
+   * @param  {Number} sphereRadius Radius of the sphere
+   * @param  {vec2} start          lat,lng of the origin point
+   * @param  {vec2} end            lat,lng of the destionation point
+   * @param  {vec4} color          Color of the link
+   * @param  {Number} startPercent Origin portal health percentage
+   * @param  {Number} endPercent   Destination portal health percentage
+   */
   constructor(gl, sphereRadius, start, end, color, startPercent, endPercent) {
     var buf = _generateLinkAttributes(sphereRadius, start, end, color, startPercent, endPercent);
     var len = buf.length, segments = Math.floor(len / _chunkSize / 6);

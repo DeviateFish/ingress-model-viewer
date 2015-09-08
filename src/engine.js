@@ -8,10 +8,25 @@ import InventoryItems from './entity/inventory';
 import PortalEntity from './entity/portal';
 import { vec3, mat4 } from 'gl-matrix';
 
+/**
+ * The Engine provides nearly all the mechanics for actually drawing things to a canvas.
+ *
+ * Also includes a few simple functions for demoing various entities/drawables.  This
+ * will probably go away in a future release.
+ */
 class Engine {
 
-  constructor(canvas, assets, enableSnapshots)
-  {
+  /**
+   * Constructs an engine, given a canvas to render on and a list of assets to seed
+   * its AssetManager with.
+   * @param  {HTMLCanvas} canvas       A Canvas element
+   * @param  {Object} assets           A manifest to pass to the internal AssetManager
+   *                                   @see  AssetManager
+   * @param  {Boolean} enableSnapshots If set to true, the canvas will preserve its drawing
+   *                                   buffer, to allow for accurate .toDataURL calls.
+   *                                   This will have a performance impact.
+   */
+  constructor(canvas, assets, enableSnapshots) {
     this.canvas = canvas;
     var opt = {};
     if(enableSnapshots) {
@@ -41,6 +56,12 @@ class Engine {
     this.frame = null;
   }
 
+  /**
+   * Resize the canvas and viewport to new dimensions
+   * @param  {Number} width  Width, in pixels
+   * @param  {Number} height Heigh, in pixels
+   * @return {void}
+   */
   resize(width, height) {
     this.canvas.width = width;
     this.canvas.height = height;
@@ -48,12 +69,20 @@ class Engine {
     this.updateView();
   }
 
+  /**
+   * Updates the current drawing viewport to the canvas' current dimensions
+   * @return {void}
+   */
   updateView() {
     this.project = mat4.create();
     mat4.perspective(this.project, this.hFoV, this.canvas.width / this.canvas.height, 0.1, this.far);
     this.objectRenderer.updateView(this.view, this.project);
   }
 
+  /**
+   * Stops the render loop, if it's running.
+   * @return {void}
+   */
   stop() {
     this.paused = true;
     this.cleared = false;
@@ -62,6 +91,10 @@ class Engine {
     }
   }
 
+  /**
+   * Adds one of each inventory item, and a portal, to the scene
+   * @return {void}
+   */
   demoEntities() {
     var x = -5, y = 0, z = 4;
     var i, item;
@@ -81,6 +114,10 @@ class Engine {
     portal.translate(vec3.fromValues(x, y, z));
   }
 
+  /**
+   * Adds one of each drawable to the scene
+   * @return {void}
+   */
   demo() {
     var x = -5, y = 0, z = 4;
     var i, item;
@@ -127,6 +164,11 @@ class Engine {
     }
   }
 
+  /**
+   * Draw a single frame, with a specified time since last draw
+   * @param  {Number} delta Time since last render
+   * @return {void}
+   */
   draw(delta) {
     var gl = this.gl;
     // default setup stuff:
@@ -142,8 +184,12 @@ class Engine {
     this.objectRenderer.updateTime(delta);
   }
 
-  render(tick)
-  {
+  /**
+   * Start the render loop.
+   * @param  {Number} tick Time since last tick (optional)
+   * @return {void}
+   */
+  render(tick) {
     if(this.paused) {
       this.cleared = true;
       this.paused = false;
@@ -165,6 +211,11 @@ class Engine {
     this.frame = window.requestAnimationFrame(this.render.bind(this));
   }
 
+  /**
+   * Preloads all assets
+   * @param  {Function} callback Callback to invoke on completion
+   * @return {void}
+   */
   preload(callback) {
     this.assetManager.loadAll(callback);
   }

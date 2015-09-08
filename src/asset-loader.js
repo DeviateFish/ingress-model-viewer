@@ -1,5 +1,16 @@
 import libtga from 'libtga';
 
+/**
+ * Loads a resource via xhr or Image
+ * @param  {String}   url      href of the resource to fetch
+ * @param  {String}   type     One of XHMLHttpRequest's supported responseType
+ *                             values (arraybuffer, blob, document, json, text)
+ *                             or 'image' or 'image.co' (for a cross-origin image)
+ * @param  {Function} callback Callback to execute on success or failure.  Takes
+ *                             err, value as parameters.  Value will be null if err
+ *                             is not null
+ * @return {void}
+ */
 export function loadResource(url, type, callback) {
   if(type === 'image' || type === 'image.co')
   {
@@ -63,17 +74,32 @@ export function loadResource(url, type, callback) {
   }
 }
 
+
+/**
+ * An AssetLoader manages loading one or more assets.  It handles debouncing of
+ * of multiple requests for the same asset, etc.
+ */
 class AssetLoader {
 
+  /**
+   * Noop.
+   */
   constructor() {
     this._callbacks = {};
     this._assets = {};
   }
 
+  /**
+   * Loads a single asset.
+   *
+   * If the asset is already loaded, the callback is immediately invoked.
+   * @see loadResource
+   */
   loadAsset(url, type, callback) {
     var name = '_' + encodeURIComponent(url);
     if(this._assets[name])
     {
+      // TODO: bounce this out of the current execution
       callback(null, this._assets[name]);
       return;
     }
@@ -96,6 +122,14 @@ class AssetLoader {
     }
   }
 
+  /**
+   * Load a set of assets in parallel
+   * @param  {Array}   urls      Array of urls of resources
+   * @param  {Array}   types     Array of types of resources
+   * @param  {Function} callback Callback to invoke for each resource
+   * @return {void}
+   * @see  loadResource
+   */
   loadAssetGroup(urls, types, callback) {
     if(urls.length !== types.length)
     {
@@ -124,6 +158,11 @@ class AssetLoader {
     }
   }
 
+  /**
+   * Directly retrieve an asset from the cache
+   * @param  {String} name The cache key
+   * @return {mixed}       The cached asset, if it exists.
+   */
   getAsset(name) {
     return this._assets[name];
   }

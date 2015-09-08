@@ -107,7 +107,22 @@ function _generateFaces(vertexOffset) {
   return ind;
 }
 
+/**
+ * A PortalLinkMesh represents the mesh for a single portal link.
+ *
+ * @extends {Mesh}
+ */
 class PortalLinkMesh extends Mesh {
+
+  /**
+   * Programatically constructs the mesh for a link between two points
+   * @param  {context} gl          WebGL context
+   * @param  {vec2} start          X,Z of the origin point
+   * @param  {vec2} end            X,Z of the destination point
+   * @param  {vec4} color          Color of the link
+   * @param  {Number} startPercent Origin point percentage
+   * @param  {Number} endPercent   Destination point percentage
+   */
   constructor(gl, start, end, color, startPercent, endPercent) {
     var buf = _generateLinkAttributes(start, end, color, startPercent, endPercent);
     var ind = _generateFaces(0);

@@ -1,6 +1,16 @@
 import GLBound from './gl-bound';
 
-function fixPrecision(shader)
+/**
+ * Fixes an issue with shaders where the shader doesn't set a precision,
+ * leading it to have a mismatch with its counterpart
+ *
+ * I.e. the vertex shader might set a precision, but the fragment shader
+ * does not, leading to precision mismatch errors.
+ * @param  {String} shader The shader to check/fix
+ * @return {String}        The fixed shader, or the original if it needed
+ *                         no patching.
+ */
+export function fixPrecision(shader)
 {
   if(/precision mediump float/g.test(shader))
   {
@@ -125,7 +135,21 @@ function getUniformSetter(gl, program, info, isArray) {
   throw "Unknown type: " + type;
 }
 
+/**
+ * Represents a shader program consisting of a vertex shader and a fragment
+ * shader.
+ * @extends {GLBound}
+ */
 class Program extends GLBound {
+
+  /**
+   * Constructs a program from the given vertex and fragment shader strings.
+   *
+   * Manages the shader's attributes and uniforms.
+   * @param  {context} gl      Webgl context
+   * @param  {String} vertex   Vertex shader
+   * @param  {String} fragment Fragment shader
+   */
   constructor(gl, vertex, fragment) {
     super(gl);
     this.program = null;
@@ -135,27 +159,12 @@ class Program extends GLBound {
     this.uniforms = {};
   }
 
-  setupLocations() {
-    var gl = this._gl, program = this.program;
-    // this is taken partly from PhiloGL's Program class.
-    //fill attribute locations
-    var len = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES), info, name;
-    for (var i = 0; i < len; i++) {
-      info = gl.getActiveAttrib(program, i);
-      this.attributes[info.name] = gl.getAttribLocation(program, info.name);
-    }
-
-    //create uniform setters
-    len = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
-    for (i = 0; i < len; i++) {
-      info = gl.getActiveUniform(program, i);
-      name = info.name;
-      //if array name then clean the array brackets
-      name = name[name.length -1] == ']' ? name.substr(0, name.length -3) : name;
-      this.uniforms[name] = getUniformSetter(gl, program, info, info.name != name);
-    }
-  }
-
+  /**
+   * Initialize the shader
+   *
+   * Parses out shader parameters, compiles the shader, and binds it to
+   * the context.
+   */
   init() {
     var gl = this._gl, vertex, fragment;
     vertex = gl.createShader(gl.VERTEX_SHADER);
@@ -190,11 +199,15 @@ class Program extends GLBound {
     }
     gl.useProgram(this.program);
 
-    this.setupLocations();
-
-    //gl.useProgram(0);
+    this._setupLocations();
   }
 
+  /**
+   * Use the program with the given draw function
+   * @param  {Function} fn Function to handle the actual drawing.
+   *                       The programs attributes and uniforms will
+   *                       be passed to the draw function for use.
+   */
   use(fn) {
     var gl = this._gl;
     if(!this.program)
@@ -207,6 +220,27 @@ class Program extends GLBound {
     }
     fn(this.attributes, this.uniforms);
     //gl.useProgram(0);
+  }
+
+  _setupLocations() {
+    var gl = this._gl, program = this.program;
+    // this is taken partly from PhiloGL's Program class.
+    //fill attribute locations
+    var len = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES), info, name;
+    for (var i = 0; i < len; i++) {
+      info = gl.getActiveAttrib(program, i);
+      this.attributes[info.name] = gl.getAttribLocation(program, info.name);
+    }
+
+    //create uniform setters
+    len = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+    for (i = 0; i < len; i++) {
+      info = gl.getActiveUniform(program, i);
+      name = info.name;
+      //if array name then clean the array brackets
+      name = name[name.length -1] == ']' ? name.substr(0, name.length -3) : name;
+      this.uniforms[name] = getUniformSetter(gl, program, info, info.name != name);
+    }
   }
 }
 

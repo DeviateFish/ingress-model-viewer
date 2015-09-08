@@ -4,6 +4,11 @@ import BicoloredDrawable from './bicolored';
 var Resource = {};
 var meshes = Constants.Mesh.Resource;
 
+/**
+ * Creates a resource drawable
+ * @param  {String} name InternalName
+ * @return {itembase}    A BicoloredDrawable representing this resource item
+ */
 function createResource(name) {
   class itembase extends BicoloredDrawable {
     constructor() {
