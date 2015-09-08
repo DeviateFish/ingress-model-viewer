@@ -3,6 +3,12 @@ import GlowrampDrawable from './glowramp';
 import BicoloredDrawable from './bicolored';
 import ShieldEffect from './shield-effect';
 
+/**
+ * Various world drawables
+ *
+ * Includes Portal, ShieldEffect, waypoints, resonators, and artifact glows
+ * @type {Object}
+ */
 var World = {};
 var meshes = Constants.Mesh.World;
 var textures = Constants.Texture;

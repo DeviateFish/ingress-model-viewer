@@ -108,7 +108,24 @@ function _generateFaces(vertexOffset) {
   return ind;
 }
 
+/**
+ * A ResonatorLinkMesh is a Mesh that represents a single link between a portal and a resonator
+ *
+ * TODO: Make disco
+ *
+ * @extends {Mesh}
+ */
 class ResonatorLinkMesh extends Mesh {
+
+  /**
+   * Construct a resonator link mesh
+   * @param  {context} gl              WebGL context
+   * @param  {vec2} portalPosition     X,Z of the portal
+   * @param  {Number} slot             Resonator slot (0-7)
+   * @param  {Number} distance         Distance from the portal
+   * @param  {vec4} color              Color of the resonator link
+   * @param  {Number} resonatorPercent Percent health of the resonator
+   */
   constructor(gl, portalPosition, slot, distance, color, resonatorPercent) {
     var theta = slot / 8 * 2 * Math.PI;
     var end = vec2.create();

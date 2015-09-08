@@ -33,7 +33,19 @@ function parseAttributes(buf)
   return attributes;
 }
 
+/**
+ * A FileMesh is a Mesh that is loaded from a serialzied Java object,
+ * as found in the apk.
+ *
+ * @extends {Mesh}
+ */
 class FileMesh extends Mesh {
+
+  /**
+   * Construct the Mesh from the given file
+   * @param  {context} gl           WebGL context
+   * @param  {ArrayBuffer} arraybuf ArrayBuffer representing the entire .obj file
+   */
   constructor(gl, arraybuf) {
     var jd = new JavaDeserializer(arraybuf);
     var blocks = jd.getContents();

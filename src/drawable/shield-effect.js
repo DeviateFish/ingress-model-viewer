@@ -12,8 +12,24 @@ var defaultColor = vec4.clone(Constants.teamColors.NEUTRAL);
 var defaultRampTargetInv = vec2.fromValues(0.5, 1.3);
 var defaultContributions = vec3.fromValues(0.5, 0.5, 0.5);
 
+/**
+ * Represents the shield idle effect
+ *
+ * Note: This probably should actually be generalized differently...
+ * Apparently all three shield effects use the same texture and mesh, but have
+ * different programs and variables.
+ *
+ * So, perhaps a better way would be to have the base class hardcode the texture
+ * and mesh internal names, and then the derived classes pick a program and handle
+ * the variables.
+ */
 class ShieldEffectDrawable extends TexturedDrawable {
 
+  /**
+   * Constructs a shield effect
+   * @param  {String} meshName    Mesh internal name
+   * @param  {String} textureName Texture internal name
+   */
   constructor(meshName, textureName) {
     super(PROGRAM, meshName, textureName);
     this.uniforms.u_color = vec4.clone(defaultColor);
@@ -21,6 +37,14 @@ class ShieldEffectDrawable extends TexturedDrawable {
     this.uniforms.u_contributionsAndAlpha = vec3.clone(defaultContributions);
   }
 
+  /**
+   * Updates the default uniforms
+   *
+   * Note: these are nothing like what's in the apk, just some functions that
+   * happen to look kinda sorta nice
+   * @param  {Number} delta Time since last frame
+   * @return {Boolean}      Returns true to continue the animation.
+   */
   updateTime(delta) {
     var ret = super.updateTime(delta);
     var inc = this.elapsed / 10000;

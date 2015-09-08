@@ -1,6 +1,21 @@
 import GLBound from '../gl-bound';
 
+/**
+ * A GLBuffer is a buffer of some sort that will be passed to the gpu
+ *
+ * @extends {GLBound}
+ */
 class GLBuffer extends GLBound {
+
+  /**
+   * Construct a gl-bound buffer
+   *
+   * @chainable
+   * @param  {context} gl    WebGL context
+   * @param  {enum} target   gl target  @see https://www.khronos.org/registry/webgl/specs/1.0/#5.14.5
+   * @param  {enum} usage    gl usage @see https://www.khronos.org/registry/webgl/specs/1.0/#5.14.5
+   * @return {this}          the GLBuffer
+   */
   constructor(gl, target, usage) {
     super(gl);
     this.target = target || gl.ARRAY_BUFFER; // probably shouldn't default this.
@@ -10,6 +25,12 @@ class GLBuffer extends GLBound {
     return this;
   }
 
+  /**
+   * Binds the buffer to the gpu
+   *
+   * @chainable
+   * @return {this}
+   */
   bindBuffer() {
     if(!this.values) {
       console.warn('trying to update a buffer with no values.');
@@ -22,11 +43,23 @@ class GLBuffer extends GLBound {
     return this;
   }
 
+  /**
+   * Unbinds the buffer (NPI)
+   *
+   * @chainable
+   * @return {this}
+   */
   unbindBuffer() {
     // this._gl.bindBuffer(this.target, 0);  // apparently this makes webgl cranky
     return this;
   }
 
+  /**
+   * Update the buffer data on the gpu
+   *
+   * @chainable
+   * @return {this}
+   */
   update() {
     this.bindBuffer();
     // if I do it this way, does it break?
@@ -36,6 +69,14 @@ class GLBuffer extends GLBound {
     return this; // .unbindBuffer(); // apparently this makes webgl angry.
   }
 
+  /**
+   * Sets the buffer contents
+   *
+   * @chainable
+   * @param {ArrayBuffer} values Values to store in the buffer
+   * @param {Number} offset      Offset to write the values
+   * @return {this}
+   */
   setValues(values, offset) {
     if(!this.values) {
       this.values = values;
@@ -46,7 +87,14 @@ class GLBuffer extends GLBound {
     return this;
   }
 
-  // remove a chunk of a buffer
+  /**
+   * Deletes a chunk of a buffer
+   *
+   * @chainable
+   * @param  {Number} start Start of deletion
+   * @param  {Number} end   End of deletion
+   * @return {this}
+   */
   deleteWithin(start, end) {
     if(!this.values) {
       console.warn('Trying to splice a buffer that has no values.');
@@ -60,15 +108,32 @@ class GLBuffer extends GLBound {
     return this;
   }
 
-  // do something to each element in a buffer
+  /**
+   * Do something with each elemnt of the buffer
+   *
+   * @chainable
+   * @param  {Function} callback The callback (values returned will overwrite
+   *                             the contents of the buffer at that offset)
+   * @param  {Number}   start    Offset to start
+   * @param  {Number}   end      Offset to end
+   * @return {this}
+   */
   map(callback, start, end) {
     start = start === undefined ? 0 : start;
     end = end === undefined ? this.values.length : end;
     for(var i = start; i < end; i++) {
       this.values[i] = callback(this.values[i], i);
     }
+    return this;
   }
 
+  /**
+   * Update a buffer's values, and also update the buffer on the gpu
+   *
+   * @chainable
+   * @param  {ArrayBuffer} values New values to fill the buffer with
+   * @return {this}
+   */
   updateBuffer(values) {
     this.values = values;
     return this.update();

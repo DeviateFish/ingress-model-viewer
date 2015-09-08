@@ -1,11 +1,30 @@
 import Program from '../program';
 import { resetGL } from '../utils';
 
+/**
+ * A GlowrampProgram is a program meant for drawing
+ * transparent glowramp drawables
+ *
+ * @extends {Program}
+ */
 class GlowrampProgram extends Program {
+
+  /**
+   * Constructs a Glowramp program given vertex and fragment shader sources
+   * @param  {context} gl      WebGL context
+   * @param  {String} vertex   Vertex shader source
+   * @param  {String} fragment Fragment shader source
+   */
   constructor(gl, vertex, fragment) {
     super(gl, vertex, fragment);
   }
 
+  /**
+   * Use this program to draw
+   *
+   * Sets up the proper blending modes, etc
+   * @param  {Function} fn The draw function
+   */
   use(fn) {
     if(!this.program)
     {
