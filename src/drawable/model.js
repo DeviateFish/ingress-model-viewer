@@ -1,5 +1,5 @@
 import MeshDrawable from './mesh';
-import { mat4 } from 'gl-matrix';
+import { mat4, vec3 } from 'gl-matrix';
 
 /**
  * A ModelDrawable is a MeshDrawable that supports local
@@ -49,6 +49,67 @@ class ModelDrawable extends MeshDrawable {
   setMatrix(mat) {
     this.model = mat;
     this.updateMatrix();
+  }
+
+  /**
+   * Translate a model along some vector
+   * @param  {vec3} vec   The vector
+   */
+  translate(vec) {
+    mat4.translate(this.local, this.local, vec);
+    this.updateMatrix();
+  }
+
+  /**
+   * Scale a model by some vector
+   * @param  {vec3} vec   The vector
+   */
+  scale(vec) {
+    mat4.scale(this.local, this.local, vec);
+    this.updateMatrix();
+  }
+
+  /**
+   * Rotate a model with a quaternion
+   * @param  {quat} quat   The quaternion
+   */
+  rotateQuat(quat) {
+    var quatMatrix = mat4.create();
+    mat4.fromQuat(quatMatrix, quat);
+    mat4.multiply(this.local, this.local, quatMatrix);
+    this.updateMatrix();
+  }
+
+  /**
+   * Translate the model along the X axis
+   * @param  {float} dist  Distance to translate
+   */
+  translateX(dist) {
+    this.translate(vec3.fromValues(dist, 0, 0));
+  }
+
+  /**
+   * Translate the model along the Y axis
+   * @param  {float} dist  Distance to translate
+   */
+  translateY(dist) {
+    this.translate(vec3.fromValues(0, dist, 0));
+  }
+
+  /**
+   * Translate the model along the Z axis
+   * @param  {float} dist  Distance to translate
+   */
+  translateZ(dist) {
+    this.translate(vec3.fromValues(0, 0, dist));
+  }
+
+  /**
+   * Scale all dimensions by the same value
+   * @param  {Number} f The amount to scale
+   */
+  scalarScale(f) {
+    this.scale(vec3.fromValues(f, f, f));
   }
 }
 

@@ -171,7 +171,11 @@ var Constants = {
       ArtifactsGreenGlow: 'ArtifactsGreenGlow',
       ArtifactsPurpleGlow: 'ArtifactsPurpleGlow',
       ArtifactsTargetGlow: 'ArtifactsTargetGlow',
-      SingleResonator: 'SingleResonatorMesh'
+      SingleResonator: 'SingleResonatorMesh',
+      OrnamentMeetupPoint: 'OrnamentMeetupPointMesh',
+      OrnamentFinishPoint: 'OrnamentFinishPointMesh',
+      OrnamentCluster: 'OrnamentClusterMesh',
+      OrnamentVolatile: 'OrnamentVolatileMesh',
     }
   },
   /**
@@ -181,6 +185,7 @@ var Constants = {
   Program: {
     Bicolored: 'bicolor_textured',
     Textured: 'textured',
+    RegionTextured: 'region_textured',
     Glowramp: 'portal_scanner',
     Xm: 'xm',
     ShieldEffect: 'shield',
@@ -202,7 +207,12 @@ var Constants = {
     ColorGlow: 'ColorGlowTexture',
     TargetGlow: 'TargetGlowTexture',
     PortalLink: 'PortalLinkTexture',
-    ResonatorLink: 'ResonatorLinkTexture'
+    ResonatorLink: 'ResonatorLinkTexture',
+    OrnamentMeetupPoint: 'OrnamentMeetupPointTexture',
+    OrnamentFinishPoint: 'OrnamentFinishPointTexture',
+    OrnamentCluster: 'OrnamentClusterTexture',
+    OrnamentVolatile: 'OrnamentVolatileTexture',
+
   }
 };
 
