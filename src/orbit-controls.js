@@ -1,5 +1,5 @@
 import { setParams } from './utils';
-import { vec3, mat4 } from 'gl-matrix';
+import { vec3 } from 'gl-matrix';
 
 const PI_HALF = Math.PI / 2.0;
 const MIN_LOG_DIST = 5.0;
@@ -35,9 +35,10 @@ class OrbitControls {
    * @param  {Number} distance Starting distance from origin
    * @param  {Object} options  Hash of options for configuration
    */
-  constructor(element, distance, options) {
+  constructor(element, camera, distance, options) {
     options = options || {};
     this.element = element;
+    this.camera = camera;
     this.distance = distance || 2;
     this.distanceTarget = this.distance;
     var params = {
@@ -52,6 +53,7 @@ class OrbitControls {
       allowZoom: true
     };
     this.options = setParams(params, options);
+    this.camera.lookAt(this.options.target);
     this.mouse = {x: 0, y: 0};
     this.mouseOnDown = {x: 0, y: 0};
     this.rotation = {x: 0, y: 0};
@@ -113,7 +115,7 @@ class OrbitControls {
    * Update the given camera matrix with new position information, etc
    * @param  {mat4} view   A view matrix
    */
-  updateView(view) {
+  updateView() {
     var dx = this.target.x - this.rotation.x,
       dy = this.target.y - this.rotation.y,
       dz = this.distanceTarget - this.distance,
@@ -128,7 +130,7 @@ class OrbitControls {
       cameraPosition[1] = this.distance * Math.sin(this.rotation.y) + this.options.target[1];
       cameraPosition[2] = this.distance * Math.cos(this.rotation.x) * Math.cos(this.rotation.y) + this.options.target[2];
 
-      mat4.lookAt(view, cameraPosition, this.options.target, [0, 1, 0]);
+      this.camera.setPosition(cameraPosition);
     }
   }
 

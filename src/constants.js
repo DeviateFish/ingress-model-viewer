@@ -191,7 +191,8 @@ var Constants = {
     ShieldEffect: 'shield',
     Atmosphere: 'atmosphere',
     Link: 'LinkShader',
-    SphericalLink: 'link3d'
+    SphericalLink: 'link3d',
+    ParticlePortal: 'particle_portals'
   },
   /**
    * Texture internal name constants.
@@ -212,7 +213,7 @@ var Constants = {
     OrnamentFinishPoint: 'OrnamentFinishPointTexture',
     OrnamentCluster: 'OrnamentClusterTexture',
     OrnamentVolatile: 'OrnamentVolatileTexture',
-
+    Particle: 'ParticleTexture'
   }
 };
 

@@ -113,7 +113,7 @@
         "shield": { "vertex": "shaders/shield.glsl.vert", "fragment": "shaders/shield.glsl.frag", "program": "Glowramp" },
         "shield_wave": { "vertex": "shaders/shield_wave.glsl.vert", "fragment": "shaders/shield_wave.glsl.frag" },
         "shield_die": { "vertex": "shaders/shield_die.glsl.vert", "fragment": "shaders/shield_die.glsl.frag" },
-        "particle_portals": { "vertex": "shaders/particle_portals.glsl.vert", "fragment": "shaders/particle_portals.glsl.frag" },
+        "particle_portals": { "vertex": "shaders/particle_portals.glsl.vert", "fragment": "shaders/particle_portals.glsl.frag", "program": "Glowramp" },
         "particle_glyph": { "vertex": "shaders/particle_glyph.glsl.vert", "fragment": "shaders/particle_glyph.glsl.frag" },
         "particle_spark": { "vertex": "shaders/particle_spark.glsl.vert", "fragment": "shaders/particle_spark.glsl.frag" },
         "particle_hack": { "vertex": "shaders/particle_hack.glsl.vert", "fragment": "shaders/particle_hack.glsl.frag" },

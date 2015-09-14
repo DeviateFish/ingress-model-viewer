@@ -8,6 +8,7 @@ import ResonatorLink from './drawable/resonator-link';
 import SphericalPortalLink from './drawable/spherical-portal-link';
 import Atmosphere from './drawable/atmosphere';
 import TexturedSphere from './drawable/textured-sphere';
+import ParticlePortal from './drawable/particle-portal';
 
 import InventoryItems from './entity/inventory';
 import PortalEntity from './entity/portal';
@@ -34,7 +35,8 @@ export default {
     PortalLink,
     SphericalPortalLink,
     Atmosphere,
-    TexturedSphere
+    TexturedSphere,
+    ParticlePortal
   },
   Entities: {
     World: {
