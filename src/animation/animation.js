@@ -29,17 +29,22 @@ class Animation {
       this.transform = transform;
       this.timing = timing || Ease.linear;
       this.loop = loop;
+      this.oldUpdate = null;
       function onUpdate(delta) {
         self.elapsed += delta;
         // if we're done with the animation
         if (self.elapsed > self.duration && !self.loop) {
-          self.drawable.onUpdate = null;
+          self.stop();
+        } else {
+          let t = self.timing((self.elapsed / self.duration) % 1);
+          // jshint, pls, I know what I'm doing.
+          self.transform.call(this, t); // jshint ignore:line
+        }
+        if (self.oldUpdate) {
+          return self.oldUpdate.call(this, delta); // jshint ignore:line
+        } else {
           return true;
         }
-        let t = self.timing((self.elapsed / self.duration) % 1);
-        // jshint, pls, I know what I'm doing.
-        self.transform.call(this, t); // jshint ignore:line
-        return true;
       }
       this.onUpdate = onUpdate;
       return this;
@@ -52,6 +57,7 @@ class Animation {
      * @return {this}
      */
     start() {
+      this.oldUpdate = this.drawable.onUpdate;
       this.drawable.onUpdate = this.onUpdate;
       return this;
     }
@@ -74,7 +80,7 @@ class Animation {
      * @return {this}
      */
     pause() {
-      this.drawable.onUpdate = null;
+      this.drawable.onUpdate = this.oldUpdate;
       return this;
     }
 }
