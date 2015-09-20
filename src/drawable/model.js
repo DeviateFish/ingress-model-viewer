@@ -1,5 +1,5 @@
 import MeshDrawable from './mesh';
-import { mat4, vec3 } from 'gl-matrix';
+import { mat4, vec3, quat } from 'gl-matrix';
 
 /**
  * A ModelDrawable is a MeshDrawable that supports local
@@ -16,9 +16,13 @@ class ModelDrawable extends MeshDrawable {
   constructor(programName, meshName) {
     super(programName, meshName);
     this.viewProject = mat4.create();
-    this.model = mat4.create();
+    this._position = vec3.create();
+    this._rotation = quat.create();
+    this._scale = vec3.fromValues(1, 1, 1);
+    this._model = mat4.create();
     this.local = mat4.create();
     this.world = mat4.create();
+    this.uniforms.u_modelViewProject = mat4.create();
   }
 
   /**
@@ -27,10 +31,10 @@ class ModelDrawable extends MeshDrawable {
    * matrix
    */
   updateMatrix() {
-    var mvp = mat4.create();
-    mat4.multiply(this.model, this.world, this.local);
-    mat4.multiply(mvp, this.viewProject, this.model);
-    this.uniforms.u_modelViewProject = mvp;
+    mat4.fromRotationTranslation(this.local, this._rotation, this._position);
+    mat4.scale(this.local, this.local, this._scale);
+    mat4.multiply(this._model, this.world, this.local);
+    mat4.multiply(this.uniforms.u_modelViewProject, this.viewProject, this._model);
   }
 
   /**
@@ -47,7 +51,7 @@ class ModelDrawable extends MeshDrawable {
    * @param {mat4} mat Matrix to use
    */
   setMatrix(mat) {
-    this.model = mat;
+    this._model = mat;
     this.updateMatrix();
   }
 
@@ -56,7 +60,7 @@ class ModelDrawable extends MeshDrawable {
    * @param  {vec3} vec   The vector
    */
   translate(vec) {
-    mat4.translate(this.local, this.local, vec);
+    vec3.add(this._position, this._position, vec);
     this.updateMatrix();
   }
 
@@ -65,7 +69,16 @@ class ModelDrawable extends MeshDrawable {
    * @param  {vec3} vec   The vector
    */
   scale(vec) {
-    mat4.scale(this.local, this.local, vec);
+    vec3.add(this._scale, this._scale, vec);
+    this.updateMatrix();
+  }
+
+  /**
+   * Sets the scale of the local transform
+   * @param {vec3} vec The scale to set to.
+   */
+  setScale(vec) {
+    vec3.copy(this._scale, vec);
     this.updateMatrix();
   }
 
@@ -74,9 +87,7 @@ class ModelDrawable extends MeshDrawable {
    * @param  {quat} quat   The quaternion
    */
   rotateQuat(quat) {
-    var quatMatrix = mat4.create();
-    mat4.fromQuat(quatMatrix, quat);
-    mat4.multiply(this.local, this.local, quatMatrix);
+    quat.add(this._rotation, this._rotation, quat);
     this.updateMatrix();
   }
 
@@ -106,10 +117,18 @@ class ModelDrawable extends MeshDrawable {
 
   /**
    * Scale all dimensions by the same value
-   * @param  {Number} f The amount to scale
+   * @param  {Number} f The amount to _scale
    */
   scalarScale(f) {
     this.scale(vec3.fromValues(f, f, f));
+  }
+
+  /**
+   * Sets the local scale to some scalar value (for x, y, and z)
+   * @param {Number} f Amount to set the scale to.
+   */
+  setScalarScale(f) {
+    this.setScale(vec3.fromValues(f, f, f));
   }
 }
 
