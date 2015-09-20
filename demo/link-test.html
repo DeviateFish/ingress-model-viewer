@@ -54,8 +54,7 @@
 
   var setupScene = function() {
 
-    engine.camera.far = 500;
-    engine.camera.setPosition([0.0, 50, 75]).lookAt([0.0, 0.0, 0.0])._updateProjection();
+    engine.camera.setFar(500).setPosition([0.0, 50, 75]).lookAt([0.0, 0.0, 0.0]);
     engine.updateView();
 
     var length = 75, num = 50;

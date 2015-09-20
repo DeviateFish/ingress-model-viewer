@@ -16,6 +16,8 @@ import PortalEntity from './entity/portal';
 import OrbitControls from './orbit-controls';
 
 import { resetGL, setParams, disco, generateArtifacts } from './utils';
+import Ease from './animation/easing';
+import Animation from './animation/animation';
 
 
 export default {
@@ -26,7 +28,9 @@ export default {
     resetGL,
     setParams,
     disco,
-    generateArtifacts
+    generateArtifacts,
+    Ease,
+    Animation
   },
   Drawables: {
     Inventory,
@@ -47,5 +51,5 @@ export default {
   Controls: {
     Orbit: OrbitControls
   },
-  VERSION: '0.18.0'
+  VERSION: '0.20.0'
 };
