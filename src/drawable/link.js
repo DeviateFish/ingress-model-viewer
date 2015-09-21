@@ -24,10 +24,10 @@ class LinkDrawable extends TexturedDrawable {
    * @param  {mat4} project     Projection matrix
    * @return {void}
    */
-  updateView(viewProject, view, project) {
-    super.updateView(viewProject, view, project);
-    if(view) {
-      var rot = mat3.fromMat4(mat3.create(), view);
+  updateView(viewProject, camera) {
+    super.updateView(viewProject, camera);
+    if(camera) {
+      var rot = mat3.fromMat4(mat3.create(), camera.view);
       var q = quat.fromMat3(quat.create(), rot);
       var fwd = vec3.transformQuat(vec3.create(), vec3.fromValues(0, 0, -1), q);
       vec3.normalize(fwd, fwd);

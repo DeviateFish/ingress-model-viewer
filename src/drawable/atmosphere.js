@@ -44,7 +44,7 @@ class AtmosphereDrawable extends ModelDrawable {
     var invert = mat4.invert(mat4.create(), viewProject),
         transpose = mat4.transpose(mat4.create(), invert);
     this.uniforms.u_normalMatrix = mat3.fromMat4(mat3.create(), transpose);
-    return this
+    return this;
   }
 
   /**

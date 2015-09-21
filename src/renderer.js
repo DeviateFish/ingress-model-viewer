@@ -30,10 +30,10 @@ class Renderer extends GLBound {
    * @param  {mat4} view    View matrix
    * @param  {mat4} project Projection matrix
    */
-  updateView(view, project) {
-    this.view = view;
-    this.project = project;
-    mat4.multiply(this.viewProject, project, view);
+  updateView(camera) {
+    this.view = camera.view;
+    this.project = camera.project;
+    mat4.multiply(this.viewProject, this.project, this.view);
   }
 
   /**

@@ -21,10 +21,7 @@
   canvas.width = document.body.offsetWidth;
   canvas.height = document.body.offsetHeight;
 
-  var controls = new IMV.Controls.Orbit(canvas, 100, {
-    distanceMin: 1,
-    distanceMax: 150
-  });
+  var controls;
 
   window.addEventListener('resize', function(){
     engine.resize(document.body.offsetWidth, document.body.offsetHeight);
@@ -32,6 +29,11 @@
 
   var init = function(assets) {
     engine = new IMV.Engine(canvas, assets, true);
+    controls = new IMV.Controls.Orbit(canvas, engine.camera, 100, {
+      distanceMin: 1,
+      distanceMax: 150
+    });
+
     engine.preload(function() {
       console.log('ready');
       setupScene();
@@ -45,16 +47,15 @@
   };
 
   var updateCamera = function() {
-    controls.updateView(engine.view);
+    controls.updateView();
     engine.updateView();
     window.requestAnimationFrame(updateCamera);
   };
 
   var setupScene = function() {
 
-    mat4.lookAt(engine.view, [0.0, 50, 75], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
-    engine.far = 500;
-    engine.objectRenderer.updateView(engine.view, engine.project);
+    engine.camera.setFar(500).setPosition([0.0, 50, 75]).lookAt([0.0, 0.0, 0.0]);
+    engine.updateView();
 
     var length = 75, num = 50;
     for(var i = 0; i < num; i++) {

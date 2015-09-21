@@ -20,10 +20,7 @@
   var canvas = document.getElementById('screen'), engine,
       radius = 100,
       artifactInfos = null,
-      controls = new IMV.Controls.Orbit(canvas, radius * 3, {
-        distanceMin: radius,
-        distanceMax: 5 * radius
-      }),
+      controls,
       shoninShards = null;
   canvas.width = document.body.offsetWidth;
   canvas.height = document.body.offsetHeight;
@@ -87,18 +84,20 @@
   };
 
   var updateCamera = function() {
-    controls.updateView(engine.view);
+    controls.updateView();
     engine.updateView();
     window.requestAnimationFrame(updateCamera);
   };
 
   var init = function(assets, shonin) {
     engine = new IMV.Engine(canvas, assets, true);
+    controls = new IMV.Controls.Orbit(canvas, engine.camera, radius * 3, {
+      distanceMin: radius,
+      distanceMax: 5 * radius
+    }),
+    engine.camera.setPosition([radius * 3, 0.0, 0.0]).lookAt([0.0, 0.0, 0.0]).setFar(radius * 5).setFieldOfView(Math.PI / 3);
     engine.assetManager.addAssets(shonin);
     shoninShards = IMV.Utilities.generateArtifacts('Shonin', 31, true);
-    mat4.lookAt(engine.view, [radius * 3, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
-    engine.hFoV = Math.PI / 3;
-    engine.far = radius * 5;
     engine.updateView();
     engine.preload(function() {
       var globe, atmosphere, world;

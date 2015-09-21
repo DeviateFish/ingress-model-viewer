@@ -69,16 +69,15 @@
   var init = function(assets) {
     engine = new IMV.Engine(canvas, assets);
     engine.preload(function() {
-      mat4.lookAt(engine.view, [0.0, 1.5, 3], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
-      engine.objectRenderer.updateView(engine.view, engine.project);
+      engine.camera.setPosition([0.0, 6, 12]).lookAt([0, 0, 0]);
+      engine.updateView();
       var ic = new IMV.Entities.Inventory.InterestCapsule(engine);
       ic.setAnimation(rotate);
-      engine.objectRenderer.addEntity(ic);
     });
   };
 
   var rotate = function(delta) {
-    mat4.rotateY(this.local, this.local, delta / 1000);
+    mat4.rotateY(this.world, this.world, delta / 1000);
     this.updateMatrix();
     return true;
   };

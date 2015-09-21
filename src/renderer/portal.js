@@ -9,12 +9,12 @@ class PortalRenderer extends Renderer {
     this.particles = null;
   }
 
-  updateView(view, project) {
-    super.updateView(view, project);
+  updateView(camera) {
+    super.updateView(camera);
     var i, len = this.portals.length;
     for(i = 0; i < len; i++)
     {
-      this.portals[i].updateView(this.viewProject, view, project);
+      this.portals[i].updateView(this.viewProject, camera);
     }
   }
 

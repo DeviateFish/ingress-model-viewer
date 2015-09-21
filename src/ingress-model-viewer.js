@@ -8,6 +8,7 @@ import ResonatorLink from './drawable/resonator-link';
 import SphericalPortalLink from './drawable/spherical-portal-link';
 import Atmosphere from './drawable/atmosphere';
 import TexturedSphere from './drawable/textured-sphere';
+import ParticlePortal from './drawable/particle-portal';
 
 import InventoryItems from './entity/inventory';
 import PortalEntity from './entity/portal';
@@ -15,6 +16,8 @@ import PortalEntity from './entity/portal';
 import OrbitControls from './orbit-controls';
 
 import { resetGL, setParams, disco, generateArtifacts } from './utils';
+import Ease from './animation/easing';
+import Animation from './animation/animation';
 
 
 export default {
@@ -25,7 +28,9 @@ export default {
     resetGL,
     setParams,
     disco,
-    generateArtifacts
+    generateArtifacts,
+    Ease,
+    Animation
   },
   Drawables: {
     Inventory,
@@ -34,7 +39,8 @@ export default {
     PortalLink,
     SphericalPortalLink,
     Atmosphere,
-    TexturedSphere
+    TexturedSphere,
+    ParticlePortal
   },
   Entities: {
     World: {
@@ -45,5 +51,5 @@ export default {
   Controls: {
     Orbit: OrbitControls
   },
-  VERSION: '0.18.0'
+  VERSION: '0.20.0'
 };

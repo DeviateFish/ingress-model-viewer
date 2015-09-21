@@ -20,7 +20,7 @@ class ObjectRenderer extends Renderer {
     }
     if(drawable.updateView)
     {
-      drawable.updateView(this.viewProject, this.view, this.project);
+      drawable.updateView(this.viewProject, null);
     }
     this.drawables.push(drawable);
   }
@@ -48,13 +48,13 @@ class ObjectRenderer extends Renderer {
     }
   }
 
-  updateView(view, project) {
-    super.updateView(view, project);
+  updateView(camera) {
+    super.updateView(camera);
     var i, len = this.drawables.length;
     for(i = 0; i < len; i++)
     {
       if(this.drawables[i].updateView) {
-        this.drawables[i].updateView(this.viewProject, view, project);
+        this.drawables[i].updateView(this.viewProject, camera);
       }
     }
   }

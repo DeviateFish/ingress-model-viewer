@@ -6,6 +6,7 @@ import Resource from './drawable/resource';
 import Inventory from './drawable/inventory';
 import InventoryItems from './entity/inventory';
 import PortalEntity from './entity/portal';
+import Camera from './camera';
 import { vec3, mat4 } from 'gl-matrix';
 
 /**
@@ -39,17 +40,16 @@ class Engine {
     }
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     this.gl = gl;
-    this.view = mat4.create();
-    mat4.lookAt(this.view, [0.0, 20.0, 25.0], [0.0, 10.0, 0.0], [0.0, 1.0, 0.0]);
+    this.camera = new Camera(canvas.width, canvas.height);
+    this.camera.setPosition(
+      vec3.fromValues(0.0, 20.0, 25.0)
+    ).lookAt(
+      vec3.fromValues(0.0, 10.0, 0.0)
+    );
 
     // this should be in radians, not degrees.
-    this.hFoV = Math.PI / 4;
-
-    this.far = 100;
-    this.project = mat4.create();
     this.assetManager = new AssetManager(this.gl, assets);
     this.objectRenderer = new ObjectRenderer(this.gl, this.assetManager);
-    this.resize(canvas.width, canvas.height);
     this.start = this.last = null;
     this.paused = false;
     this.cleared = false;
@@ -65,8 +65,8 @@ class Engine {
   resize(width, height) {
     this.canvas.width = width;
     this.canvas.height = height;
+    this.camera.setDimensions(width, height);
     this.gl.viewport(0, 0, width, height);
-    this.updateView();
   }
 
   /**
@@ -74,9 +74,7 @@ class Engine {
    * @return {void}
    */
   updateView() {
-    this.project = mat4.create();
-    mat4.perspective(this.project, this.hFoV, this.canvas.width / this.canvas.height, 0.1, this.far);
-    this.objectRenderer.updateView(this.view, this.project);
+    this.objectRenderer.updateView(this.camera);
   }
 
   /**

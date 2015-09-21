@@ -1,7 +1,8 @@
 import Constants from '../constants';
 import GlowrampDrawable from './glowramp';
 import BicoloredDrawable from './bicolored';
-import ShieldEffect from './shield-effect';
+import ShieldEffectDrawable from './shield-effect';
+import OrnamentDrawable from './ornament';
 
 /**
  * Various world drawables
@@ -34,13 +35,23 @@ function makeBicolored(mesh, texture) {
 }
 
 function makeShieldEffect(mesh, texture) {
-  class shieldeffectbase extends ShieldEffect {
+  class shieldeffectbase extends ShieldEffectDrawable {
     constructor() {
       super(mesh, texture);
     }
   }
 
   return shieldeffectbase;
+}
+
+function makeOrnament(mesh, texture) {
+  class ornamentbase extends OrnamentDrawable {
+    constructor() {
+      super(mesh, texture);
+    }
+  }
+
+  return ornamentbase;
 }
 
 World.Portal = makeGlowramp(meshes.Portal, textures.Glowramp);
@@ -52,5 +63,10 @@ World.ArtifactsTargetGlow = makeGlowramp(meshes.ArtifactsTargetGlow, textures.Ta
 
 World.Shield = makeShieldEffect(meshes.Shield, textures.ShieldEffect);
 World.Resonator = makeBicolored(meshes.Resonator, textures.FlipCard);
+
+World.OrnamentMeetupPoint = makeOrnament(meshes.OrnamentMeetupPoint, textures.OrnamentMeetupPoint);
+World.OrnamentFinishPoint = makeOrnament(meshes.OrnamentFinishPoint, textures.OrnamentFinishPoint);
+World.OrnamentCluster = makeOrnament(meshes.OrnamentCluster, textures.OrnamentCluster);
+World.OrnamentVolatile = makeOrnament(meshes.OrnamentVolatile, textures.OrnamentVolatile);
 
 export default World;
