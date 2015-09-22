@@ -23,6 +23,9 @@ class ObjectRenderer extends Renderer {
       drawable.updateView(this.viewProject, null);
     }
     this.drawables.push(drawable);
+    drawable.children.forEach((c) => {
+      this.addDrawable(c);
+    });
   }
 
   removeDrawable(drawable, destroy) {

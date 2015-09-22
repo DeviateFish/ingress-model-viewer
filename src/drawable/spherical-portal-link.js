@@ -27,6 +27,7 @@ class SphericalPortalLinkDrawable extends LinkDrawable {
     this.color = color;
     this.startPercent = startPercent;
     this.endPercent = endPercent;
+    this.uniforms.u_model = this._model;
   }
 
   /**
@@ -47,9 +48,9 @@ class SphericalPortalLinkDrawable extends LinkDrawable {
     return super.init(manager);
   }
 
-  updateView(viewProject, view, project) {
-    super.updateView(viewProject, view, project);
-    this.uniforms.u_model = this.model;
+  updateView(viewProject, camera) {
+    super.updateView(viewProject, camera);
+    this.uniforms.u_model = this._model;
   }
 }
 

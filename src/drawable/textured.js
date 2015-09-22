@@ -1,9 +1,9 @@
-import ModelDrawable from './model';
+import Drawable from '../drawable';
 
 /**
- * A TexturedDrawable is a ModelDrawable with a specific texture
+ * A TexturedDrawable is a Drawable with a specific texture
  */
-class TexturedDrawable extends ModelDrawable {
+class TexturedDrawable extends Drawable {
 
   /**
    * Construct a textured drawable, given a program, mesh, and texture

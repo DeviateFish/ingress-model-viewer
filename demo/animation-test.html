@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ingress Model Sandbox</title>
+    <script src="../dist/ingress-model-viewer.js"></script>
+    <script src="https://rawgit.com/eligrey/FileSaver.js/master/FileSaver.min.js"></script>
+    <style>
+      html, body {
+        height: 100%;
+        width: 100%;
+        position: relative;
+        margin: 0;
+      }
+    </style>
+</head>
+<body>
+<canvas id="screen" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;"></canvas>
+<script type="text/javascript">
+  var canvas = document.getElementById('screen'), engine, assets = {};
+  canvas.width = document.body.offsetWidth;
+  canvas.height = document.body.offsetHeight;
+
+  window.addEventListener('resize', function(){
+    engine.resize(document.body.offsetWidth, document.body.offsetHeight);
+  });
+
+  function loop(t) {
+    this._position[0] = Math.sin(t * Math.PI * 2);
+    this._position[2] = Math.cos(t * Math.PI * 2);
+    this.updateMatrix();
+  }
+
+  var init = function(assets) {
+    engine = new IMV.Engine(canvas, assets, true);
+    engine.preload(function() {
+      console.log('ready');
+      engine.camera.setPosition([0, 6, 12]).lookAt([0, 0, 0]);
+      engine.updateView();
+      var container = new IMV.Drawables.Drawable();
+      var shell = new IMV.Drawables.Inventory.FlipCardAda();
+      var core = new IMV.Drawables.Inventory.FlipCardXm();
+      container.children.push(shell);
+      container.children.push(core);
+      engine.objectRenderer.addDrawable(container);
+      var anim = new IMV.Utilities.Animation(container, 3000, loop, IMV.Utilities.Ease.linear, true);
+      engine.render();
+      anim.start();
+    });
+  };
+
+  IMV.Utilities.loadResource('/manifest/assets.json', 'text', function(err, val) {
+    if(err) {
+      throw err;
+    }
+    assets = JSON.parse(val);
+    if(assets) {
+      init(assets);
+    }
+  });
+</script>
+</body>
+</html>

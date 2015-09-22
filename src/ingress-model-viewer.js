@@ -1,6 +1,7 @@
 import Constants from './constants';
 import Engine from './engine';
 import { loadResource } from './asset-loader';
+import Drawable from './drawable';
 import Inventory from './drawable/inventory';
 import World from './drawable/world';
 import PortalLink from './drawable/portal-link';
@@ -40,7 +41,8 @@ export default {
     SphericalPortalLink,
     Atmosphere,
     TexturedSphere,
-    ParticlePortal
+    ParticlePortal,
+    Drawable
   },
   Entities: {
     World: {
@@ -51,5 +53,5 @@ export default {
   Controls: {
     Orbit: OrbitControls
   },
-  VERSION: '0.20.0'
+  VERSION: '0.21.0'
 };

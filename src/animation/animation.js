@@ -47,6 +47,7 @@ class Animation {
         }
       }
       this.onUpdate = onUpdate;
+      this.running = false;
       return this;
     }
 
@@ -57,8 +58,11 @@ class Animation {
      * @return {this}
      */
     start() {
-      this.oldUpdate = this.drawable.onUpdate;
-      this.drawable.onUpdate = this.onUpdate;
+      if(!this.running) {
+        this.oldUpdate = this.drawable.onUpdate;
+        this.drawable.onUpdate = this.onUpdate;
+        this.running = true;
+      }
       return this;
     }
 
@@ -80,7 +84,10 @@ class Animation {
      * @return {this}
      */
     pause() {
-      this.drawable.onUpdate = this.oldUpdate;
+      if(this.running) {
+        this.drawable.onUpdate = this.oldUpdate;
+        this.running = false;
+      }
       return this;
     }
 }
