@@ -8,7 +8,7 @@ class ObjectRenderer extends Renderer {
     this.drawables = [];
   }
 
-  addDrawable(drawable) {
+  addDrawable(drawable, excludeChildren) {
     if(!drawable instanceof Drawable)
     {
       throw 'Drawables must always inherit from the base Drawable';
@@ -23,9 +23,11 @@ class ObjectRenderer extends Renderer {
       drawable.updateView(this.viewProject, null);
     }
     this.drawables.push(drawable);
-    drawable.children.forEach((c) => {
-      this.addDrawable(c);
-    });
+    if(!excludeChildren) {
+      drawable.children.forEach((c) => {
+        this.addDrawable(c);
+      });
+    }
   }
 
   removeDrawable(drawable, destroy) {

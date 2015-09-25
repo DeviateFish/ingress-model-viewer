@@ -1,4 +1,5 @@
-import { mat4, vec3, quat } from 'gl-matrix';
+import { mat4, vec3 } from 'gl-matrix';
+import Animation from './animation/animation';
 
 /**
  * Base class for all "drawable" things.
@@ -23,14 +24,15 @@ class Drawable {
     this.elapsed = 0;
     this.ready = false;
     this.viewProject = mat4.create();
-    this._position = vec3.create();
-    this._rotation = quat.create();
-    this._scale = vec3.fromValues(1, 1, 1);
+    this._translate = mat4.create();
+    this._rotate = mat4.create();
+    this._scale = mat4.create();
     this._model = mat4.create();
     this.local = mat4.create();
     this.world = mat4.create();
     this.uniforms.u_modelViewProject = mat4.create();
     this.children = [];
+    this._animations = [];
   }
 
   /**
@@ -116,11 +118,32 @@ class Drawable {
    */
   updateTime(delta) {
     this.elapsed += delta;
-    if(this.onUpdate)
-    {
-      return this.onUpdate(delta, this.elapsed);
-    }
+    this._runAnimations(delta);
     return true;
+  }
+
+  /**
+   * Adds an animation to the drawable
+   * @param {Animation} animation The animation to be run.
+   *                              This will need to be started independently, or prior to being added.
+   */
+  addAnimation(animation) {
+    if (!(animation instanceof Animation)) {
+      console.warn('New animation should be an instance of an Animation');
+    }
+    this._animations.unshift(animation);
+  }
+
+  /**
+   * Adds a drawable as a child of this one.
+   * @param {Drawable} drawable The child drawable.
+   */
+  addChild(drawable) {
+    if (!(drawable instanceof Drawable)) {
+      console.warn('Child drawable should be an instance of Drawable');
+    }
+    drawable.updateWorld(this._model);
+    this.children.push(drawable);
   }
 
   /**
@@ -130,12 +153,13 @@ class Drawable {
    * by way of their world transforms.
    */
   updateMatrix() {
-    mat4.fromRotationTranslation(this.local, this._rotation, this._position);
-    mat4.scale(this.local, this.local, this._scale);
+    var scaleTranslate = mat4.create();
+    mat4.multiply(scaleTranslate, this._translate, this._scale);
+    mat4.multiply(this.local, this._rotate, scaleTranslate);
     mat4.multiply(this._model, this.world, this.local);
     mat4.multiply(this.uniforms.u_modelViewProject, this.viewProject, this._model);
     this.children.forEach((child) => {
-      child.updateWorld(this.local);
+      child.updateWorld(this._model);
     });
   }
 
@@ -158,21 +182,21 @@ class Drawable {
   }
 
   /**
-   * Sets the model transform to a given matrix
-   * @param {mat4} mat Matrix to use
-   */
-  setMatrix(mat) {
-    this._model = mat;
-    this.updateMatrix();
-  }
-
-  /**
    * Translate a model along some vector
    * @param  {vec3} vec   The vector
    */
   translate(vec) {
-    vec3.add(this._position, this._position, vec);
+    mat4.translate(this._translate, this._translate, vec);
     this.updateMatrix();
+  }
+
+  /**
+   * Sets the position to some vector
+   * @param {vec3} vec The new position
+   */
+  setPosition(vec) {
+    this._translate = mat4.create();
+    this.translate(vec);
   }
 
   /**
@@ -180,7 +204,7 @@ class Drawable {
    * @param  {vec3} vec   The vector
    */
   scale(vec) {
-    vec3.add(this._scale, this._scale, vec);
+    mat4.scale(this._scale, this._scale, vec);
     this.updateMatrix();
   }
 
@@ -189,16 +213,28 @@ class Drawable {
    * @param {vec3} vec The scale to set to.
    */
   setScale(vec) {
-    vec3.copy(this._scale, vec);
-    this.updateMatrix();
+    this._scale = mat4.create();
+    this.scale(vec);
   }
 
   /**
    * Rotate a model with a quaternion
    * @param  {quat} quat   The quaternion
    */
-  rotateQuat(quat) {
-    quat.add(this._rotation, this._rotation, quat);
+  rotate(quat) {
+    var rotate = mat4.create();
+    mat4.fromQuat(rotate, quat);
+    mat4.multiply(this._rotate, this._rotate, rotate);
+    this.updateMatrix();
+  }
+
+  /**
+   * Sets the object's rotation from a quaternion
+   * @param {quat} quat The new rotation
+   */
+  setRotation(quat) {
+    this._rotate = mat4.create();
+    mat4.fromQuat(this._rotate, quat);
     this.updateMatrix();
   }
 
@@ -259,6 +295,16 @@ class Drawable {
       }
     }
     this.mesh.draw(locations);
+  }
+
+  _runAnimations(delta) {
+    let i = this._animations.length - 1;
+    for(; i >= 0; i--) {
+      let animation = this._animations[i];
+      if(animation.running && animation.step(delta, this)) {
+        this._animations.splice(i, 1);
+      }
+    }
   }
 }
 

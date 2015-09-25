@@ -1,6 +1,6 @@
 import Constants from './constants';
 import Engine from './engine';
-import { loadResource } from './asset-loader';
+import { default as AssetLoader, loadResource } from './asset-loader';
 import Drawable from './drawable';
 import Inventory from './drawable/inventory';
 import World from './drawable/world';
@@ -31,7 +31,8 @@ export default {
     disco,
     generateArtifacts,
     Ease,
-    Animation
+    Animation,
+    AssetLoader
   },
   Drawables: {
     Inventory,

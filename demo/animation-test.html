@@ -3,6 +3,7 @@
 <head>
     <title>Ingress Model Sandbox</title>
     <script src="../dist/ingress-model-viewer.js"></script>
+    <script src="../node_modules/gl-matrix/dist/gl-matrix-min.js"></script>
     <script src="https://rawgit.com/eligrey/FileSaver.js/master/FileSaver.min.js"></script>
     <style>
       html, body {
@@ -16,7 +17,7 @@
 <body>
 <canvas id="screen" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;"></canvas>
 <script type="text/javascript">
-  var canvas = document.getElementById('screen'), engine, assets = {};
+  var canvas = document.getElementById('screen'), engine;
   canvas.width = document.body.offsetWidth;
   canvas.height = document.body.offsetHeight;
 
@@ -24,39 +25,109 @@
     engine.resize(document.body.offsetWidth, document.body.offsetHeight);
   });
 
-  function loop(t) {
-    this._position[0] = Math.sin(t * Math.PI * 2);
-    this._position[2] = Math.cos(t * Math.PI * 2);
-    this.updateMatrix();
+  var abaddon1 = IMV.Utilities.generateArtifacts('Abaddon1', 100, true);
+  var abaddon2 = IMV.Utilities.generateArtifacts('Abaddon2', 100, true);
+
+  function grow(t, portal) {
+    var scale = t * 6.0;
+    portal.setScalarScale(scale);
   }
 
-  var init = function(assets) {
+  function moveShard(t, shard) {
+    var end = vec3.fromValues(0, 0, 0);
+    var start = vec3.fromValues(0, 40, 250);
+    var pos = vec3.create();
+    vec3.lerp(pos, start, end, t);
+    shard.setPosition(pos);
+  }
+
+  function addShard(portal, series, index) {
+    if (index > 100) {
+      return;
+    }
+    var shard = new series['' + index]();
+    var anim = new IMV.Utilities.Animation(4000, moveShard, IMV.Utilities.Ease.cubicOut);
+    shard.setPosition([0, 40, 250]);
+    shard.addAnimation(anim);
+    anim.start();
+    portal.addChild(shard);
+    engine.objectRenderer.addDrawable(shard);
+    setTimeout(function() {
+      addShard(portal, series, index + 1);
+    }, 1000 - IMV.Utilities.Ease.cubicOut(index / 100) * 800);
+  }
+
+  function addPortal(location, series) {
+    var portal = new IMV.Drawables.World.Portal();
+    portal.setPosition(location);
+    portal.setScalarScale(0);
+    var anim = new IMV.Utilities.Animation(500, grow, IMV.Utilities.Ease.cubicIn);
+    portal.addAnimation(anim);
+    anim.start();
+    var target = new IMV.Drawables.World.ArtifactsTargetGlow();
+    target.setUniform('u_baseColor', vec4.clone(IMV.Constants.artifactGlowColors['Abaddon'+series].Target));
+    portal.addChild(target);
+    var red = new IMV.Drawables.World.ArtifactsRedGlow();
+    red.setUniform('u_baseColor', vec4.clone(IMV.Constants.artifactGlowColors['Abaddon'+series].Red));
+    portal.addChild(red);
+    var purple = new IMV.Drawables.World.ArtifactsPurpleGlow();
+    purple.setUniform('u_baseColor', vec4.clone(IMV.Constants.artifactGlowColors['Abaddon'+series].Purple));
+    portal.addChild(purple);
+    var green = new IMV.Drawables.World.ArtifactsGreenGlow();
+    green.setUniform('u_baseColor', vec4.clone(IMV.Constants.teamColors.NEUTRAL));
+    portal.addChild(green);
+    return portal;
+  }
+
+  function begin() {
+    var left = addPortal([-50, 0, 0], '1');
+    var right = addPortal([50, 0, 0], '2');
+    engine.objectRenderer.addDrawable(left);
+    engine.objectRenderer.removeDrawable(left);
+    engine.objectRenderer.addDrawable(left, true);
+    engine.objectRenderer.addDrawable(right);
+    engine.objectRenderer.removeDrawable(right);
+    engine.objectRenderer.addDrawable(right, true);
+    setTimeout(function() {
+      addShard(left, abaddon1, 1);
+      setTimeout(function() {
+        addShard(right, abaddon2, 1);
+      }, 500);
+    }, 1500);
+  }
+
+  var init = function(assets, shards) {
+    console.log(assets, shards);
     engine = new IMV.Engine(canvas, assets, true);
+    shards.forEach(function(s) {
+      engine.assetManager.addAssets(s);
+    });
     engine.preload(function() {
       console.log('ready');
-      engine.camera.setPosition([0, 6, 12]).lookAt([0, 0, 0]);
+      engine.camera.setPosition([0, 100, 200]).lookAt([0, 40, 0]).setFar(500);
       engine.updateView();
-      var container = new IMV.Drawables.Drawable();
-      var shell = new IMV.Drawables.Inventory.FlipCardAda();
-      var core = new IMV.Drawables.Inventory.FlipCardXm();
-      container.children.push(shell);
-      container.children.push(core);
-      engine.objectRenderer.addDrawable(container);
-      var anim = new IMV.Utilities.Animation(container, 3000, loop, IMV.Utilities.Ease.linear, true);
       engine.render();
-      anim.start();
     });
   };
 
-  IMV.Utilities.loadResource('/manifest/assets.json', 'text', function(err, val) {
-    if(err) {
-      throw err;
+  var loader = new IMV.Utilities.AssetLoader();
+  loader.loadAssetGroup(
+    ['/manifest/assets.json', '/manifest/abaddon1.json', '/manifest/abaddon2.json'],
+    ['text', 'text', 'text'],
+    function(err, vals) {
+      if(err) {
+        throw err;
+      }
+      var assets = JSON.parse(vals.shift());
+      var shards = [];
+      vals.forEach(function(v) {
+        shards.push(JSON.parse(v));
+      })
+      if(assets) {
+        init(assets, shards);
+      }
     }
-    assets = JSON.parse(val);
-    if(assets) {
-      init(assets);
-    }
-  });
+  )
 </script>
 </body>
 </html>
