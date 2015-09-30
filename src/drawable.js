@@ -153,9 +153,9 @@ class Drawable {
    * by way of their world transforms.
    */
   updateMatrix() {
-    var scaleTranslate = mat4.create();
-    mat4.multiply(scaleTranslate, this._translate, this._scale);
-    mat4.multiply(this.local, this._rotate, scaleTranslate);
+    var translateRotate = mat4.create();
+    mat4.multiply(translateRotate, this._translate, this._rotate);
+    mat4.multiply(this.local, translateRotate, this._scale);
     mat4.multiply(this._model, this.world, this.local);
     mat4.multiply(this.uniforms.u_modelViewProject, this.viewProject, this._model);
     this.children.forEach((child) => {
