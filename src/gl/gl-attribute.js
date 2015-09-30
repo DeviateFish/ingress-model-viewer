@@ -81,15 +81,14 @@ class GLAttribute extends GLBuffer {
     for(var i = 0; i < this.attributes.length; i++)
     {
       a = this.attributes[i];
-      if(!(a.name in locations))
+      if(a.name in locations)
       {
-        // I don't know if I should suppress this, but if I
-        // don't, it generates one warning per frame.
-        //console.warn('Program is missing attribute ' + a.name);
-        continue;
+        gl.enableVertexAttribArray(locations[a.name]);
+        gl.vertexAttribPointer(locations[a.name], a.size, gl.FLOAT, false, this.size, s);
       }
-      gl.enableVertexAttribArray(locations[a.name]);
-      gl.vertexAttribPointer(locations[a.name], a.size, gl.FLOAT, false, this.size, s);
+      // I don't know if I should suppress this, but if I
+      // don't, it generates one warning per frame.
+      //console.warn('Program is missing attribute ' + a.name);
       s += 4 * a.size;
     }
     return this; //.unbindBuffer();  // maybe?
