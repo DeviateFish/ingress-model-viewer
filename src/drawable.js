@@ -1,5 +1,6 @@
-import { mat4, vec3 } from 'gl-matrix';
+import { mat4, vec3, quat } from 'gl-matrix';
 import Animation from './animation/animation';
+import Mesh from './mesh';
 
 /**
  * Base class for all "drawable" things.
@@ -24,15 +25,16 @@ class Drawable {
     this.elapsed = 0;
     this.ready = false;
     this.viewProject = mat4.create();
-    this._translate = mat4.create();
-    this._rotate = mat4.create();
-    this._scale = mat4.create();
+    this._translate = vec3.create();
+    this._rotate = quat.create();
+    this._scale = vec3.fromValues(1, 1, 1);
     this._model = mat4.create();
     this.local = mat4.create();
     this.world = mat4.create();
     this.uniforms.u_modelViewProject = mat4.create();
     this.children = [];
     this._animations = [];
+    this.drawMode = Mesh.MODE_TRIANGLES;
   }
 
   /**
@@ -154,8 +156,8 @@ class Drawable {
    */
   updateMatrix() {
     var translateRotate = mat4.create();
-    mat4.multiply(translateRotate, this._translate, this._rotate);
-    mat4.multiply(this.local, translateRotate, this._scale);
+    mat4.fromRotationTranslation(translateRotate, this._rotate, this._translate);
+    mat4.scale(this.local, translateRotate, this._scale);
     mat4.multiply(this._model, this.world, this.local);
     mat4.multiply(this.uniforms.u_modelViewProject, this.viewProject, this._model);
     this.children.forEach((child) => {
@@ -186,7 +188,7 @@ class Drawable {
    * @param  {vec3} vec   The vector
    */
   translate(vec) {
-    mat4.translate(this._translate, this._translate, vec);
+    vec3.add(this._translate, this._translate, vec);
     this.updateMatrix();
   }
 
@@ -194,8 +196,8 @@ class Drawable {
    * Sets the position to some vector
    * @param {vec3} vec The new position
    */
-  setPosition(vec) {
-    this._translate = mat4.create();
+  setTranslation(vec) {
+    this._translate = vec3.create();
     this.translate(vec);
   }
 
@@ -204,7 +206,7 @@ class Drawable {
    * @param  {vec3} vec   The vector
    */
   scale(vec) {
-    mat4.scale(this._scale, this._scale, vec);
+    vec3.multiply(this._scale, this._scale, vec);
     this.updateMatrix();
   }
 
@@ -213,7 +215,7 @@ class Drawable {
    * @param {vec3} vec The scale to set to.
    */
   setScale(vec) {
-    this._scale = mat4.create();
+    this._scale = vec3.fromValues(1, 1, 1);
     this.scale(vec);
   }
 
@@ -221,10 +223,8 @@ class Drawable {
    * Rotate a model with a quaternion
    * @param  {quat} quat   The quaternion
    */
-  rotate(quat) {
-    var rotate = mat4.create();
-    mat4.fromQuat(rotate, quat);
-    mat4.multiply(this._rotate, this._rotate, rotate);
+  rotate(q) {
+    quat.multiply(this._rotate, this._rotate, q);
     this.updateMatrix();
   }
 
@@ -232,10 +232,9 @@ class Drawable {
    * Sets the object's rotation from a quaternion
    * @param {quat} quat The new rotation
    */
-  setRotation(quat) {
-    this._rotate = mat4.create();
-    mat4.fromQuat(this._rotate, quat);
-    this.updateMatrix();
+  setRotation(q) {
+    this._rotate = quat.create();
+    this.rotate(q);
   }
 
   /**
@@ -279,6 +278,22 @@ class Drawable {
   }
 
   /**
+   * Sets the drawing mode for this drawable.  Should be one of the modes
+   * found on Mesh
+   *
+   * @see  Mesh
+   * @param {enum} mode One of the Mesh.MODE_* constants
+   */
+  setDrawMode(mode) {
+    let modes = [Mesh.MODE_TRIANGLES, Mesh.MODE_LINES];
+    if(modes.indexOf(mode) === -1) {
+      console.warn('mode should be one of ' + modes.join(', '));
+      mode = Mesh.MODE_TRIANGLES;
+    }
+    this.drawMode = mode;
+  }
+
+  /**
    * NYI
    * @return {void}
    */
@@ -294,7 +309,7 @@ class Drawable {
         uniforms[i](this.uniforms[i]);
       }
     }
-    this.mesh.draw(locations);
+    this.mesh.draw(locations, this.drawMode);
   }
 
   _runAnimations(delta) {

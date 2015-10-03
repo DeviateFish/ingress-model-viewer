@@ -38,7 +38,7 @@
     var start = vec3.fromValues(0, 40, 250);
     var pos = vec3.create();
     vec3.lerp(pos, start, end, t);
-    shard.setPosition(pos);
+    shard.setTranslation(pos);
   }
 
   function addShard(portal, series, index) {
@@ -47,8 +47,9 @@
     }
     var shard = new series['' + index]();
     var anim = new IMV.Utilities.Animation(4000, moveShard, IMV.Utilities.Ease.cubicOut);
-    shard.setPosition([0, 40, 250]);
+    shard.setTranslation([0, 40, 250]);
     shard.addAnimation(anim);
+    shard.setDrawMode('lines');
     anim.start();
     portal.addChild(shard);
     engine.objectRenderer.addDrawable(shard);
@@ -59,7 +60,7 @@
 
   function addPortal(location, series) {
     var portal = new IMV.Drawables.World.Portal();
-    portal.setPosition(location);
+    portal.setTranslation(location);
     portal.setScalarScale(0);
     var anim = new IMV.Utilities.Animation(500, grow, IMV.Utilities.Ease.cubicIn);
     portal.addAnimation(anim);

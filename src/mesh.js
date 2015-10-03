@@ -22,7 +22,6 @@ class Mesh extends GLBound {
     this.attributes = attributes;
     this.faces = faces;
     this.lines = lines;
-    this.mode = MODE_TRIANGLES;
     this.bounds = null;
     this.center = null;
   }
@@ -31,11 +30,12 @@ class Mesh extends GLBound {
    * Given a set of locations from the currently-active shader, draw this mesh
    * @param  {Object} locations A hash of locations by name
    */
-  draw(locations) {
+  draw(locations, mode) {
+    mode = mode || MODE_TRIANGLES;
     this.attributes.draw(locations);
-    if(this.mode === MODE_TRIANGLES) {
+    if(mode === MODE_TRIANGLES) {
       this.faces.draw();
-    } else if (this.mode === MODE_LINES) {
+    } else if (mode === MODE_LINES) {
       this.lines.draw();
     }
   }
