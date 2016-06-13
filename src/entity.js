@@ -25,7 +25,7 @@ class Entity {
   applyTransform() {
     for(var i in this.drawables)
     {
-      this.drawables[i].setMatrix(this.transform);
+      this.drawables[i].updateWorld(this.transform);
     }
   }
 

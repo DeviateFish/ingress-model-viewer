@@ -29,12 +29,38 @@ class Drawable {
     this._rotate = quat.create();
     this._scale = vec3.fromValues(1, 1, 1);
     this._model = mat4.create();
+    this._ray = vec3.create();
     this.local = mat4.create();
     this.world = mat4.create();
     this.uniforms.u_modelViewProject = mat4.create();
     this.children = [];
     this._animations = [];
     this.drawMode = Mesh.MODE_TRIANGLES;
+  }
+
+  _loadAssets(manager) {
+    let promises = [];
+    if(this.meshName) {
+      promises.push(
+        manager.loadMesh(this.meshName).then((mesh) => {
+          this.mesh = mesh;
+        }).catch((err) => {
+          console.warn('missing mesh ' + this.meshName);
+          throw err;
+        })
+      );
+    }
+    if(this.programName) {
+      promises.push(
+        manager.loadProgram(this.programName).then((program) => {
+          this.program = program;
+        }).catch((err) => {
+          console.warn('missing program' + this.programName);
+          throw err;
+        })
+      );
+    }
+    return promises;
   }
 
   /**
@@ -44,26 +70,15 @@ class Drawable {
    *
    * @param  {AssetManager} manager AssetManager containing the managed resources for this
    *                                drawable.
-   * @return {boolean}              Returns true if the assets are successfully found and initialized,
-   *                                false (and generates a warning) otherwise.
+   * @return {Promise}              Resolves if the assets are successfully found and initialized,
+   *                                rejects (and generates a warning) otherwise.
    */
   init(manager) {
-    if(this.meshName) {
-      this.mesh = manager.getMesh(this.meshName);
-      if(!this.mesh) {
-        console.warn('missing mesh ' + this.meshName);
-        return false;
-      }
-    }
-    if(this.programName) {
-      this.program = manager.getProgram(this.programName);
-      if(!this.program) {
-        console.warn('missing program ' + this.programName);
-        return false;
-      }
-    }
-    this.ready = true;
-    return true;
+    let promises = this._loadAssets(manager);
+    return Promise.all(promises).then(() => {
+      this.ready = true;
+      return true;
+    });
   }
 
   /**
@@ -85,12 +100,10 @@ class Drawable {
    * @return {void}
    */
   draw() {
-    if(!this.ready) {
-      console.warn('drawable is not initialized');
-      return false;
-    }
-    if(this.program) {
-      this.program.use(this.drawfn);
+    if(this.ready) {
+      if(this.program) {
+        this.program.use(this.drawfn);
+      }
     }
   }
 
@@ -181,6 +194,17 @@ class Drawable {
   updateView(viewProject) {
     this.viewProject = viewProject;
     this.updateMatrix();
+    this.updateRay();
+  }
+
+  /**
+   * Updates the internal representation of the ray from the camera to the
+   * drawable
+   */
+  updateRay() {
+    vec3.copy(this._ray, this._translate);
+    vec3.transformMat4(this._ray, this._ray, this.world);
+    vec3.transformMat4(this._ray, this._ray, this.viewProject);
   }
 
   /**
@@ -190,6 +214,7 @@ class Drawable {
   translate(vec) {
     vec3.add(this._translate, this._translate, vec);
     this.updateMatrix();
+    this.updateRay();
   }
 
   /**
@@ -291,6 +316,20 @@ class Drawable {
       mode = Mesh.MODE_TRIANGLES;
     }
     this.drawMode = mode;
+  }
+
+  /**
+   * Sets the draw mode to draw lines
+   */
+  drawLines() {
+    this.setDrawMode(Mesh.MODE_LINES);
+  }
+
+  /**
+   * Sets the draw mode to draw triangles
+   */
+  drawFaces() {
+    this.setDrawMode(Mesh.MODE_TRIANGLES);
   }
 
   /**

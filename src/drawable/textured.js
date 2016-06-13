@@ -21,25 +21,24 @@ class TexturedDrawable extends Drawable {
    * Draw the textured object
    */
   draw() {
-    this.texture.use(0);
-    this.uniforms.u_texture = 0;
-    super.draw();
+    if(this.ready) {
+      this.texture.use(0);
+      this.uniforms.u_texture = 0;
+      super.draw();
+    }
   }
 
-  /**
-   * Initialize the texture, then initialize other resources
-   * @param  {AssetManager} manager AssetManager containing the texture and other resources
-   * @return {Boolean}              Success/failure
-   */
-  init(manager) {
-    if(this.textureName) {
-      this.texture = manager.getTexture(this.textureName);
-      if(!this.texture) {
+  _loadAssets(manager) {
+    let promises = super._loadAssets(manager);
+    promises.push(
+      manager.loadTexture(this.textureName).then((texture) => {
+        this.texture = texture;
+      }).catch((err) => {
         console.warn('missing texture ' + this.textureName);
-        return false;
-      }
-    }
-    return super.init(manager);
+        throw err;
+      })
+    );
+    return promises;
   }
 }
 

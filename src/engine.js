@@ -214,8 +214,8 @@ class Engine {
    * @param  {Function} callback Callback to invoke on completion
    * @return {void}
    */
-  preload(callback) {
-    this.assetManager.loadAll(callback);
+  preload() {
+    return this.assetManager.loadAll();
   }
 }
 

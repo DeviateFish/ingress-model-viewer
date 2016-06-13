@@ -26,20 +26,21 @@
 
   var init = function(assets) {
     engine = new IMV.Engine(canvas, assets, true);
-    engine.preload(function() {
+    engine.preload().then(function() {
       console.log('ready');
     });
   };
 
-  IMV.Utilities.loadResource('/manifest/assets.json', 'text', function(err, val) {
-    if(err) {
-      throw err;
-    }
+  IMV.Utilities.loadResource('/manifest/assets.json', 'text').then(function(val) {
     assets = JSON.parse(val);
     if(assets) {
       init(assets);
     }
-  });
+  }).catch(function(err) {
+    if(err) {
+      throw err;
+    }
+  })
 </script>
 </body>
 </html>

@@ -1,3 +1,4 @@
+import Promise from 'es6-promises';
 import GLBound from './gl-bound';
 import AssetLoader from './asset-loader';
 import FileMesh from './mesh/file';
@@ -10,27 +11,6 @@ var _programs = {
   'Glowramp': GlowrampProgram,
   'Opaque': OpaqueProgram
 };
-
-function areLoading(n, e) {
-  if(e === 0) {
-    n++;
-  }
-  return n;
-}
-
-function areLoaded(n, e) {
-  if(e > 0) {
-    n++;
-  }
-  return n;
-}
-
-function areError(n, e) {
-  if(e < 0) {
-    n++;
-  }
-  return n;
-}
 
 function simpleMerge(left, right) {
   left = left || {};
@@ -48,20 +28,6 @@ function mergeManifests(base, add) {
     }
   });
   return base;
-}
-
-/**
- * Utility function to get some info on loading states.
- * @param  {Array} queue  List of status codes, one per request
- * @return {Object}       Short summary of the state of the queue.
- */
-function summarize(queue) {
-  return {
-    total: queue.length,
-    loading: queue.reduce(areLoading, 0),
-    loaded: queue.reduce(areLoaded, 0),
-    error: queue.reduce(areError, 0)
-  };
 }
 
 /**
@@ -95,7 +61,6 @@ class AssetManager extends GLBound {
       program: {},
       rawProgram: {}
     };
-    this.complete = null;
     this.path = '/assets/';
   }
 
@@ -137,121 +102,122 @@ class AssetManager extends GLBound {
   }
 
   /**
-   * Gets a bound texture directly from the cache.
+   * Returns a promise that resolves to a bound texture.
    * @param  {String} name Texture internal name
-   * @return {Texture}     The bound texture, or undefined if it does not
-   *                       exist or is not yet loaded.
+   * @return {Promise}     Resolves to the bound texture.
    */
-  getTexture(name) {
-    var texture = this.textures[name];
-    if(texture) {
-      this.stats.texture[name] = (this.stats.texture[name] || 0) + 1;
+  loadTexture(name) {
+    if (!(name in this.manifest.texture)) {
+      return Promise.reject(new Error('Unknown texture ' + name));
+    } else if (this.textures[name]) {
+      this._recordUsage('texture', name);
+      return Promise.resolve(this.textures[name]);
+    } else {
+      let asset = this.manifest.texture[name];
+      return this.loader.loadAsset(this._getFullPath(asset.static, asset.path), 'image')
+        .then((texture) => {
+          if (!this.textures[name]) {
+            console.log('loaded texture: ' + name);
+            this.textures[name] = new Texture(this._gl, asset, texture);
+          }
+          this._recordUsage('texture', name);
+          return this.textures[name];
+        });
     }
-    return texture;
   }
 
   /**
-   * Gets a bound mesh directly from the cache.
+   * Returns a promise that resolves to a bound mesh.
    * @param  {String} name Mesh internal name
-   * @return {Mesh}        The bound mesh, or undefined if it does not
-   *                       exist or is not yet loaded.
+   * @return {Promise}     Resolves to the bound mesh.
    */
-  getMesh(name) {
-    var mesh = this.meshes[name];
-    if(mesh) {
-      this.stats.mesh[name] = (this.stats.mesh[name] || 0) + 1;
+  loadMesh(name) {
+    if (!(name in this.manifest.mesh)) {
+      return Promise.reject(new Error('Unknown mesh ' + name));
+    } else if (this.meshes[name]) {
+      this._recordUsage('mesh', name);
+      return Promise.resolve(this.meshes[name]);
+    } else {
+      let asset = this.manifest.mesh[name];
+      return this.loader.loadAsset(this._getFullPath(asset.static, asset.path), 'arraybuffer')
+        .then((mesh) => {
+          if (!this.meshes[name]) {
+            console.log('loaded mesh: ' + name);
+            this.meshes[name] = new FileMesh(this._gl, mesh);
+          }
+          this._recordUsage('mesh', name);
+          return this.meshes[name];
+        });
     }
-    return mesh;
   }
 
   /**
-   * Gets a bound program directly from the cache.
-   * @param  {String} name Program internal name
-   * @return {Program}     The bound program, or undefined if it does not
-   *                       exist or is not yet loaded.
+   * Returns a promise that resolves to a bound program.
+   * @param  {String} name Program internal name (raw or loaded)
+   * @return {Promise}     Resolves to the bound program.
    */
-  getProgram(name) {
-    var prog = this.programs[name];
-    if(prog) {
-      if(this.stats.rawProgram.hasOwnProperty(name)) {
-        this.stats.rawProgram[name]++;
-      }
-      else {
-        this.stats.program[name] = (this.stats.program[name] || 0) + 1;
+  loadProgram(name) {
+    if (!(name in this.manifest.program) && !(name in this.manifest.rawProgram)) {
+      return Promise.reject(new Error('Unknown program ' + name));
+    } else if (this.programs[name]) {
+      this._recordUsage('program', name);
+      return Promise.resolve(this.programs[name]);
+    } else {
+      if (name in this.manifest.rawProgram) {
+        let asset = this.manifest.rawProgram[name];
+        return new Promise((resolve) => {
+          if (!this.programs[name]) {
+            console.log('created program from raw: ' + name);
+            let Klass = _programs[asset.program] || Program;
+            this.programs[name] = new Klass(this._gl, asset.vertex, asset.fragment);
+          }
+          this._recordUsage('program', name);
+          resolve(this.programs[name]);
+        });
+      } else {
+        let asset = this.manifest.program[name];
+        return Promise.all([
+            this.loader.loadAsset(this._getFullPath(asset.static, asset.vertex), 'text'),
+            this.loader.loadAsset(this._getFullPath(asset.static, asset.fragment), 'text')
+          ]).then((program) => {
+            if (!this.programs[name]) {
+              console.log('loaded program: ' + name);
+              let Klass = _programs[asset.program] || Program;
+              this.programs[name] = new Klass(this._gl, program[0], program[1]);
+            }
+            this._recordUsage('program', name);
+            return this.programs[name];
+          });
       }
     }
-    return prog;
   }
 
   /**
    * Loads all remote resources found in the manifest, and creates any static programs
    * included in the manifest's rawPrograms section, if it exists.
-   * @param  {Function} callback Callback invoked upon completion
-   * @return {Function}          Returns a function that can be called to get information
-   *                             on loading status. @see getStatus
+   * @return {Promise}          Promise that resolves when all assets are loaded
    */
-  loadAll(callback) {
-    var i, asset, manifest = this.manifest;
-    this.complete = callback;
-    for(i in manifest.texture) {
-      if(manifest.texture.hasOwnProperty(i) && !(i in this.textures))
-      {
-        this.textures[i] = null;
-        asset = manifest.texture[i];
-        this.loader.loadAsset(
-          (!asset.static ? this.path : '') + asset.path,
-          'image',
-          this._handleTexture.bind(this, this.queues.texture.length, i, asset)
-        );
-        this.queues.texture.push(0);
-      }
-    }
-    for(i in manifest.mesh) {
-      if(manifest.mesh.hasOwnProperty(i) && !(i in this.meshes))
-      {
-        this.meshes[i] = null;
-        asset = manifest.mesh[i];
-        this.loader.loadAsset(
-          (!asset.static ? this.path : '') + asset.path,
-          'arraybuffer',
-          this._handleMesh.bind(this, this.queues.mesh.length, i, asset)
-        );
-        this.queues.mesh.push(0);
-      }
-    }
-    for(i in manifest.program) {
-      if(manifest.program.hasOwnProperty(i) && !(i in this.programs))
-      {
-        this.programs[i] = null;
-        asset = manifest.program[i];
-        this.loader.loadAssetGroup(
-          [(!asset.static ? this.path : '') + asset.vertex, (!asset.static ? this.path : '') + asset.fragment],
-          ['text', 'text'],
-          this._handleProgram.bind(this, this.queues.program.length, i, asset)
-        );
-        this.queues.program.push(0);
-      }
-    }
-    for(i in manifest.rawProgram) {
-      if(manifest.rawProgram.hasOwnProperty(i) && !(i in this.programs)) {
-        this.stats.rawProgram[i] = 0;
-        this._createProgram(i, manifest.rawProgram[i]);
-      }
-    }
-
-    return this.getStatus.bind(this);
-  }
-
-  /**
-   * Returns a small summary of all the loader queues for all assets.
-   * @return {Object} A summary of each queue. @see summarize
-   */
-  getStatus() {
-    return {
-      texture: summarize(this.queues.texture),
-      mesh: summarize(this.queues.mesh),
-      program: summarize(this.queues.program)
-    };
+  loadAll() {
+    var manifest = this.manifest;
+    return Promise.all([
+      Object.keys(manifest.texture).reduce((promise, name) => {
+        return promise.then(() => {
+          return this.loadTexture(name);
+        });
+      }, Promise.resolve()),
+      Object.keys(manifest.mesh).reduce((promise, name) => {
+        return promise.then(() => {
+          return this.loadMesh(name);
+        });
+      }, Promise.resolve()),
+      Object.keys(manifest.program)
+        .concat(Object.keys(manifest.rawProgram))
+        .reduce((promise, name) => {
+          return promise.then(() => {
+            return this.loadProgram(name);
+          });
+        }, Promise.resolve())
+    ]);
   }
 
   /**
@@ -274,66 +240,12 @@ class AssetManager extends GLBound {
     return manifest;
   }
 
-  _isComplete() {
-    var status = this.getStatus();
-    if(this.complete && status.texture.loading === 0 &&
-       status.mesh.loading === 0 && status.program.loading === 0)
-    {
-      this.complete();
-    }
+  _getFullPath(isStatic, path) {
+    return (isStatic ? '' : this.path) + path;
   }
 
-  _handleTexture(idx, name, info, err, value) {
-    if(err)
-    {
-      this.queues.texture[idx] = -1;
-      console.error(err);
-      throw 'Could not load ' + name;
-    }
-
-    this.addTexture(name, new Texture(this._gl, info, value));
-    this.queues.texture[idx] = 1;
-    this._isComplete();
-  }
-
-  _handleMesh(idx, name, info, err, value) {
-    if(err)
-    {
-      this.queues.mesh[idx] = -1;
-      console.error(err);
-      throw 'Could not load ' + name;
-    }
-
-    this.addMesh(name, new FileMesh(this._gl, value));
-    this.queues.mesh[idx] = 1;
-    this._isComplete();
-  }
-
-  _createProgram(name, info) {
-    var Klass = Program;
-    if(info.program in _programs)
-    {
-      Klass = _programs[info.program];
-    }
-    this.addProgram(name, new Klass(this._gl, info.vertex, info.fragment));
-  }
-
-  _handleProgram(idx, name, info, err, vals) {
-    if(err)
-    {
-      this.queues.program[idx] = -1;
-      console.error(err);
-      throw 'Could not load ' + name;
-    }
-
-    var Klass = Program;
-    if(info.program in _programs)
-    {
-      Klass = _programs[info.program];
-    }
-    this.addProgram(name, new Klass(this._gl, vals[0], vals[1]));
-    this.queues.program[idx] = 1;
-    this._isComplete();
+  _recordUsage(type, name) {
+    this.stats[type][name] = (this.stats[type][name] || 0) + 1;
   }
 }
 

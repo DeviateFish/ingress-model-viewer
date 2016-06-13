@@ -33,9 +33,11 @@
       distanceMin: 1,
       distanceMax: 150
     });
-    engine.preload(function() {
+    engine.preload().then(function() {
       console.log('ready');
       setupScene();
+    }).catch(function(err) {
+      console.error(err);
     });
   };
 
@@ -74,10 +76,7 @@
     }, 1000);
   };
 
-  IMV.Utilities.loadResource('/manifest/assets.json', 'text', function(err, val) {
-    if(err) {
-      throw err;
-    }
+  IMV.Utilities.loadResource('/manifest/assets.json', 'text').then(function(val) {
     assets = JSON.parse(val);
     if(assets) {
       init(assets);

@@ -12,9 +12,10 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "dependencies": {
+    "es6-promises": "1.0.10",
+    "gl-matrix": "~2.2.1",
     "java-deserializer": "git://github.com/DeviateFish/java-deserializer.git#v0.2.0",
-    "libtga": "git://github.com/DeviateFish/libtga#v0.3.1",
-    "gl-matrix": "~2.2.1"
+    "libtga": "git://github.com/DeviateFish/libtga#v0.3.1"
   },
   "devDependencies": {
     "babelify": "^6.1.3",
