@@ -56,7 +56,7 @@ export function disco(delta, elapsed) {
   return true;
 }
 
-function makeArtifact(meshName, textureName) {
+export function makeArtifact(meshName, textureName) {
 
   class artifact extends TexturedDrawable {
     constructor() {

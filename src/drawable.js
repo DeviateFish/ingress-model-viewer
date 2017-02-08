@@ -44,9 +44,10 @@ class Drawable {
       promises.push(
         manager.loadMesh(this.meshName).then((mesh) => {
           this.mesh = mesh;
+          return mesh;
         }).catch((err) => {
           console.warn('missing mesh ' + this.meshName);
-          throw err;
+          return Promise.reject(err);
         })
       );
     }
@@ -54,9 +55,10 @@ class Drawable {
       promises.push(
         manager.loadProgram(this.programName).then((program) => {
           this.program = program;
+          return program;
         }).catch((err) => {
           console.warn('missing program' + this.programName);
-          throw err;
+          return Promise.reject(err);
         })
       );
     }
@@ -77,7 +79,7 @@ class Drawable {
     let promises = this._loadAssets(manager);
     return Promise.all(promises).then(() => {
       this.ready = true;
-      return true;
+      return this;
     });
   }
 

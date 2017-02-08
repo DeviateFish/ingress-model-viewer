@@ -16,12 +16,12 @@ import PortalEntity from './entity/portal';
 
 import OrbitControls from './orbit-controls';
 
-import { resetGL, setParams, disco, generateArtifacts } from './utils';
+import { resetGL, setParams, disco, generateArtifacts, makeArtifact } from './utils';
 import Ease from './animation/easing';
 import Animation from './animation/animation';
+import GLMatrix from 'gl-matrix';
 
-
-export default {
+const IMV = {
   Constants,
   Engine,
   Utilities: {
@@ -30,9 +30,11 @@ export default {
     setParams,
     disco,
     generateArtifacts,
+    makeArtifact,
     Ease,
     Animation,
-    AssetLoader
+    AssetLoader,
+    GLMatrix,
   },
   Drawables: {
     Inventory,
@@ -56,3 +58,7 @@ export default {
   },
   VERSION: '0.21.0'
 };
+
+export default IMV;
+
+module.exports = IMV;

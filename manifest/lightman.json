@@ -85,4 +85,5 @@
         "LightmanFrozen40": { "path": "scanner/artifacts/artifact_frozen_lightman_fragment_40.obj" },
         "Lightman41": { "path": "scanner/artifacts/artifact_lightman_fragment_41.obj" },
         "LightmanFrozen41": { "path": "scanner/artifacts/artifact_frozen_lightman_fragment_41.obj" }
+    }
 }

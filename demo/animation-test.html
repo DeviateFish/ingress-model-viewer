@@ -25,8 +25,9 @@
     engine.resize(document.body.offsetWidth, document.body.offsetHeight);
   });
 
-  var abaddon1 = IMV.Utilities.generateArtifacts('Abaddon1', 100, true);
-  var abaddon2 = IMV.Utilities.generateArtifacts('Abaddon2', 100, true);
+  var nShards = 91;
+
+  var shard2017 = IMV.Utilities.generateArtifacts('shard2017', nShards, true);
 
   function grow(t, portal) {
     var scale = t * 6.0;
@@ -41,20 +42,20 @@
     shard.setTranslation(pos);
   }
 
-  function addShard(portal, series, index) {
-    if (index > 100) {
+  function addShard(portal, series, index, frozen) {
+    if (index > nShards) {
       return;
     }
-    var shard = new series['' + index]();
+    var shard = new series['' + (frozen ? 'Frozen' : '') + index]();
     var anim = new IMV.Utilities.Animation(4000, moveShard, IMV.Utilities.Ease.cubicOut);
     shard.setTranslation([0, 40, 250]);
     shard.addAnimation(anim);
-    shard.setDrawMode('lines');
+    //shard.setDrawMode('lines');
     anim.start();
     portal.addChild(shard);
     engine.objectRenderer.addDrawable(shard);
     setTimeout(function() {
-      addShard(portal, series, index + 1);
+      addShard(portal, series, index + 1, frozen);
     }, 1000 - IMV.Utilities.Ease.cubicOut(index / 100) * 800);
   }
 
@@ -82,18 +83,18 @@
 
   function begin() {
     var left = addPortal([-50, 0, 0], '1');
-    var right = addPortal([50, 0, 0], '2');
     engine.objectRenderer.addDrawable(left);
     engine.objectRenderer.removeDrawable(left);
     engine.objectRenderer.addDrawable(left, true);
+    var right = addPortal([50, 0, 0], '2');
     engine.objectRenderer.addDrawable(right);
     engine.objectRenderer.removeDrawable(right);
     engine.objectRenderer.addDrawable(right, true);
     setTimeout(function() {
-      addShard(left, abaddon1, 1);
+      addShard(left, shard2017, 1, false);
       setTimeout(function() {
-        addShard(right, abaddon2, 1);
-      }, 500);
+        addShard(right, shard2017, 1, true);
+      }, 500)
     }, 1500);
   }
 
@@ -103,9 +104,9 @@
     shards.forEach(function(s) {
       engine.assetManager.addAssets(s);
     });
-    engine.preload(function() {
+    engine.preload().then(function() {
       console.log('ready');
-      engine.camera.setPosition([0, 100, 200]).lookAt([0, 40, 0]).setFar(500);
+      engine.camera.setPosition([0, 125, 250]).lookAt([0, 50, 0]).setFar(500);
       engine.updateView();
       engine.render();
     });
@@ -113,22 +114,20 @@
 
   var loader = new IMV.Utilities.AssetLoader();
   loader.loadAssetGroup(
-    ['/manifest/assets.json', '/manifest/abaddon1.json', '/manifest/abaddon2.json'],
-    ['text', 'text', 'text'],
-    function(err, vals) {
-      if(err) {
-        throw err;
-      }
-      var assets = JSON.parse(vals.shift());
-      var shards = [];
-      vals.forEach(function(v) {
-        shards.push(JSON.parse(v));
-      })
-      if(assets) {
-        init(assets, shards);
-      }
+    ['/manifest/assets.json', '/manifest/shard2017.json'],
+    ['text', 'text']
+  ).then(function(vals) {
+    var assets = JSON.parse(vals.shift());
+    var shards = [];
+    vals.forEach(function(v) {
+      shards.push(JSON.parse(v));
+    })
+    if(assets) {
+      init(assets, shards);
     }
-  )
+  }).catch(function(err) {
+    throw err;
+  });
 </script>
 </body>
 </html>

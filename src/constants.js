@@ -89,6 +89,11 @@ var Constants = {
       Red: vec4.fromValues(0.7, 1.0, 0.87, 1.0),
       Purple: vec4.fromValues(0.86, 0.7, 1.0, 1.0),
       Target: vec4.fromValues(0.0, 0.59, 1.0, 1.0)
+    },
+    Shard2017: {
+      Red: vec4.fromValues(0.7, 1.0, 0.87, 1.0),
+      Purple: vec4.fromValues(0.86, 0.7, 1.0, 1.0),
+      Target: vec4.fromValues(0.0, 0.59, 1.0, 1.0)
     }
   },
   /**

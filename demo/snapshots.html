@@ -4,6 +4,7 @@
     <title>Ingress Model Sandbox</title>
     <script src="../dist/ingress-model-viewer.js"></script>
     <script src="https://rawgit.com/eligrey/FileSaver.js/master/FileSaver.min.js"></script>
+    <script src="scripts/capture.js"></script>
     <style>
       html, body {
         height: 100%;
@@ -24,24 +25,45 @@
     engine.resize(document.body.offsetWidth, document.body.offsetHeight);
   });
 
-  var init = function(assets) {
+  var options = {
+    series: 'Shard2017',
+    shardCount: 91,
+    useFrozenHighlight: true,
+    highlightTexture: 'Shard2017'
+  }
+
+  var init = function(assets, shards) {
     engine = new IMV.Engine(canvas, assets, true);
+    shards.forEach(function(s) {
+      engine.assetManager.addAssets(s);
+    });
+    engine.assetManager.addAssets({
+      texture: {
+        ArtifactHeliosTexture: { "path": "scanner/artifacts/artifact_helios.png", "minFilter": "Linear", "magFilter": "Linear", "wrapS": "ClampToEdge", "wrapT": "ClampToEdge" }
+      }
+    });
     engine.preload().then(function() {
       console.log('ready');
+      window.tick = captureScreenshots(engine, options);
     });
   };
 
-  IMV.Utilities.loadResource('/manifest/assets.json', 'text').then(function(val) {
-    assets = JSON.parse(val);
+  var loader = new IMV.Utilities.AssetLoader();
+  loader.loadAssetGroup(
+    ['/manifest/assets.json', '/manifest/' + options.series.toLowerCase() + '.json'],
+    ['text', 'text']
+  ).then(function(vals) {
+    var assets = JSON.parse(vals.shift());
+    var shards = [];
+    vals.forEach(function(v) {
+      shards.push(JSON.parse(v));
+    })
     if(assets) {
-      init(assets);
+      init(assets, shards);
     }
   }).catch(function(err) {
-    if(err) {
-      console.error(err);
-      throw err;
-    }
-  })
+    throw err;
+  });
 </script>
 </body>
 </html>

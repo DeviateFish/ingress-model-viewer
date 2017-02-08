@@ -35,7 +35,7 @@ class TexturedDrawable extends Drawable {
         this.texture = texture;
       }).catch((err) => {
         console.warn('missing texture ' + this.textureName);
-        throw err;
+        return Promise.reject(err);
       })
     );
     return promises;
