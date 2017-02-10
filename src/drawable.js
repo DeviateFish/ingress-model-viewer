@@ -1,5 +1,5 @@
 import { mat4, vec3, quat } from 'gl-matrix';
-import Animation from './animation/animation';
+import Animator from './animation/animator';
 import Mesh from './mesh';
 
 /**
@@ -34,8 +34,8 @@ class Drawable {
     this.world = mat4.create();
     this.uniforms.u_modelViewProject = mat4.create();
     this.children = [];
-    this._animations = [];
     this.drawMode = Mesh.MODE_TRIANGLES;
+    this.animator = new Animator();
   }
 
   _loadAssets(manager) {
@@ -135,20 +135,8 @@ class Drawable {
    */
   updateTime(delta) {
     this.elapsed += delta;
-    this._runAnimations(delta);
+    this.animator.runAnimations(delta, this);
     return true;
-  }
-
-  /**
-   * Adds an animation to the drawable
-   * @param {Animation} animation The animation to be run.
-   *                              This will need to be started independently, or prior to being added.
-   */
-  addAnimation(animation) {
-    if (!(animation instanceof Animation)) {
-      console.warn('New animation should be an instance of an Animation');
-    }
-    this._animations.unshift(animation);
   }
 
   /**
@@ -342,6 +330,19 @@ class Drawable {
     // noop;
   }
 
+  /**
+   * Adds an animation
+   *
+   * @chainable
+   * @param {Animation} animation The animation to be run.
+   *                              This will need to be started independently, or prior to being added.
+   * @return {this}
+   */
+  addAnimation(animation) {
+    this.animator.addAnimation(animation);
+    return this;
+  }
+
   _draw(locations, uniforms) {
     for(var i in this.uniforms)
     {
@@ -351,16 +352,6 @@ class Drawable {
       }
     }
     this.mesh.draw(locations, this.drawMode);
-  }
-
-  _runAnimations(delta) {
-    let i = this._animations.length - 1;
-    for(; i >= 0; i--) {
-      let animation = this._animations[i];
-      if(animation.running && animation.step(delta, this)) {
-        this._animations.splice(i, 1);
-      }
-    }
   }
 }
 

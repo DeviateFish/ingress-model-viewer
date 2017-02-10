@@ -28,6 +28,7 @@ class Animation {
     this.timing = timing || Ease.linear;
     this.loop = loop;
     this.running = false;
+    this.next = [];
     return this;
   }
 
@@ -89,6 +90,22 @@ class Animation {
     let t = this.timing((this.elapsed / this.duration) % 1);
     this.transform(t, drawable);
     return false;
+  }
+
+  /**
+   * Allows for chaining of animations
+   *
+   * @chainable
+   * @param  {Animation}    The animation to queue after this one completes
+   *                        Note that this isn't really valid for looping animations
+   * @return {this}
+   */
+  chain(animation) {
+    if (!(animation instanceof Animation)) {
+      console.warn('New animation should be an instance of an Animation');
+    }
+    this.next.push(animation);
+    return this;
   }
 }
 

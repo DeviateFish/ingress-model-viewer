@@ -13,7 +13,7 @@
   "readmeFilename": "README.md",
   "dependencies": {
     "es6-promises": "1.0.10",
-    "gl-matrix": "~2.2.1",
+    "gl-matrix": "2.3.2",
     "java-deserializer": "git://github.com/DeviateFish/java-deserializer.git#v0.2.0",
     "libtga": "git://github.com/DeviateFish/libtga#v0.3.1"
   },
