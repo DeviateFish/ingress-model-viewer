@@ -255,11 +255,11 @@ class Engine {
           reject(e);
         }
       });
-      promise.then(() => {
-        this.render();
-      }, () => {
-        this.render();
-      });
+      // promise.then(() => {
+      //   this.render();
+      // }, () => {
+      //   this.render();
+      // });
       return promise;
     } else {
       return Promise.reject(new Error('Screenshots not enabled.  Initialize engine with `enableSnapshots` and ensure `canvas.toBlob` is supported by your browser.'));
