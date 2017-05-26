@@ -15,7 +15,7 @@
     </style>
 </head>
 <body>
-<canvas id="screen" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;"></canvas>
+<canvas id="screen" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%"></canvas>
 <script type="text/javascript">
   var canvas = document.getElementById('screen'), engine,
       radius = 100,
@@ -99,7 +99,7 @@
     engine.assetManager.addAssets(shonin);
     shoninShards = IMV.Utilities.generateArtifacts('Shonin', 31, true);
     engine.updateView();
-    engine.preload(function() {
+    //engine.preload().then(function() {
       var globe, atmosphere, world;
 
       globe = new IMV.Drawables.TexturedSphere('WorldTexture', radius, 50, 50);
@@ -136,7 +136,9 @@
       controls.enable();
       window.requestAnimationFrame(updateCamera);
       console.log('ready');
-    });
+    //}).catch(function(err) {
+    //  console.error(err);
+    //});
   };
 
   var rotate = function(delta) {
@@ -145,30 +147,16 @@
     return true;
   };
 
-  IMV.Utilities.loadResource('/manifest/assets.json', 'text', function(err, val) {
-    if(err) {
-      throw err;
-    }
+  IMV.Utilities.loadResource('/manifest/assets.json', 'text').then(function(val) {
     var assets = JSON.parse(val);
-    if(assets) {
-      IMV.Utilities.loadResource('/manifest/shonin.json', 'text', function(err, val) {
-        if(err) {
-          throw err;
-        }
-        var shonin = JSON.parse(val);
-        if(assets) {
-          IMV.Utilities.loadResource('/snapshot.json', 'text', function(err, val) {
-            if(err) {
-              throw err;
-            }
-            artifactInfos = JSON.parse(val);
-            init(assets, shonin);
-            engine.draw(0);
-          });
-
-        }
+    return IMV.Utilities.loadResource('/manifest/shonin.json', 'text').then(function(val) {
+      var shonin = JSON.parse(val);
+      return IMV.Utilities.loadResource('/snapshot.json', 'text').then(function(val) {
+        artifactInfos = JSON.parse(val);
+        init(assets, shonin);
+        engine.draw(0);
       });
-    }
+    });
   });
 </script>
 </body>

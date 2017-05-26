@@ -8,81 +8,105 @@ import Ease from './easing';
 
 class Animation {
 
-    /**
-     * Create an animation for a drawable
-     *
-     * @chainable
-     * @param  {Drawable} drawable  The object ot animate
-     * @param  {Number}  duration   Duration of one cycle of the animation
-     * @param  {Function} transform Animation callback
-     *                              Parameter: Number t
-     *                              Will be executed in the context of the drawable (i.e. this === drawable)
-     * @param  {Function} timing    Timing function (i.e. easing)  Defaults. to Ease.linear
-     * @param  {Boolean}  loop      Whether or not to loop the animation
-     * @return {this}               The animation
-     */
-    constructor(drawable, duration, transform, timing, loop) {
-      let self = this;
-      this.elapsed = 0;
-      this.drawable = drawable;
-      this.duration = duration;
-      this.transform = transform;
-      this.timing = timing || Ease.linear;
-      this.loop = loop;
-      this.oldUpdate = null;
-      function onUpdate(delta) {
-        self.elapsed += delta;
-        // if we're done with the animation
-        if (self.elapsed > self.duration && !self.loop) {
-          self.stop();
-        } else {
-          let t = self.timing((self.elapsed / self.duration) % 1);
-          // jshint, pls, I know what I'm doing.
-          self.transform.call(this, t); // jshint ignore:line
-        }
-        if (self.oldUpdate) {
-          return self.oldUpdate.call(this, delta); // jshint ignore:line
-        } else {
-          return true;
-        }
-      }
-      this.onUpdate = onUpdate;
-      return this;
-    }
+  /**
+   * Create an animation for a drawable
+   *
+   * @chainable
+   * @param  {Drawable} drawable  The object ot animate
+   * @param  {Number}  duration   Duration of one cycle of the animation
+   * @param  {Function} transform Animation callback
+   *                              Parameter: Number t
+   *                              Parameter: Drawable drawable
+   * @param  {Function} timing    Timing function (i.e. easing)  Defaults. to Ease.linear
+   * @param  {Boolean}  loop      Whether or not to loop the animation
+   * @return {this}               The animation
+   */
+  constructor(duration, transform, timing, loop) {
+    this.elapsed = 0;
+    this.duration = duration;
+    this.transform = transform;
+    this.timing = timing || Ease.linear;
+    this.loop = loop;
+    this.running = false;
+    this.next = [];
+    return this;
+  }
 
-    /**
-     * Starts the animation
-     *
-     * @chainable
-     * @return {this}
-     */
-    start() {
-      this.oldUpdate = this.drawable.onUpdate;
-      this.drawable.onUpdate = this.onUpdate;
-      return this;
+  /**
+   * Starts the animation
+   *
+   * @chainable
+   * @return {this}
+   */
+  start() {
+    if(!this.running) {
+      this.running = true;
     }
+    return this;
+  }
 
-    /**
-     * Stops the animation, and resets the elasped time to 0
-     *
-     * @chainable
-     * @return {this}
-     */
-    stop() {
-      this.elapsed = 0;
-      return this.pause();
-    }
+  /**
+   * Stops the animation, and resets the elasped time to 0
+   *
+   * @chainable
+   * @return {this}
+   */
+  stop() {
+    this.elapsed = 0;
+    return this.pause();
+  }
 
-    /**
-     * Pauses the running animation
-     *
-     * @chainable
-     * @return {this}
-     */
-    pause() {
-      this.drawable.onUpdate = this.oldUpdate;
-      return this;
+  /**
+   * Pauses the running animation
+   *
+   * @chainable
+   * @return {this}
+   */
+  pause() {
+    if(this.running) {
+      this.running = false;
     }
+    return this;
+  }
+
+  /**
+   * Perform a step of the animation
+   * @param  {Number} delta      Time elasped since last frame
+   * @param  {Drawable} drawable The drawable to operate on
+   * @return {Boolean}           Return true to signal the end of the animation
+   */
+  step(delta, drawable) {
+    if(!this.running) {
+      return false;
+    }
+    this.elapsed += delta;
+    // if we're done with the animation
+    if (this.elapsed > this.duration && !this.loop) {
+      let t = this.timing(1);
+      this.transform(t, drawable);
+      this.stop();
+      return true;
+    }
+    let t = this.timing((this.elapsed / this.duration) % 1);
+    this.transform(t, drawable);
+    return false;
+  }
+
+  /**
+   * Allows for chaining of animations
+   *
+   * @chainable
+   * @param  {Animation}    The animation to queue after this one completes
+   *                        Note that this isn't really valid for looping animations
+   * @return {this}
+   */
+  chain(animation) {
+    if (!(animation instanceof Animation)) {
+      console.warn('New animation should be an instance of an Animation');
+    }
+    this.next.push(animation);
+    return this;
+  }
 }
 
 export default Animation;

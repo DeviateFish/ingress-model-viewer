@@ -54,11 +54,11 @@ class PortalEntity extends Entity {
       1.0
     );
     resonator.uniforms.u_color0 = vec4.clone(Constants.qualityColors[level]);
-    resonator.local = mat4.clone(this.drawables.Portal.local);
+    resonator.world = mat4.clone(this.drawables.Portal.local);
     //link.local = mat4.clone(this.drawables.Portal.local);
     mat4.translate(
-      resonator.local,
-      resonator.local,
+      resonator.world,
+      resonator.world,
       vec3.fromValues(x / 6, 0, y / 6)
     );
     resonator.updateMatrix();

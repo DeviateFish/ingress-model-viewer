@@ -1,5 +1,5 @@
 import Constants from '../constants';
-import ModelDrawable from './model';
+import Drawable from '../drawable';
 import SphereMesh from '../mesh/sphere';
 import { mat3, mat4 } from 'gl-matrix';
 
@@ -9,7 +9,7 @@ const PROGRAM = Constants.Program.Atmosphere;
  * This is a modified version of the atmosphere program from:
  * https://github.com/dataarts/webgl-globe/blob/master/globe/globe.js
  */
-class AtmosphereDrawable extends ModelDrawable {
+class AtmosphereDrawable extends Drawable {
 
   /**
    * Initializer
@@ -28,7 +28,7 @@ class AtmosphereDrawable extends ModelDrawable {
     this.hSlices = hSlices;
     this.uniforms.u_normalMatrix = mat3.create();
     this.scaleFactor = scaleFactor || 1.1;
-    mat4.scale(this.local, this.local, [this.scaleFactor, this.scaleFactor, this.scaleFactor]);
+    this.setScalarScale(this.scaleFactor);
   }
 
   /**

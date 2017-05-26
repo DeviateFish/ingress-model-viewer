@@ -1,4 +1,5 @@
 import { mat4, vec3 } from 'gl-matrix';
+import Animator from './animation/animator';
 
 /**
  * A Camera is a class to manage view of the scene.
@@ -23,6 +24,7 @@ class Camera {
     this.height = height;
     this.focus = vec3.create();
     this.up = vec3.fromValues(0, 1, 0);
+    this.animator = new Animator();
     return this._updateProjection()._updateView();
   }
 
@@ -98,6 +100,28 @@ class Camera {
   setFar(far) {
     this.far = far;
     return this._updateProjection();
+  }
+
+  /**
+   * Adds an animation
+   *
+   * @chainable
+   * @param {Animation} animation The animation to be run.
+   *                              This will need to be started independently, or prior to being added.
+   * @return {this}
+   */
+  addAnimation(animation) {
+    this.animator.addAnimation(animation);
+    return this;
+  }
+
+  /**
+   * @param  {Number}
+   * @return {this}
+   */
+  updateTime(delta) {
+    this.animator.runAnimations(delta, this);
+    return this;
   }
 
   /**

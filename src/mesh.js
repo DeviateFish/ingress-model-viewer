@@ -22,7 +22,6 @@ class Mesh extends GLBound {
     this.attributes = attributes;
     this.faces = faces;
     this.lines = lines;
-    this.mode = MODE_TRIANGLES;
     this.bounds = null;
     this.center = null;
   }
@@ -31,11 +30,12 @@ class Mesh extends GLBound {
    * Given a set of locations from the currently-active shader, draw this mesh
    * @param  {Object} locations A hash of locations by name
    */
-  draw(locations) {
+  draw(locations, mode) {
+    mode = mode || MODE_TRIANGLES;
     this.attributes.draw(locations);
-    if(this.mode === MODE_TRIANGLES) {
+    if(mode === MODE_TRIANGLES) {
       this.faces.draw();
-    } else if (this.mode === MODE_LINES) {
+    } else if (mode === MODE_LINES) {
       this.lines.draw();
     }
   }
@@ -55,9 +55,6 @@ class Mesh extends GLBound {
         min: null
       };
       this.attributes.eachAttribute(coordAttribute, function(arr) {
-        if(Array.prototype.reduce.call(arr, function(s, a) { return s + a; }, 0) === 0) {
-          return;
-        }
         if(bounds.max) {
           bounds.max = bounds.max.map(function(e, i) {
             return Math.max(e, arr[i]);
@@ -78,16 +75,12 @@ class Mesh extends GLBound {
     return this.bounds;
   }
 
-  // TODO: fixme
   centerOfMass(coordAttribute) {
     if(!this.center) {
       coordAttribute = coordAttribute === undefined ? 0 : coordAttribute;
       var sum = null,
         count = 0;
       this.attributes.eachAttribute(coordAttribute, function(arr) {
-        if(Array.prototype.reduce.call(arr, function(s, a) { return s + a; }, 0) === 0) {
-          return;
-        }
         count++;
         if(sum) {
           sum = sum.map(function(e, i) {
@@ -97,10 +90,9 @@ class Mesh extends GLBound {
           sum = Array.prototype.slice.call(arr);
         }
       });
-      sum.map(function(e) {
+      this.center = sum.map(function(e) {
         return e / count;
       });
-      this.center = sum;
     }
     return this.center;
   }

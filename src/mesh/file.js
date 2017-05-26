@@ -13,10 +13,6 @@ function parseAttributes(buf)
   for(var i = 0; i < n; i++)
   {
     type = v.getUint32(c);
-    if(type != 0x01 && type != 0x10)
-    {
-      console.warn('unknown type ' + type);
-    }
     c += 4;
     size = v.getUint32(c);
     c += 4;

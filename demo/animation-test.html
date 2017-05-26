@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ingress Model Sandbox</title>
+    <script src="../dist/ingress-model-viewer.js"></script>
+    <script src="../node_modules/gl-matrix/dist/gl-matrix-min.js"></script>
+    <script src="https://rawgit.com/eligrey/FileSaver.js/master/FileSaver.min.js"></script>
+    <style>
+      html, body {
+        height: 100%;
+        width: 100%;
+        position: relative;
+        margin: 0;
+      }
+    </style>
+</head>
+<body>
+<canvas id="screen" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%"></canvas>
+<script type="text/javascript">
+  var canvas = document.getElementById('screen'), engine;
+  canvas.width = document.body.offsetWidth;
+  canvas.height = document.body.offsetHeight;
+
+  window.addEventListener('resize', function(){
+    engine.resize();
+  });
+
+  var nShards = 91;
+
+  var shard2017 = IMV.Utilities.generateArtifacts('Shard2017', nShards, true);
+
+  function grow(t, portal) {
+    var scale = t * 6.0;
+    portal.setScalarScale(scale);
+  }
+
+  function moveShard(t, shard) {
+    var end = vec3.fromValues(0, 0, 0);
+    var start = vec3.fromValues(0, 40, 250);
+    var pos = vec3.create();
+    vec3.lerp(pos, start, end, t);
+    shard.setTranslation(pos);
+  }
+
+  function addShard(portal, series, index, frozen) {
+    if (index > nShards) {
+      return;
+    }
+    var shard = new series['' + (frozen ? 'Frozen' : '') + index]();
+    var anim = new IMV.Utilities.Animation(4000, moveShard, IMV.Utilities.Ease.cubicOut);
+    shard.setTranslation([0, 40, 250]);
+    shard.addAnimation(anim);
+    //shard.setDrawMode('lines');
+    anim.start();
+    portal.addChild(shard);
+    engine.objectRenderer.addDrawable(shard);
+    setTimeout(function() {
+      addShard(portal, series, index + 1, frozen);
+    }, 1000 - IMV.Utilities.Ease.cubicOut(index / 100) * 800);
+  }
+
+  function addPortal(location, series) {
+    var portal = new IMV.Drawables.World.Portal();
+    portal.setTranslation(location);
+    portal.setScalarScale(0);
+    var anim = new IMV.Utilities.Animation(500, grow, IMV.Utilities.Ease.cubicIn);
+    portal.addAnimation(anim);
+    anim.start();
+    var target = new IMV.Drawables.World.ArtifactsTargetGlow();
+    target.setUniform('u_baseColor', vec4.clone(IMV.Constants.artifactGlowColors['Abaddon'+series].Target));
+    portal.addChild(target);
+    var red = new IMV.Drawables.World.ArtifactsRedGlow();
+    red.setUniform('u_baseColor', vec4.clone(IMV.Constants.artifactGlowColors['Abaddon'+series].Red));
+    portal.addChild(red);
+    var purple = new IMV.Drawables.World.ArtifactsPurpleGlow();
+    purple.setUniform('u_baseColor', vec4.clone(IMV.Constants.artifactGlowColors['Abaddon'+series].Purple));
+    portal.addChild(purple);
+    var green = new IMV.Drawables.World.ArtifactsGreenGlow();
+    green.setUniform('u_baseColor', vec4.clone(IMV.Constants.teamColors.NEUTRAL));
+    portal.addChild(green);
+    return portal;
+  }
+
+  function begin() {
+    var left = addPortal([-50, 0, 0], '1');
+    engine.objectRenderer.addDrawable(left);
+    engine.objectRenderer.removeDrawable(left);
+    engine.objectRenderer.addDrawable(left, true);
+    var right = addPortal([50, 0, 0], '2');
+    engine.objectRenderer.addDrawable(right);
+    engine.objectRenderer.removeDrawable(right);
+    engine.objectRenderer.addDrawable(right, true);
+    setTimeout(function() {
+      addShard(left, shard2017, 1, false);
+      setTimeout(function() {
+        addShard(right, shard2017, 1, true);
+      }, 500)
+    }, 1500);
+  }
+
+  var init = function(assets, shards) {
+    console.log(assets, shards);
+    engine = new IMV.Engine(canvas, assets, true);
+    shards.forEach(function(s) {
+      engine.assetManager.addAssets(s);
+    });
+    engine.preload().then(function() {
+      console.log('ready');
+      engine.camera.setPosition([0, 125, 250]).lookAt([0, 50, 0]).setFar(500);
+      engine.updateView();
+      engine.render();
+    });
+  };
+
+  var loader = new IMV.Utilities.AssetLoader();
+  loader.loadAssetGroup(
+    ['/manifest/assets.json', '/manifest/shard2017.json'],
+    ['text', 'text']
+  ).then(function(vals) {
+    var assets = JSON.parse(vals.shift());
+    var shards = [];
+    vals.forEach(function(v) {
+      shards.push(JSON.parse(v));
+    })
+    if(assets) {
+      init(assets, shards);
+    }
+  }).catch(function(err) {
+    throw err;
+  });
+</script>
+</body>
+</html>

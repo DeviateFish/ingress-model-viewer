@@ -14,7 +14,7 @@
     </style>
 </head>
 <body>
-<canvas id="screen" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;"></canvas>
+<canvas id="screen" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%"></canvas>
 <div style="width: 100%; text-align: center; color: #ccc; position: fixed; top: 0;height: 50px; line-height: 50px"
      id="controls"></div>
 <script type="text/javascript">
@@ -23,7 +23,7 @@
   canvas.height = document.body.offsetHeight;
 
   window.addEventListener('resize', function() {
-    engine.resize(document.body.offsetWidth, document.body.offsetHeight);
+    engine.resize();
   });
 
   var minifest = {
@@ -71,15 +71,36 @@
     engine.preload(function() {
       engine.camera.setPosition([0.0, 6, 12]).lookAt([0, 0, 0]);
       engine.updateView();
-      var ic = new IMV.Entities.Inventory.InterestCapsule(engine);
-      ic.setAnimation(rotate);
+      var parent = new IMV.Drawables.Drawable();
+      var ic = new IMV.Drawables.Drawable();
+      ic.addChild(new IMV.Drawables.Inventory.InterestCapsule());
+      ic.addChild(new IMV.Drawables.Inventory.CapsuleXm());
+      parent.addChild(ic);
+      var anim = new IMV.Utilities.Animation(4000, rotate, IMV.Utilities.Ease.linear, true);
+      anim.start();
+      ic.addAnimation(anim);
+      parent.addAnimation((new IMV.Utilities.Animation(4000, orbit, IMV.Utilities.Ease.linear, true)).start());
+      var ic2 = new IMV.Drawables.Drawable();
+      ic2.addChild(new IMV.Drawables.Inventory.InterestCapsule());
+      ic2.addChild(new IMV.Drawables.Inventory.CapsuleXm());
+      engine.objectRenderer.addDrawable(ic2);
+      engine.objectRenderer.addDrawable(parent);
     });
   };
 
-  var rotate = function(delta) {
-    mat4.rotateY(this.world, this.world, delta / 1000);
-    this.updateMatrix();
-    return true;
+  var rotate = function(t, drawable) {
+    var q = quat.create();
+    quat.rotateY(q, q, t * Math.PI * 2);
+    drawable.setRotation(q);
+  };
+
+  var orbit = function(t, drawable) {
+    var t = vec3.fromValues(
+      2 * Math.sin(t * Math.PI * 2),
+      0,
+      2 * Math.cos(t * Math.PI * 2)
+    );
+    drawable.setTranslation(t);
   };
 
   init(minifest);

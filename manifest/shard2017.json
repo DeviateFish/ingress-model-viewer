@@ -1,0 +1,559 @@
+{
+    "texture": {
+        "ArtifactShard2017Texture": {
+            "path": "scanner/artifacts/artifact_shard2017.png",
+            "minFilter": "Linear",
+            "magFilter": "Linear",
+            "wrapS": "ClampToEdge",
+            "wrapT": "ClampToEdge"
+        }
+    },
+    "mesh": {
+        "Shard20171": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_1.obj"
+        },
+        "Shard2017Frozen1": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_1.obj"
+        },
+        "Shard20172": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_2.obj"
+        },
+        "Shard2017Frozen2": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_2.obj"
+        },
+        "Shard20173": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_3.obj"
+        },
+        "Shard2017Frozen3": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_3.obj"
+        },
+        "Shard20174": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_4.obj"
+        },
+        "Shard2017Frozen4": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_4.obj"
+        },
+        "Shard20175": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_5.obj"
+        },
+        "Shard2017Frozen5": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_5.obj"
+        },
+        "Shard20176": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_6.obj"
+        },
+        "Shard2017Frozen6": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_6.obj"
+        },
+        "Shard20177": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_7.obj"
+        },
+        "Shard2017Frozen7": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_7.obj"
+        },
+        "Shard20178": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_8.obj"
+        },
+        "Shard2017Frozen8": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_8.obj"
+        },
+        "Shard20179": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_9.obj"
+        },
+        "Shard2017Frozen9": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_9.obj"
+        },
+        "Shard201710": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_10.obj"
+        },
+        "Shard2017Frozen10": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_10.obj"
+        },
+        "Shard201711": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_11.obj"
+        },
+        "Shard2017Frozen11": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_11.obj"
+        },
+        "Shard201712": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_12.obj"
+        },
+        "Shard2017Frozen12": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_12.obj"
+        },
+        "Shard201713": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_13.obj"
+        },
+        "Shard2017Frozen13": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_13.obj"
+        },
+        "Shard201714": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_14.obj"
+        },
+        "Shard2017Frozen14": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_14.obj"
+        },
+        "Shard201715": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_15.obj"
+        },
+        "Shard2017Frozen15": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_15.obj"
+        },
+        "Shard201716": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_16.obj"
+        },
+        "Shard2017Frozen16": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_16.obj"
+        },
+        "Shard201717": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_17.obj"
+        },
+        "Shard2017Frozen17": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_17.obj"
+        },
+        "Shard201718": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_18.obj"
+        },
+        "Shard2017Frozen18": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_18.obj"
+        },
+        "Shard201719": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_19.obj"
+        },
+        "Shard2017Frozen19": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_19.obj"
+        },
+        "Shard201720": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_20.obj"
+        },
+        "Shard2017Frozen20": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_20.obj"
+        },
+        "Shard201721": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_21.obj"
+        },
+        "Shard2017Frozen21": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_21.obj"
+        },
+        "Shard201722": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_22.obj"
+        },
+        "Shard2017Frozen22": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_22.obj"
+        },
+        "Shard201723": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_23.obj"
+        },
+        "Shard2017Frozen23": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_23.obj"
+        },
+        "Shard201724": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_24.obj"
+        },
+        "Shard2017Frozen24": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_24.obj"
+        },
+        "Shard201725": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_25.obj"
+        },
+        "Shard2017Frozen25": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_25.obj"
+        },
+        "Shard201726": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_26.obj"
+        },
+        "Shard2017Frozen26": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_26.obj"
+        },
+        "Shard201727": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_27.obj"
+        },
+        "Shard2017Frozen27": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_27.obj"
+        },
+        "Shard201728": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_28.obj"
+        },
+        "Shard2017Frozen28": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_28.obj"
+        },
+        "Shard201729": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_29.obj"
+        },
+        "Shard2017Frozen29": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_29.obj"
+        },
+        "Shard201730": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_30.obj"
+        },
+        "Shard2017Frozen30": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_30.obj"
+        },
+        "Shard201731": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_31.obj"
+        },
+        "Shard2017Frozen31": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_31.obj"
+        },
+        "Shard201732": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_32.obj"
+        },
+        "Shard2017Frozen32": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_32.obj"
+        },
+        "Shard201733": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_33.obj"
+        },
+        "Shard2017Frozen33": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_33.obj"
+        },
+        "Shard201734": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_34.obj"
+        },
+        "Shard2017Frozen34": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_34.obj"
+        },
+        "Shard201735": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_35.obj"
+        },
+        "Shard2017Frozen35": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_35.obj"
+        },
+        "Shard201736": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_36.obj"
+        },
+        "Shard2017Frozen36": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_36.obj"
+        },
+        "Shard201737": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_37.obj"
+        },
+        "Shard2017Frozen37": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_37.obj"
+        },
+        "Shard201738": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_38.obj"
+        },
+        "Shard2017Frozen38": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_38.obj"
+        },
+        "Shard201739": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_39.obj"
+        },
+        "Shard2017Frozen39": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_39.obj"
+        },
+        "Shard201740": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_40.obj"
+        },
+        "Shard2017Frozen40": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_40.obj"
+        },
+        "Shard201741": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_41.obj"
+        },
+        "Shard2017Frozen41": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_41.obj"
+        },
+        "Shard201742": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_42.obj"
+        },
+        "Shard2017Frozen42": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_42.obj"
+        },
+        "Shard201743": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_43.obj"
+        },
+        "Shard2017Frozen43": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_43.obj"
+        },
+        "Shard201744": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_44.obj"
+        },
+        "Shard2017Frozen44": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_44.obj"
+        },
+        "Shard201745": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_45.obj"
+        },
+        "Shard2017Frozen45": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_45.obj"
+        },
+        "Shard201746": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_46.obj"
+        },
+        "Shard2017Frozen46": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_46.obj"
+        },
+        "Shard201747": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_47.obj"
+        },
+        "Shard2017Frozen47": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_47.obj"
+        },
+        "Shard201748": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_48.obj"
+        },
+        "Shard2017Frozen48": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_48.obj"
+        },
+        "Shard201749": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_49.obj"
+        },
+        "Shard2017Frozen49": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_49.obj"
+        },
+        "Shard201750": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_50.obj"
+        },
+        "Shard2017Frozen50": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_50.obj"
+        },
+        "Shard201751": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_51.obj"
+        },
+        "Shard2017Frozen51": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_51.obj"
+        },
+        "Shard201752": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_52.obj"
+        },
+        "Shard2017Frozen52": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_52.obj"
+        },
+        "Shard201753": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_53.obj"
+        },
+        "Shard2017Frozen53": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_53.obj"
+        },
+        "Shard201754": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_54.obj"
+        },
+        "Shard2017Frozen54": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_54.obj"
+        },
+        "Shard201755": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_55.obj"
+        },
+        "Shard2017Frozen55": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_55.obj"
+        },
+        "Shard201756": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_56.obj"
+        },
+        "Shard2017Frozen56": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_56.obj"
+        },
+        "Shard201757": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_57.obj"
+        },
+        "Shard2017Frozen57": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_57.obj"
+        },
+        "Shard201758": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_58.obj"
+        },
+        "Shard2017Frozen58": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_58.obj"
+        },
+        "Shard201759": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_59.obj"
+        },
+        "Shard2017Frozen59": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_59.obj"
+        },
+        "Shard201760": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_60.obj"
+        },
+        "Shard2017Frozen60": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_60.obj"
+        },
+        "Shard201761": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_61.obj"
+        },
+        "Shard2017Frozen61": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_61.obj"
+        },
+        "Shard201762": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_62.obj"
+        },
+        "Shard2017Frozen62": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_62.obj"
+        },
+        "Shard201763": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_63.obj"
+        },
+        "Shard2017Frozen63": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_63.obj"
+        },
+        "Shard201764": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_64.obj"
+        },
+        "Shard2017Frozen64": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_64.obj"
+        },
+        "Shard201765": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_65.obj"
+        },
+        "Shard2017Frozen65": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_65.obj"
+        },
+        "Shard201766": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_66.obj"
+        },
+        "Shard2017Frozen66": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_66.obj"
+        },
+        "Shard201767": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_67.obj"
+        },
+        "Shard2017Frozen67": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_67.obj"
+        },
+        "Shard201768": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_68.obj"
+        },
+        "Shard2017Frozen68": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_68.obj"
+        },
+        "Shard201769": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_69.obj"
+        },
+        "Shard2017Frozen69": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_69.obj"
+        },
+        "Shard201770": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_70.obj"
+        },
+        "Shard2017Frozen70": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_70.obj"
+        },
+        "Shard201771": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_71.obj"
+        },
+        "Shard2017Frozen71": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_71.obj"
+        },
+        "Shard201772": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_72.obj"
+        },
+        "Shard2017Frozen72": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_72.obj"
+        },
+        "Shard201773": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_73.obj"
+        },
+        "Shard2017Frozen73": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_73.obj"
+        },
+        "Shard201774": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_74.obj"
+        },
+        "Shard2017Frozen74": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_74.obj"
+        },
+        "Shard201775": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_75.obj"
+        },
+        "Shard2017Frozen75": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_75.obj"
+        },
+        "Shard201776": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_76.obj"
+        },
+        "Shard2017Frozen76": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_76.obj"
+        },
+        "Shard201777": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_77.obj"
+        },
+        "Shard2017Frozen77": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_77.obj"
+        },
+        "Shard201778": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_78.obj"
+        },
+        "Shard2017Frozen78": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_78.obj"
+        },
+        "Shard201779": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_79.obj"
+        },
+        "Shard2017Frozen79": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_79.obj"
+        },
+        "Shard201780": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_80.obj"
+        },
+        "Shard2017Frozen80": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_80.obj"
+        },
+        "Shard201781": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_81.obj"
+        },
+        "Shard2017Frozen81": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_81.obj"
+        },
+        "Shard201782": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_82.obj"
+        },
+        "Shard2017Frozen82": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_82.obj"
+        },
+        "Shard201783": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_83.obj"
+        },
+        "Shard2017Frozen83": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_83.obj"
+        },
+        "Shard201784": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_84.obj"
+        },
+        "Shard2017Frozen84": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_84.obj"
+        },
+        "Shard201785": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_85.obj"
+        },
+        "Shard2017Frozen85": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_85.obj"
+        },
+        "Shard201786": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_86.obj"
+        },
+        "Shard2017Frozen86": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_86.obj"
+        },
+        "Shard201787": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_87.obj"
+        },
+        "Shard2017Frozen87": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_87.obj"
+        },
+        "Shard201788": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_88.obj"
+        },
+        "Shard2017Frozen88": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_88.obj"
+        },
+        "Shard201789": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_89.obj"
+        },
+        "Shard2017Frozen89": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_89.obj"
+        },
+        "Shard201790": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_90.obj"
+        },
+        "Shard2017Frozen90": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_90.obj"
+        },
+        "Shard201791": {
+            "path": "scanner/artifacts/artifact_shard2017_fragment_91.obj"
+        },
+        "Shard2017Frozen91": {
+            "path": "scanner/artifacts/artifact_frozen_shard2017_fragment_91.obj"
+        }
+    }
+}

@@ -1,6 +1,7 @@
 import Constants from './constants';
 import Engine from './engine';
-import { loadResource } from './asset-loader';
+import { default as AssetLoader, loadResource } from './asset-loader';
+import Drawable from './drawable';
 import Inventory from './drawable/inventory';
 import World from './drawable/world';
 import PortalLink from './drawable/portal-link';
@@ -15,12 +16,12 @@ import PortalEntity from './entity/portal';
 
 import OrbitControls from './orbit-controls';
 
-import { resetGL, setParams, disco, generateArtifacts } from './utils';
+import { resetGL, setParams, disco, generateArtifacts, makeArtifact } from './utils';
 import Ease from './animation/easing';
 import Animation from './animation/animation';
+import GLMatrix from 'gl-matrix';
 
-
-export default {
+const IMV = {
   Constants,
   Engine,
   Utilities: {
@@ -29,8 +30,11 @@ export default {
     setParams,
     disco,
     generateArtifacts,
+    makeArtifact,
     Ease,
-    Animation
+    Animation,
+    AssetLoader,
+    GLMatrix,
   },
   Drawables: {
     Inventory,
@@ -40,7 +44,8 @@ export default {
     SphericalPortalLink,
     Atmosphere,
     TexturedSphere,
-    ParticlePortal
+    ParticlePortal,
+    Drawable
   },
   Entities: {
     World: {
@@ -51,5 +56,9 @@ export default {
   Controls: {
     Orbit: OrbitControls
   },
-  VERSION: '0.20.0'
+  VERSION: '0.21.0'
 };
+
+export default IMV;
+
+module.exports = IMV;

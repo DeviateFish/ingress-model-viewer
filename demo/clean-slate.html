@@ -14,32 +14,52 @@
     </style>
 </head>
 <body>
-<canvas id="screen" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;"></canvas>
+<canvas id="screen" style="position: absolute; left: 0; top: 0; width: 1920px; height: 1080px"></canvas>
 <script type="text/javascript">
-  var canvas = document.getElementById('screen'), engine, assets = {};
+  var canvas = document.getElementById('screen'), engine;
   canvas.width = document.body.offsetWidth;
   canvas.height = document.body.offsetHeight;
 
   window.addEventListener('resize', function(){
-    engine.resize(document.body.offsetWidth, document.body.offsetHeight);
+    if (engine) {
+      engine.resize();
+    }
   });
 
-  var init = function(assets) {
-    engine = new IMV.Engine(canvas, assets, true);
-    engine.preload(function() {
-      console.log('ready');
-    });
-  };
+  var init = (function() {
+    var _loading;
+    return function _init() {
+      if (!_loading) {
+        _loading = engine.preload().then(function() {
+          console.log('ready');
+          return engine;
+        });
+      }
+      return _loading;
+    }
+  }());
 
-  IMV.Utilities.loadResource('/manifest/assets.json', 'text', function(err, val) {
+  var preload = IMV.Utilities.loadResource('/manifest/assets.json', 'text').then(function(val) {
+    var assets = JSON.parse(val);
+    engine = new IMV.Engine(canvas, assets, true);
+  }).catch(function(err) {
     if(err) {
+      console.error(err);
       throw err;
     }
-    assets = JSON.parse(val);
-    if(assets) {
-      init(assets);
-    }
   });
+
+  function loadSupplementalAssets(manifest) {
+    return IMV.Utilities.loadResource('/manifest/' + manifest + '.json', 'text').then(function(val) {
+      var assets = JSON.parse(val);
+      engine.assetManager.addAssets(assets);
+    }).catch(function(err) {
+      if(err) {
+        console.error(err);
+        throw err;
+      }
+    });
+  }
 </script>
 </body>
 </html>

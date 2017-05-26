@@ -8,21 +8,26 @@ class ObjectRenderer extends Renderer {
     this.drawables = [];
   }
 
-  addDrawable(drawable) {
+  addDrawable(drawable, excludeChildren) {
     if(!drawable instanceof Drawable)
     {
-      throw 'Drawables must always inherit from the base Drawable';
+      return Promise.reject(new Error('Drawables must always inherit from the base Drawable'));
     }
-    if(!drawable.init(this.manager))
-    {
+    var promise = drawable.init(this.manager).catch((err) => {
       console.warn('could not initialize drawable: ', drawable);
-      return false;
-    }
+      return Promise.reject(err);
+    });
     if(drawable.updateView)
     {
       drawable.updateView(this.viewProject, null);
     }
     this.drawables.push(drawable);
+    if(!excludeChildren) {
+      drawable.children.forEach((c) => {
+        this.addDrawable(c);
+      });
+    }
+    return promise;
   }
 
   removeDrawable(drawable, destroy) {

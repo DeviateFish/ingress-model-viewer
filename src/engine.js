@@ -33,6 +33,7 @@ class Engine {
     if(enableSnapshots) {
       opt.preserveDrawingBuffer = true;
     }
+    this.canScreenshot = enableSnapshots && !!canvas.toBlob;
     var gl = canvas.getContext('webgl', opt) || canvas.getContext('experimental-webgl', opt);
     if(!gl)
     {
@@ -47,46 +48,76 @@ class Engine {
       vec3.fromValues(0.0, 10.0, 0.0)
     );
 
-    // this should be in radians, not degrees.
     this.assetManager = new AssetManager(this.gl, assets);
     this.objectRenderer = new ObjectRenderer(this.gl, this.assetManager);
-    this.start = this.last = null;
-    this.paused = false;
-    this.cleared = false;
-    this.frame = null;
+    this._start = this._last = null;
+    this._frame = null;
+    this.scale = 1;
+    this.resize();
   }
 
   /**
-   * Resize the canvas and viewport to new dimensions
-   * @param  {Number} width  Width, in pixels
-   * @param  {Number} height Heigh, in pixels
-   * @return {void}
+   * Resize the canvas and viewport to new dimensions.
+   * Uses the canvas' clientWidth and clientHeight to determine viewport size,
+   * if not provided.
+   *
+   * @chainable
+   * @param {Number} width   @optional width
+   * @param {Number} height  @optional height
+   * @return {this}
    */
   resize(width, height) {
-    this.canvas.width = width;
-    this.canvas.height = height;
-    this.camera.setDimensions(width, height);
-    this.gl.viewport(0, 0, width, height);
+    let devicePixels = window.devicePixelRatio;
+    if(!width) {
+      width = this.canvas.clientWidth;
+    }
+    if (!height) {
+      height = this.canvas.clientHeight;
+    }
+    let targetWidth = Math.floor(width * this.scale * devicePixels);
+    let targetHeight = Math.floor(height * this.scale * devicePixels);
+    this.canvas.width = targetWidth;
+    this.canvas.height = targetHeight;
+    this.camera.setDimensions(targetWidth, targetHeight);
+    this.gl.viewport(0, 0, targetWidth, targetHeight);
+    return this.updateView();
+  }
+
+  /**
+   * Sets the scaling factor for the canvas.
+   *
+   * @chainable
+   * @param  {Number}
+   * @return {this}
+   */
+  rescale(factor) {
+    this.scale = factor;
+    return this.resize();
   }
 
   /**
    * Updates the current drawing viewport to the canvas' current dimensions
-   * @return {void}
+   *
+   * @chainable
+   * @return {this}
    */
   updateView() {
     this.objectRenderer.updateView(this.camera);
+    return this;
   }
 
   /**
    * Stops the render loop, if it's running.
-   * @return {void}
+   *
+   * @chainable
+   * @return {this}
    */
   stop() {
-    this.paused = true;
-    this.cleared = false;
-    if(this.frame) {
-      window.cancelAnimationFrame(this.frame);
+    this._last = this._start = null;
+    if(this._frame) {
+      window.cancelAnimationFrame(this._frame);
     }
+    return this;
   }
 
   /**
@@ -180,6 +211,7 @@ class Engine {
 
     // run animations
     this.objectRenderer.updateTime(delta);
+    this.camera.updateTime(delta);
   }
 
   /**
@@ -188,25 +220,18 @@ class Engine {
    * @return {void}
    */
   render(tick) {
-    if(this.paused) {
-      this.cleared = true;
-      this.paused = false;
-      return;
-    }
     var delta = 0;
-    if(!this.start)
-    {
-      this.start = tick;
-      this.last = tick;
+    if(!this._start) {
+      this._start = tick;
+      this._last = tick;
     }
-    else
-    {
-      delta = tick - this.last;
-      this.last = tick;
+    else if (tick) {
+      delta = tick - this._last;
+      this._last = tick;
     }
     this.draw(delta);
     // queue up next frame:
-    this.frame = window.requestAnimationFrame(this.render.bind(this));
+    this._frame = window.requestAnimationFrame(this.render.bind(this));
   }
 
   /**
@@ -214,8 +239,31 @@ class Engine {
    * @param  {Function} callback Callback to invoke on completion
    * @return {void}
    */
-  preload(callback) {
-    this.assetManager.loadAll(callback);
+  preload() {
+    return this.assetManager.loadAll();
+  }
+
+  capture(mimeType, quality) {
+    if (this.canScreenshot) {
+      this.stop();
+      let promise = new Promise((resolve, reject) => {
+        try {
+          this.canvas.toBlob((blob) => {
+            resolve(blob);
+          }, mimeType, quality);
+        } catch (e) {
+          reject(e);
+        }
+      });
+      // promise.then(() => {
+      //   this.render();
+      // }, () => {
+      //   this.render();
+      // });
+      return promise;
+    } else {
+      return Promise.reject(new Error('Screenshots not enabled.  Initialize engine with `enableSnapshots` and ensure `canvas.toBlob` is supported by your browser.'));
+    }
   }
 }
 

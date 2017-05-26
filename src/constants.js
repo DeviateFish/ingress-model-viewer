@@ -79,6 +79,21 @@ var Constants = {
       Red: vec4.fromValues(1.0, 0.44, 0.45, 1.0),
       Purple: vec4.fromValues(1.0, 0.24, 0.25, 1.0),
       Target: vec4.fromValues(0.74, 0.0, 0.02, 1.0)
+    },
+    Abaddon1: {
+      Red: vec4.fromValues(1.0, 0.7, 0.86, 1.0),
+      Purple: vec4.fromValues(0.82, 0.7, 1.0, 1.0),
+      Target: vec4.fromValues(0.0, 0.95, 0.4, 1.0)
+    },
+    Abaddon2: {
+      Red: vec4.fromValues(0.7, 1.0, 0.87, 1.0),
+      Purple: vec4.fromValues(0.86, 0.7, 1.0, 1.0),
+      Target: vec4.fromValues(0.0, 0.59, 1.0, 1.0)
+    },
+    Shard2017: {
+      Red: vec4.fromValues(0.7, 1.0, 0.87, 1.0),
+      Purple: vec4.fromValues(0.86, 0.7, 1.0, 1.0),
+      Target: vec4.fromValues(0.0, 0.59, 1.0, 1.0)
     }
   },
   /**
@@ -107,6 +122,8 @@ var Constants = {
       PowerCubeXm: 'PowerCubeXmMesh',
       LinkAmp: 'LinkAmpMesh',
       LinkAmpXm: 'LinkAmpXmMesh',
+      UltraLinkAmp: 'UltraLinkAmpMesh',
+      UltraLinkAmpXm: 'UltraLinkAmpXmMesh',
       HeatSink: 'HeatSinkMesh',
       HeatSinkXm: 'HeatSinkXmMesh',
       MultiHack: 'MultiHackMesh',
@@ -122,7 +139,11 @@ var Constants = {
       ResonatorXm: 'ResonatorXMMesh',
       Capsule: 'CapsuleMesh',
       InterestCapsule: 'InterestCapsuleMesh',
+      KeyCapsule: 'KeyCapsuleMesh',
       CapsuleXm: 'CapsuleXmMesh',
+      Mysterious: 'MysteriousMesh',
+      MysteriousXm: 'MysteriousXmMesh',
+      Niantic: 'NianticMesh',
       ExtraShield: 'ExtraShieldMesh',
       MediaCube: 'MediaCubeMesh',
       MediaPlaneMesh: 'MediaPlaneMesh'
@@ -133,6 +154,7 @@ var Constants = {
       Ultrastrike: 'UltrastrikeResourceUnitMesh',
       PowerCube: 'PowerCubeResourceUnitMesh',
       LinkAmp: 'LinkAmpResourceUnitMesh',
+      UltraLinkAmp: 'UltraLinkAmpResourceUnitMesh',
       HeatSink: 'HeatSinkResourceUnitMesh',
       MultiHack: 'MultiHackResourceUnitMesh',
       ForceAmp: 'ForceAmpResourceUnitMesh',
@@ -143,6 +165,7 @@ var Constants = {
       PortalShield: 'PortalShieldResourceUnitMesh',
       Capsule: 'CapsuleResourceUnitMesh',
       InterestCapsule: 'InterestCapsuleResourceUnitMesh',
+      Mysterious: 'MysteriousResourceUnitMesh',
       ExtraShield: 'ExtraShieldResourceUnitMesh',
     },
     Player: {
