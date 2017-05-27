@@ -24,7 +24,7 @@ function parseAttributes(buf)
       name += String.fromCharCode(v.getUint8(c+j));
     }
     c += len;
-    attributes.push(new VertexAttribute(name, size));
+    attributes.push(new VertexAttribute(name, size, type));
   }
   return attributes;
 }

@@ -7,9 +7,10 @@ class VertexAttribute {
    * @param  {String} name Name of the attribute
    * @param  {Number} size Size of the attribute (in bytes)
    */
-  constructor(name, size) {
+  constructor(name, size, type) {
     this.name = name;
     this.size = size;
+    this.type = type;
   }
 }
 
