@@ -227,7 +227,7 @@ class OrbitControls {
       }
       else
       {
-        console.log('could not find event ', changed[i]);
+        console.warn('could not find event ', changed[i]); // eslint-disable-line no-console
       }
     }
 

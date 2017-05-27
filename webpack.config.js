@@ -1,3 +1,4 @@
+/* eslint-env node */
 var path = require('path');
 
 module.exports = {
@@ -9,7 +10,7 @@ module.exports = {
     library: "IMV"
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.js$/,
         exclude: /(node_modules|bower_components)/,
@@ -17,7 +18,13 @@ module.exports = {
         query: {
           presets: ['es2015']
         }
-      }
+      },
+      {
+        test: /\.js$/,
+        exclude: /(node_modules|bower_components)/,
+        loader: "eslint-loader",
+        options: {}
+      },
     ]
   },
   devServer: {
@@ -25,4 +32,4 @@ module.exports = {
     port: 8080,
     publicPath: '/dist/'
   }
-}
+};

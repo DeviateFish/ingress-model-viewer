@@ -96,13 +96,14 @@ class Animation {
    * Allows for chaining of animations
    *
    * @chainable
-   * @param  {Animation}    The animation to queue after this one completes
-   *                        Note that this isn't really valid for looping animations
-   * @return {this}
+   * @param  {Animation} animation  The animation to queue after this one
+   *                                completes. Note that this isn't really
+   *                                valid for looping animations
+   * @return {this} Returns `this`
    */
   chain(animation) {
     if (!(animation instanceof Animation)) {
-      console.warn('New animation should be an instance of an Animation');
+      throw new Error('New animation should be an instance of an Animation');
     }
     this.next.push(animation);
     return this;

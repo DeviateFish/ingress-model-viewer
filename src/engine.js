@@ -136,7 +136,6 @@ class Engine {
           x = -5;
           z--;
         }
-        console.log('added ' + i);
       }
     }
     var portal = new PortalEntity(this);
@@ -160,7 +159,6 @@ class Engine {
           z--;
         }
         this.objectRenderer.addDrawable(item);
-        console.log('added ' + i);
       }
     }
 
@@ -174,7 +172,6 @@ class Engine {
           z--;
         }
         this.objectRenderer.addDrawable(item);
-        console.log('added ' + i);
       }
     }
 
@@ -188,7 +185,6 @@ class Engine {
           z--;
         }
         this.objectRenderer.addDrawable(item);
-        console.log('added ' + i);
       }
     }
   }

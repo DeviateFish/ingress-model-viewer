@@ -117,7 +117,6 @@ class AssetManager extends GLBound {
       return this.loader.loadAsset(this._getFullPath(asset.static, asset.path), 'image')
         .then((texture) => {
           if (!this.textures[name]) {
-            console.log('loaded texture: ' + name);
             this.textures[name] = new Texture(this._gl, asset, texture);
           }
           this._recordUsage('texture', name);
@@ -142,7 +141,6 @@ class AssetManager extends GLBound {
       return this.loader.loadAsset(this._getFullPath(asset.static, asset.path), 'arraybuffer')
         .then((mesh) => {
           if (!this.meshes[name]) {
-            console.log('loaded mesh: ' + name);
             this.meshes[name] = new FileMesh(this._gl, mesh);
           }
           this._recordUsage('mesh', name);
@@ -167,7 +165,6 @@ class AssetManager extends GLBound {
         let asset = this.manifest.rawProgram[name];
         return new Promise((resolve) => {
           if (!this.programs[name]) {
-            console.log('created program from raw: ' + name);
             let Klass = _programs[asset.program] || Program;
             this.programs[name] = new Klass(this._gl, asset.vertex, asset.fragment);
           }
@@ -181,7 +178,6 @@ class AssetManager extends GLBound {
             this.loader.loadAsset(this._getFullPath(asset.static, asset.fragment), 'text')
           ]).then((program) => {
             if (!this.programs[name]) {
-              console.log('loaded program: ' + name);
               let Klass = _programs[asset.program] || Program;
               this.programs[name] = new Klass(this._gl, program[0], program[1]);
             }

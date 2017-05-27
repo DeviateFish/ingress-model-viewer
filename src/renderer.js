@@ -40,7 +40,7 @@ class Renderer extends GLBound {
    * Actually controls the render loop?
    */
   render() {
-    console.warn("base class renders nothing.");
+    throw new Error('render() must be implemented');
   }
 
   /**

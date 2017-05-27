@@ -33,8 +33,7 @@ class GLBuffer extends GLBound {
    */
   bindBuffer() {
     if(!this.values) {
-      console.warn('trying to update a buffer with no values.');
-      return false;
+      throw new Error('trying to update a buffer with no values.');
     }
     if(!this.glBuf) {
       this.glBuf = this._gl.createBuffer();
@@ -97,8 +96,7 @@ class GLBuffer extends GLBound {
    */
   deleteWithin(start, end) {
     if(!this.values) {
-      console.warn('Trying to splice a buffer that has no values.');
-      return false;
+      throw new Error('Trying to splice a buffer that has no values.');
     }
     var nValues = end - start;
     var empty = new this.values.constructor(nValues);

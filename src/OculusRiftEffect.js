@@ -1,3 +1,4 @@
+/* eslint-disable */
 /**
  * @author troffmo5 / http://github.com/troffmo5
  *
@@ -6,9 +7,8 @@
  * it works also with other HMD using the same technology
  */
 
- // slight cleanup to pass jshint
+// slight cleanup to pass jshint
 // TODO: convert this
-/* jshint ignore:start */
 THREE.OculusRiftEffect = function ( renderer, options ) {
 	// worldFactor indicates how many units is 1 meter
 	var worldFactor = (options && options.worldFactor) ? options.worldFactor: 1.0;
@@ -227,4 +227,3 @@ THREE.OculusRiftEffect = function ( renderer, options ) {
 	};
 
 };
-/* jshint ignore:end */

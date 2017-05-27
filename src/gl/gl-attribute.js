@@ -40,12 +40,14 @@ class GLAttribute extends GLBuffer {
    * of total size of the attributes for the buffer
    *
    * Issues a warning if not.
+   *
+   * @return {void}
    */
   validate() {
     if(this._validate) {
       if(this.values.length % this.width !== 0)
       {
-        console.warn('values array length is not an even multiple of the total size of the attributes');
+        console.warn('values array length is not an even multiple of the total size of the attributes');  // eslint-disable-line no-console
       }
     }
   }
@@ -55,7 +57,8 @@ class GLAttribute extends GLBuffer {
    *
    * @chainable
    * @param  {ArrayBuffer} values New values to write to the buffer
-   * @return {this}
+   *
+   * @return {this} Returns `this`
    */
   updateValues(values) {
     this.values = values;
@@ -68,7 +71,8 @@ class GLAttribute extends GLBuffer {
    *
    * @chainable
    * @param  {Object} locations Map of attribute names to program locations
-   * @return {this}
+   *
+   * @return {this} Returns `this`
    */
   draw(locations) {
     var gl = this._gl;
@@ -100,7 +104,8 @@ class GLAttribute extends GLBuffer {
    * @chainable
    * @param  {Number}   attributeIndex Index of the attribute to select
    * @param  {Function} callback       Callback
-   * @return {this}
+   *
+   * @return {this} Returns `this`
    */
   eachAttribute(attributeIndex, callback) {
     var offset = 0, size, i;

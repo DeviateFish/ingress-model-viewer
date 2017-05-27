@@ -130,9 +130,6 @@ function getUniformSetter(gl, program, info, isArray) {
       glFunction(loc, val);
     };
   }
-
-  // FIXME: Unreachable code
-  throw "Unknown type: " + type;
 }
 
 /**
@@ -172,8 +169,8 @@ class Program extends GLBound {
     gl.compileShader(vertex);
     if(!gl.getShaderParameter(vertex, gl.COMPILE_STATUS))
     {
-      console.warn(gl.getShaderInfoLog(vertex));
-      console.error('could not compile vertex shader: ' + this.vertexSource);
+      console.warn(gl.getShaderInfoLog(vertex)); // eslint-disable-line no-console
+      console.error('could not compile vertex shader: ' + this.vertexSource); // eslint-disable-line no-console
       throw 'Vertex shader compile error!';
     }
     fragment = gl.createShader(gl.FRAGMENT_SHADER);
@@ -181,8 +178,8 @@ class Program extends GLBound {
     gl.compileShader(fragment);
     if(!gl.getShaderParameter(fragment, gl.COMPILE_STATUS))
     {
-      console.warn(gl.getShaderInfoLog(fragment));
-      console.error('could not compile fragment shader: ' + this.fragmentSource);
+      console.warn(gl.getShaderInfoLog(fragment)); // eslint-disable-line no-console
+      console.error('could not compile fragment shader: ' + this.fragmentSource); // eslint-disable-line no-console
       throw 'Fragment shader compile error!';
     }
 

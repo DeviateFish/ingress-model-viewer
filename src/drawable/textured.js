@@ -19,6 +19,8 @@ class TexturedDrawable extends Drawable {
 
   /**
    * Draw the textured object
+   *
+   * @return {void}
    */
   draw() {
     if(this.ready) {
@@ -34,7 +36,7 @@ class TexturedDrawable extends Drawable {
       manager.loadTexture(this.textureName).then((texture) => {
         this.texture = texture;
       }).catch((err) => {
-        console.warn('missing texture ' + this.textureName);
+        console.warn('missing texture ' + this.textureName); // eslint-disable-line no-console
         return Promise.reject(err);
       })
     );

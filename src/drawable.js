@@ -46,7 +46,7 @@ class Drawable {
           this.mesh = mesh;
           return mesh;
         }).catch((err) => {
-          console.warn('missing mesh ' + this.meshName);
+          console.warn('missing mesh ' + this.meshName); // eslint-disable-line no-console
           return Promise.reject(err);
         })
       );
@@ -57,7 +57,7 @@ class Drawable {
           this.program = program;
           return program;
         }).catch((err) => {
-          console.warn('missing program' + this.programName);
+          console.warn('missing program' + this.programName); // eslint-disable-line no-console
           return Promise.reject(err);
         })
       );
@@ -145,7 +145,7 @@ class Drawable {
    */
   addChild(drawable) {
     if (!(drawable instanceof Drawable)) {
-      console.warn('Child drawable should be an instance of Drawable');
+      throw new Error('Child drawable should be an instance of Drawable');
     }
     drawable.updateWorld(this._model);
     this.children.push(drawable);
@@ -302,8 +302,7 @@ class Drawable {
   setDrawMode(mode) {
     let modes = [Mesh.MODE_TRIANGLES, Mesh.MODE_LINES];
     if(modes.indexOf(mode) === -1) {
-      console.warn('mode should be one of ' + modes.join(', '));
-      mode = Mesh.MODE_TRIANGLES;
+      throw new Error('mode should be one of ' + modes.join(', '));
     }
     this.drawMode = mode;
   }

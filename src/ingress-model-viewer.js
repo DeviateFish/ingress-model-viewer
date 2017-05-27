@@ -60,5 +60,3 @@ const IMV = {
 };
 
 export default IMV;
-
-module.exports = IMV;
