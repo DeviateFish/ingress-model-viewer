@@ -6,6 +6,8 @@ const PROGRAM = Constants.Program.Glowramp;
 
 /**
  * Default base color for the glowramp drawable
+ *
+ * @private
  * @type {vec4}
  */
 const defaultBaseColor = vec4.clone(Constants.teamColors.NEUTRAL);
@@ -13,14 +15,12 @@ const defaultBaseColor = vec4.clone(Constants.teamColors.NEUTRAL);
 /**
  * A "glowramp" refers to the usage of the red, green, and blue channels to create
  * a "glowing" texture.
+ *
+ * @param  {String} meshName    Internal name of the mesh
+ * @param  {String} textureName Internal name of the texture
  */
 class GlowrampDrawable extends TexturedDrawable {
 
-  /**
-   * Creates a glowramp drawable
-   * @param  {String} meshName    Internal name of the mesh
-   * @param  {String} textureName Internal name of the texture
-   */
   constructor(meshName, textureName) {
     super(PROGRAM, meshName, textureName);
     this.uniforms.u_baseColor = vec4.clone(defaultBaseColor);

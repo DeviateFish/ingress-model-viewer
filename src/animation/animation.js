@@ -12,7 +12,6 @@ class Animation {
    * Create an animation for a drawable
    *
    * @chainable
-   * @param  {Drawable} drawable  The object ot animate
    * @param  {Number}  duration   Duration of one cycle of the animation
    * @param  {Function} transform Animation callback
    *                              Parameter: Number t
@@ -36,7 +35,7 @@ class Animation {
    * Starts the animation
    *
    * @chainable
-   * @return {this}
+   * @return {this} Returns `this`
    */
   start() {
     if(!this.running) {
@@ -49,7 +48,7 @@ class Animation {
    * Stops the animation, and resets the elasped time to 0
    *
    * @chainable
-   * @return {this}
+   * @return {this} Returns `this`
    */
   stop() {
     this.elapsed = 0;
@@ -60,7 +59,7 @@ class Animation {
    * Pauses the running animation
    *
    * @chainable
-   * @return {this}
+   * @return {this} Returns `this`
    */
   pause() {
     if(this.running) {

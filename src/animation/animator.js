@@ -1,12 +1,19 @@
 import Animation from './animation';
 
+/**
+ * This class handles running animations on animatable objects.
+ *
+ * This is generally composed into a class (e.g. Camera or Drawable)
+ */
 class Animator {
 	constructor() {
     this._animations = [];
 	}
 
   /**
-   * Adds an animation
+   * Adds an animation.
+   *
+   * Note that this does not start the animation.
    *
    * @chainable
    * @param {Animation} animation The animation to be run.

@@ -72,7 +72,7 @@
 
   };
 
-  IMV.Utilities.loadResource('/manifest/assets.json', 'text', function(err, val) {
+  IMV.AssetLoader.loadResource('/manifest/assets.json', 'text', function(err, val) {
     if(err) {
       throw err;
     }

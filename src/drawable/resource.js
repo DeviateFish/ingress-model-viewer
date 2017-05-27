@@ -6,6 +6,8 @@ var meshes = Constants.Mesh.Resource;
 
 /**
  * Creates a resource drawable
+ *
+ * @private
  * @param  {String} name InternalName
  * @return {itembase}    A BicoloredDrawable representing this resource item
  */

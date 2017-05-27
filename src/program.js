@@ -1,29 +1,5 @@
 import GLBound from './gl-bound';
 
-/**
- * Fixes an issue with shaders where the shader doesn't set a precision,
- * leading it to have a mismatch with its counterpart
- *
- * I.e. the vertex shader might set a precision, but the fragment shader
- * does not, leading to precision mismatch errors.
- * @param  {String} shader The shader to check/fix
- * @return {String}        The fixed shader, or the original if it needed
- *                         no patching.
- */
-export function fixPrecision(shader)
-{
-  if(/precision mediump float/g.test(shader))
-  {
-    return shader;
-  }
-  else
-  {
-    var lines = shader.split("\n");
-    lines.splice(1, 0, "#ifdef GL_ES", "precision mediump float;", "#endif");
-    return lines.join("\n");
-  }
-}
-
 // Taken from PhiloGL's program class:
 //Returns a Magic Uniform Setter
 function getUniformSetter(gl, program, info, isArray) {
@@ -150,7 +126,7 @@ class Program extends GLBound {
   constructor(gl, vertex, fragment) {
     super(gl);
     this.program = null;
-    this.vertexSource = fixPrecision(vertex);
+    this.vertexSource = Program.fixPrecision(vertex);
     this.fragmentSource = fragment;
     this.attributes = {};
     this.uniforms = {};
@@ -237,6 +213,31 @@ class Program extends GLBound {
       //if array name then clean the array brackets
       name = name[name.length -1] == ']' ? name.substr(0, name.length -3) : name;
       this.uniforms[name] = getUniformSetter(gl, program, info, info.name != name);
+    }
+  }
+
+  /**
+   * Fixes an issue with shaders where the shader doesn't set a precision,
+   * leading it to have a mismatch with its counterpart
+   *
+   * I.e. the vertex shader might set a precision, but the fragment shader
+   * does not, leading to precision mismatch errors.
+   * @static
+   * @param  {String} shader The shader to check/fix
+   * @return {String}        The fixed shader, or the original if it needed
+   *                         no patching.
+   */
+  static fixPrecision(shader)
+  {
+    if(/precision mediump float/g.test(shader))
+    {
+      return shader;
+    }
+    else
+    {
+      var lines = shader.split("\n");
+      lines.splice(1, 0, "#ifdef GL_ES", "precision mediump float;", "#endif");
+      return lines.join("\n");
     }
   }
 }

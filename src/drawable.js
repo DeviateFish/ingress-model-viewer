@@ -88,7 +88,7 @@ class Drawable {
    *
    * @chainable
    * @param {Function} fn The draw function to use when drawable this object
-   * @return {this}
+   * @return {this} Returns `this`
    */
   setDrawFn(fn) {
     this.drawfn = fn;
@@ -115,7 +115,7 @@ class Drawable {
    * @chainable
    * @param {String} name  Name of the drawable to set
    * @param {mixed} value  Value to set on the drawable.
-   * @returns {this}
+   * @returns {this} Returns `this`
    */
   setUniform(name, value) {
     this.uniforms[name] = value;

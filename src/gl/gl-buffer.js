@@ -4,18 +4,14 @@ import GLBound from '../gl-bound';
  * A GLBuffer is a buffer of some sort that will be passed to the gpu
  *
  * @extends {GLBound}
+ * @chainable
+ * @param  {context} gl    WebGL context
+ * @param  {enum} target   gl target  @see https://www.khronos.org/registry/webgl/specs/1.0/#5.14.5
+ * @param  {enum} usage    gl usage @see https://www.khronos.org/registry/webgl/specs/1.0/#5.14.5
+ * @return {this}          the GLBuffer
  */
 class GLBuffer extends GLBound {
 
-  /**
-   * Construct a gl-bound buffer
-   *
-   * @chainable
-   * @param  {context} gl    WebGL context
-   * @param  {enum} target   gl target  @see https://www.khronos.org/registry/webgl/specs/1.0/#5.14.5
-   * @param  {enum} usage    gl usage @see https://www.khronos.org/registry/webgl/specs/1.0/#5.14.5
-   * @return {this}          the GLBuffer
-   */
   constructor(gl, target, usage) {
     super(gl);
     this.target = target || gl.ARRAY_BUFFER; // probably shouldn't default this.

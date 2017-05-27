@@ -69,6 +69,8 @@ class AssetManager extends GLBound {
    *
    * Additional manifests should be merged in before loading.
    * @param {Object} manifest @see constructor
+   *
+   * @return {void}
    */
   addAssets(manifest) {
     this.manifest = mergeManifests(this.manifest, manifest);
@@ -78,6 +80,8 @@ class AssetManager extends GLBound {
    * Adds a bound texture to the texture cache, under a given internal name
    * @param {String} name     Texture internal name
    * @param {Texture} texture A bound Texture
+   *
+   * @return {void}
    */
   addTexture(name, texture) {
     this.textures[name] = texture;
@@ -87,6 +91,8 @@ class AssetManager extends GLBound {
    * Adds a bound mesh to the mesh cache, under a given internal name
    * @param {String} name Mesh internal name
    * @param {Mesh} mesh   A bound mesh
+   *
+   * @return {void}
    */
   addMesh(name, mesh) {
     this.meshes[name] = mesh;
@@ -96,6 +102,8 @@ class AssetManager extends GLBound {
    * Adds a bound program to the program cache, under a given internal name
    * @param {String} name     Program internal name
    * @param {Program} program A bound Program
+   *
+   * @return {void}
    */
   addProgram(name, program) {
     this.programs[name] = program;
