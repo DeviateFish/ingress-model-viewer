@@ -6,21 +6,19 @@ import { mat3, mat4 } from 'gl-matrix';
 const PROGRAM = Constants.Program.Atmosphere;
 
 /**
+ * Creates an "atmosphere" effect.
+ *
  * This is a modified version of the atmosphere program from:
  * https://github.com/dataarts/webgl-globe/blob/master/globe/globe.js
+ * @param  {Number} radius      Radius of the world.
+ *                              This should match the radius of the world mesh the
+ *                              atmosphere is being rendered over.
+ * @param  {Number} vSlices     Number of vertical slices for the sphere mesh
+ * @param  {Number} hSlices     Number of horizontal slices for the sphere mesh
+ * @param  {Number} scaleFactor The percent to scale the mesh
+ * @return {void}
  */
 class AtmosphereDrawable extends Drawable {
-
-  /**
-   * Initializer
-   * @param  {Number} radius      Radius of the world.
-   *                              This should match the radius of the world mesh the
-   *                              atmosphere is being rendered over.
-   * @param  {Number} vSlices     Number of vertical slices for the sphere mesh
-   * @param  {Number} hSlices     Number of horizontal slices for the sphere mesh
-   * @param  {Number} scaleFactor The percent to scale the mesh
-   * @return {void}
-   */
   constructor(radius, vSlices, hSlices, scaleFactor) {
     super(PROGRAM, null);
     this.radius = radius;
@@ -37,7 +35,7 @@ class AtmosphereDrawable extends Drawable {
    * @chainable
    * @see    src/drawable/model.js#updateView
    * @param  {mat4} viewProject   combined projection matrix multiplied by view matrix.
-   * @return {this}
+   * @return {this} Returns `this`
    */
   updateView(viewProject) {
     super.updateView(viewProject);
@@ -52,7 +50,7 @@ class AtmosphereDrawable extends Drawable {
    *
    * @see    src/drawable.js
    * @param  {AssetManager} manager The AssetManager containing the required assets.
-   * @return {boolean}
+   * @return {Promise}  A Promise that resolves when the asset is initialized
    */
   init(manager) {
     this.mesh = new SphereMesh(

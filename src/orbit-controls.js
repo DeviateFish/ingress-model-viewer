@@ -26,15 +26,14 @@ function getTouchIndex(touches, touch)
  * with variable position and depth.
  *
  * This is a port of the THREE.js OrbitControls found with the webgl globe.
+ *
+ * @class
+ * @param  {HTMLElement} element  Target element to bind listeners to
+ * @param  {Number} distance Starting distance from origin
+ * @param  {Object} options  Hash of options for configuration
  */
 class OrbitControls {
 
-  /**
-   * Constructs an orbiting camera control.
-   * @param  {HTMLElement} element  Target element to bind listeners to
-   * @param  {Number} distance Starting distance from origin
-   * @param  {Object} options  Hash of options for configuration
-   */
   constructor(element, camera, distance, options) {
     options = options || {};
     this.element = element;
@@ -80,6 +79,8 @@ class OrbitControls {
 
   /**
    * Unbinds all listeners and disables the controls
+   *
+   * @return {void}
    */
   disable() {
     this.element.removeEventListener('mousedown', this.mouseDown, false);
@@ -98,6 +99,8 @@ class OrbitControls {
 
   /**
    * Binds all listeners and enables the controls
+   *
+   * @return {void}
    */
   enable() {
     this.element.addEventListener('mousedown', this.mouseDown, false);
@@ -114,14 +117,15 @@ class OrbitControls {
   /**
    * Update the given camera matrix with new position information, etc
    * @param  {mat4} view   A view matrix
+   * @return {void}
    */
   updateView() {
     var dx = this.target.x - this.rotation.x,
       dy = this.target.y - this.rotation.y,
       dz = this.distanceTarget - this.distance,
       cameraPosition = vec3.create();
-    if(Math.abs(dx) > 0.00001 || Math.abs(dy) > 0.00001 || Math.abs(dz) > 0.00001)
-    {
+
+    if(Math.abs(dx) > 0.00001 || Math.abs(dy) > 0.00001 || Math.abs(dz) > 0.00001) {
       this.rotation.x += dx * this.options.friction;
       this.rotation.y += dy * this.options.friction;
       this.distance += dz * this.options.distanceScale;
@@ -227,7 +231,7 @@ class OrbitControls {
       }
       else
       {
-        console.log('could not find event ', changed[i]);
+        console.warn('could not find event ', changed[i]); // eslint-disable-line no-console
       }
     }
 
@@ -283,7 +287,6 @@ class OrbitControls {
     this._removeTouches(ev);
   }
 
-  //?
   _onTouchCancel(ev) {
     this._removeTouches(ev);
   }

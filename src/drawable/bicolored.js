@@ -6,12 +6,16 @@ const PROGRAM = Constants.Program.Bicolored;
 
 /**
  * Default quality color.
+ *
+ * @private
  * @type {vec4}
  */
 const defaultColor0 = vec4.clone(Constants.qualityColors.VERY_RARE);
 
 /**
  * Default glow color
+ *
+ * @private
  * @type {vec4}
  */
 const defaultColor1 = vec4.clone(Constants.xmColors.coreGlow);
@@ -24,14 +28,11 @@ const defaultColor1 = vec4.clone(Constants.xmColors.coreGlow);
  * Otherwise, it's the texture color blended with u_color1
  *
  * Or something like that.
+ * @param  {String} meshName    Internal name of the mesh for this drawable
+ * @param  {String} textureName Internal name of the texture for this drawble
  */
 class BicoloredDrawable extends TexturedDrawable {
 
-  /**
-   * Initialized a bi-colored drawable
-   * @param  {String} meshName    Internal name of the mesh for this drawable
-   * @param  {String} textureName Internal name of the texture for this drawble
-   */
   constructor(meshName, textureName) {
     super(PROGRAM, meshName, textureName);
     this.uniforms.u_color0 = vec4.clone(defaultColor0);

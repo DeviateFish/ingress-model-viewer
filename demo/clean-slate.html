@@ -39,7 +39,7 @@
     }
   }());
 
-  var preload = IMV.Utilities.loadResource('/manifest/assets.json', 'text').then(function(val) {
+  var preload = IMV.AssetLoader.loadResource('/manifest/assets.json', 'text').then(function(val) {
     var assets = JSON.parse(val);
     engine = new IMV.Engine(canvas, assets, true);
   }).catch(function(err) {
@@ -50,7 +50,7 @@
   });
 
   function loadSupplementalAssets(manifest) {
-    return IMV.Utilities.loadResource('/manifest/' + manifest + '.json', 'text').then(function(val) {
+    return IMV.AssetLoader.loadResource('/manifest/' + manifest + '.json', 'text').then(function(val) {
       var assets = JSON.parse(val);
       engine.assetManager.addAssets(assets);
     }).catch(function(err) {

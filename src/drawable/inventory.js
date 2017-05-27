@@ -3,17 +3,19 @@ import BicoloredDrawable from './bicolored';
 import XmDrawable from './xm';
 import TexturedDrawable from './textured';
 
-
 /**
- * This file constructs the drawable primitives for many of the inventory items.
+ * Contains drawable primitives for many of the inventory items.
  */
-
 var Inventory = {};
+
+
 var meshes = Constants.Mesh.Inventory;
 var textures = Constants.Texture;
 
 /**
  * Creates the outer "shell" for an xm item.
+ *
+ * @private
  * @param  {String} name Internal name of the mesh
  * @return {itembase}    A BicoloredDrawable with the specified mesh name
  *                       and the flipcard texture
@@ -30,6 +32,8 @@ function createShell(name) {
 
 /**
  * Creates the xm "core" of an item
+ *
+ * @private
  * @param  {String} name Internal name of the xm mesh
  * @return {xmbase}      An XmDrawable with the specified mesh name
  *                       and the Xm texture.
@@ -46,6 +50,8 @@ function createCore(name) {
 
 /**
  * Creates a media item
+ *
+ * @private
  * @param  {String} name Media mesh internal name
  * @return {media}       A TexturedDrawable with the Textured program,
  *                       the specified mesh, and the flipcard texture.

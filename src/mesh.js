@@ -7,16 +7,13 @@ const MODE_LINES = 'lines';
  * Base class for all meshes
  *
  * @extends {GLBound}
+ * @param  {context} gl              A webgl context
+ * @param  {Float32Array} attributes A typed array of vertex attributes
+ * @param  {Uint16Array} faces       A typed array of face indices
+ * @param  {Uint16Array} lines       A typed array of line indices
  */
 class Mesh extends GLBound {
 
-  /**
-   * Initializes a mesh
-   * @param  {context} gl              A webgl context
-   * @param  {Float32Array} attributes A typed array of vertex attributes
-   * @param  {Uint16Array} faces       A typed array of face indices
-   * @param  {Uint16Array} lines       A typed array of line indices
-   */
   constructor(gl, attributes, faces, lines) {
     super(gl);
     this.attributes = attributes;
@@ -28,7 +25,10 @@ class Mesh extends GLBound {
 
   /**
    * Given a set of locations from the currently-active shader, draw this mesh
-   * @param  {Object} locations A hash of locations by name
+   * @param {Object} locations A hash of locations by name
+   * @param {String} mode (optional) The draw mode
+   *                      Either MODE_TRIANGLES or MODE_LINES
+   * @return {void}
    */
   draw(locations, mode) {
     mode = mode || MODE_TRIANGLES;
@@ -113,7 +113,16 @@ class Mesh extends GLBound {
   }
 }
 
+/**
+ * Specifies drawing in `lines` mode
+ * @type {String}
+ */
 Mesh.MODE_LINES = MODE_LINES;
+
+/**
+ * Specifies drawing in `triangles` mode
+ * @type {String}
+ */
 Mesh.MODE_TRIANGLES = MODE_TRIANGLES;
 
 export default Mesh;

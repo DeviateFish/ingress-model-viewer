@@ -3,15 +3,15 @@ import Animator from './animation/animator';
 
 /**
  * A Camera is a class to manage view of the scene.
+ *
+ * @class
+ * @chainable
+ * @param {Number} width  The width of the viewport
+ * @param {Number} height The height of the viewport
+ * @return {this} The new Camera
  */
 class Camera {
 
-  /**
-   * Creates a camera
-   *
-   * @chainable
-   * @return {this}
-   */
   constructor(width, height) {
     this.position = vec3.create();
     this.view = mat4.create();
@@ -33,7 +33,7 @@ class Camera {
    *
    * @chainable
    * @param  {vec3} point   The point to look at
-   * @return {this}
+   * @return {this} Returns `this`
    */
   lookAt(point) {
     vec3.copy(this.focus, point);
@@ -47,7 +47,7 @@ class Camera {
    *
    * @chainable
    * @param  {vec3} vec   The vector to translate by
-   * @return {this}
+   * @return {this} Returns `this`
    */
   translate(vec) {
     vec3.translate(this.position, this.position, vec);
@@ -59,6 +59,7 @@ class Camera {
    *
    * @chainable
    * @param {vec3} position Camera position
+   * @return {this} Returns `this`
    */
   setPosition(position) {
     vec3.copy(this.position, position);
@@ -71,7 +72,7 @@ class Camera {
    * @chainable
    * @param {Number} width  Viewport width
    * @param {Number} height Viewport height
-   * @return {this}
+   * @return {this} Returns `this`
    */
   setDimensions(width, height) {
     this.width = width;
@@ -84,7 +85,7 @@ class Camera {
    *
    * @chainable
    * @param {Number} fov Field of view, in radians
-   * @return {this}
+   * @return {this} Returns `this`
    */
   setFieldOfView(fov) {
     this.hFoV = fov;
@@ -96,6 +97,7 @@ class Camera {
    *
    * @chainable
    * @param {Number} far Max viewable distance
+   * @return {this} Returns `this`
    */
   setFar(far) {
     this.far = far;
@@ -108,7 +110,7 @@ class Camera {
    * @chainable
    * @param {Animation} animation The animation to be run.
    *                              This will need to be started independently, or prior to being added.
-   * @return {this}
+   * @return {this} Returns `this`
    */
   addAnimation(animation) {
     this.animator.addAnimation(animation);
@@ -116,8 +118,8 @@ class Camera {
   }
 
   /**
-   * @param  {Number}
-   * @return {this}
+   * @param {Number} delta The time elapsed since the last draw
+   * @return {this} Returns `this`
    */
   updateTime(delta) {
     this.animator.runAnimations(delta, this);
@@ -128,7 +130,7 @@ class Camera {
    * Updates the camera's view matrix from all parameters.
    *
    * @chainable
-   * @return {this}
+   * @return {this} Returns `this`
    */
   _updateView() {
     mat4.lookAt(this.view, this.position, this.focus, this.up);
@@ -139,7 +141,7 @@ class Camera {
    * Update the camera's projection matrix
    *
    * @chainable
-   * @return {this}
+   * @return {this} Returns `this`
    */
   _updateProjection() {
     mat4.perspective(this.project, this.hFoV, this.width / this.height, this.near, this.far);

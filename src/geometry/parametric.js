@@ -1,4 +1,4 @@
-/* jshint ignore:start */
+/* eslint-disable */
 var ParametricGeometry = (function(){
 
   // basic template for our parametric function.
@@ -81,4 +81,3 @@ var ParametricGeometry = (function(){
 
 imv.Geometries = imv.Geometries || {};
 imv.Geometries.Parametric = ParametricGeometry;
-/* jshint ignore:end */

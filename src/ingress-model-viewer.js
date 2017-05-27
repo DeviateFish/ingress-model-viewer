@@ -1,6 +1,6 @@
 import Constants from './constants';
 import Engine from './engine';
-import { default as AssetLoader, loadResource } from './asset-loader';
+import { default as AssetLoader } from './asset-loader';
 import Drawable from './drawable';
 import Inventory from './drawable/inventory';
 import World from './drawable/world';
@@ -24,8 +24,8 @@ import GLMatrix from 'gl-matrix';
 const IMV = {
   Constants,
   Engine,
+  AssetLoader,
   Utilities: {
-    loadResource,
     resetGL,
     setParams,
     disco,
@@ -33,7 +33,6 @@ const IMV = {
     makeArtifact,
     Ease,
     Animation,
-    AssetLoader,
     GLMatrix,
   },
   Drawables: {
@@ -60,5 +59,3 @@ const IMV = {
 };
 
 export default IMV;
-
-module.exports = IMV;

@@ -6,15 +6,12 @@ import { resetGL } from '../utils';
  * transparent glowramp drawables
  *
  * @extends {Program}
+ * @param  {context} gl      WebGL context
+ * @param  {String} vertex   Vertex shader source
+ * @param  {String} fragment Fragment shader source
  */
 class GlowrampProgram extends Program {
 
-  /**
-   * Constructs a Glowramp program given vertex and fragment shader sources
-   * @param  {context} gl      WebGL context
-   * @param  {String} vertex   Vertex shader source
-   * @param  {String} fragment Fragment shader source
-   */
   constructor(gl, vertex, fragment) {
     super(gl, vertex, fragment);
   }
@@ -24,6 +21,7 @@ class GlowrampProgram extends Program {
    *
    * Sets up the proper blending modes, etc
    * @param  {Function} fn The draw function
+   * @return {void}
    */
   use(fn) {
     if(!this.program)

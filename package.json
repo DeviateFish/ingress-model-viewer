@@ -7,6 +7,12 @@
     "type": "git",
     "url": "git://github.com/DeviateFish/ingress-model-viewer.git"
   },
+  "scripts": {
+    "build": "webpack",
+    "lint": "eslint ./src/ --ext .js -c .eslintrc.js",
+    "serve": "webpack-dev-server --open",
+    "docs": "documentation build ./src/ingress-model-viewer.js -f html -o docs -g true"
+  },
   "keywords": [],
   "author": "Daniel Benton",
   "license": "MIT",
@@ -21,6 +27,10 @@
     "babel-core": "^6.22.1",
     "babel-loader": "^6.2.10",
     "babel-preset-es2015": "^6.22.0",
+    "documentation": "^4.0.0-rc.1",
+    "documentation-loader": "^0.1.1-beta",
+    "eslint": "^3.19.0",
+    "eslint-loader": "^1.7.1",
     "webpack": "^2.2.1",
     "webpack-dev-server": "^2.3.0"
   }

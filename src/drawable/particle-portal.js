@@ -6,6 +6,17 @@ import { vec3, vec4 } from 'gl-matrix';
 const PROGRAM = Constants.Program.ParticlePortal;
 const MAX_SYSTEMS = 40;
 
+/**
+ * A drawable representing a system of particles emanating from a portal
+ *
+ * @class
+ * @extends {ParticleDrawable}
+ * @param  {vec4}   color    The particle color
+ * @param  {Number} height   The height to propagate
+ * @param  {Number} count    The number of particles
+ * @param  {Number} spread   The spread between particles
+ * @param  {Number} distance The distance
+ */
 class ParticlePortalDrawable extends ParticleDrawable {
 
   constructor(color, height, count, spread, distance) {
@@ -28,6 +39,7 @@ class ParticlePortalDrawable extends ParticleDrawable {
    * Update the view, and uniforms pertaining to the view
    * @param  {mat4} viewProject   Camera's combine view and projection matrix
    * @param  {Camera} camera      The camera
+   * @return {void}
    */
   updateView(viewProject, camera) {
     super.updateView(viewProject, camera);

@@ -5,16 +5,12 @@ import { resetGL } from '../utils';
  * And OpaqueProgram is a Program used to draw opaque drawables
  *
  * @extends {Program}
+ * @param  {context} gl      WebGL context
+ * @param  {String} vertex   Vertex shader source
+ * @param  {String} fragment Fragment shader source
  */
 class OpaqueProgram extends Program {
 
-  /**
-   * Construct an opaque program given vertex and fragment shader
-   * sources.
-   * @param  {context} gl      WebGL context
-   * @param  {String} vertex   Vertex shader source
-   * @param  {String} fragment Fragment shader source
-   */
   constructor(gl, vertex, fragment) {
     super(gl, vertex, fragment);
   }
@@ -23,7 +19,9 @@ class OpaqueProgram extends Program {
    * Use this program to draw.
    *
    * Sets up the proper culling for drawing opaque objects
+   *
    * @param  {Function} fn The draw function
+   * @return {void}
    */
   use(fn) {
     if(!this.program)

@@ -1,29 +1,5 @@
 import GLBound from './gl-bound';
 
-/**
- * Fixes an issue with shaders where the shader doesn't set a precision,
- * leading it to have a mismatch with its counterpart
- *
- * I.e. the vertex shader might set a precision, but the fragment shader
- * does not, leading to precision mismatch errors.
- * @param  {String} shader The shader to check/fix
- * @return {String}        The fixed shader, or the original if it needed
- *                         no patching.
- */
-export function fixPrecision(shader)
-{
-  if(/precision mediump float/g.test(shader))
-  {
-    return shader;
-  }
-  else
-  {
-    var lines = shader.split("\n");
-    lines.splice(1, 0, "#ifdef GL_ES", "precision mediump float;", "#endif");
-    return lines.join("\n");
-  }
-}
-
 // Taken from PhiloGL's program class:
 //Returns a Magic Uniform Setter
 function getUniformSetter(gl, program, info, isArray) {
@@ -130,30 +106,26 @@ function getUniformSetter(gl, program, info, isArray) {
       glFunction(loc, val);
     };
   }
-
-  // FIXME: Unreachable code
-  throw "Unknown type: " + type;
 }
 
 /**
  * Represents a shader program consisting of a vertex shader and a fragment
  * shader.
+ *
+ * Manages the shader's attributes and uniforms.
+ *
+ * @class
  * @extends {GLBound}
+ * @param  {context} gl      Webgl context
+ * @param  {String} vertex   Vertex shader
+ * @param  {String} fragment Fragment shader
  */
 class Program extends GLBound {
 
-  /**
-   * Constructs a program from the given vertex and fragment shader strings.
-   *
-   * Manages the shader's attributes and uniforms.
-   * @param  {context} gl      Webgl context
-   * @param  {String} vertex   Vertex shader
-   * @param  {String} fragment Fragment shader
-   */
   constructor(gl, vertex, fragment) {
     super(gl);
     this.program = null;
-    this.vertexSource = fixPrecision(vertex);
+    this.vertexSource = Program.fixPrecision(vertex);
     this.fragmentSource = fragment;
     this.attributes = {};
     this.uniforms = {};
@@ -164,6 +136,8 @@ class Program extends GLBound {
    *
    * Parses out shader parameters, compiles the shader, and binds it to
    * the context.
+   *
+   * @return {void}
    */
   init() {
     var gl = this._gl, vertex, fragment;
@@ -172,8 +146,8 @@ class Program extends GLBound {
     gl.compileShader(vertex);
     if(!gl.getShaderParameter(vertex, gl.COMPILE_STATUS))
     {
-      console.warn(gl.getShaderInfoLog(vertex));
-      console.error('could not compile vertex shader: ' + this.vertexSource);
+      console.warn(gl.getShaderInfoLog(vertex)); // eslint-disable-line no-console
+      console.error('could not compile vertex shader: ' + this.vertexSource); // eslint-disable-line no-console
       throw 'Vertex shader compile error!';
     }
     fragment = gl.createShader(gl.FRAGMENT_SHADER);
@@ -181,8 +155,8 @@ class Program extends GLBound {
     gl.compileShader(fragment);
     if(!gl.getShaderParameter(fragment, gl.COMPILE_STATUS))
     {
-      console.warn(gl.getShaderInfoLog(fragment));
-      console.error('could not compile fragment shader: ' + this.fragmentSource);
+      console.warn(gl.getShaderInfoLog(fragment)); // eslint-disable-line no-console
+      console.error('could not compile fragment shader: ' + this.fragmentSource); // eslint-disable-line no-console
       throw 'Fragment shader compile error!';
     }
 
@@ -207,6 +181,7 @@ class Program extends GLBound {
    * @param  {Function} fn Function to handle the actual drawing.
    *                       The programs attributes and uniforms will
    *                       be passed to the draw function for use.
+   * @return {void}
    */
   use(fn) {
     var gl = this._gl;
@@ -240,6 +215,31 @@ class Program extends GLBound {
       //if array name then clean the array brackets
       name = name[name.length -1] == ']' ? name.substr(0, name.length -3) : name;
       this.uniforms[name] = getUniformSetter(gl, program, info, info.name != name);
+    }
+  }
+
+  /**
+   * Fixes an issue with shaders where the shader doesn't set a precision,
+   * leading it to have a mismatch with its counterpart
+   *
+   * I.e. the vertex shader might set a precision, but the fragment shader
+   * does not, leading to precision mismatch errors.
+   * @static
+   * @param  {String} shader The shader to check/fix
+   * @return {String}        The fixed shader, or the original if it needed
+   *                         no patching.
+   */
+  static fixPrecision(shader)
+  {
+    if(/precision mediump float/g.test(shader))
+    {
+      return shader;
+    }
+    else
+    {
+      var lines = shader.split("\n");
+      lines.splice(1, 0, "#ifdef GL_ES", "precision mediump float;", "#endif");
+      return lines.join("\n");
     }
   }
 }

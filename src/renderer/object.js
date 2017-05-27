@@ -9,12 +9,12 @@ class ObjectRenderer extends Renderer {
   }
 
   addDrawable(drawable, excludeChildren) {
-    if(!drawable instanceof Drawable)
+    if(!(drawable instanceof Drawable))
     {
       return Promise.reject(new Error('Drawables must always inherit from the base Drawable'));
     }
     var promise = drawable.init(this.manager).catch((err) => {
-      console.warn('could not initialize drawable: ', drawable);
+      console.warn('could not initialize drawable: ', drawable); // eslint-disable-line no-console
       return Promise.reject(err);
     });
     if(drawable.updateView)

@@ -1,4 +1,4 @@
-/* jshint ignore:start */
+/* eslint-disable */
 var ParticlePortalsGeometry = (function(){
 
   var MAX_SYSTEMS = 40,
@@ -125,5 +125,3 @@ var ParticlePortalsGeometry = (function(){
 
 imv.Geometries = imv.Geometries || {};
 imv.Geometries.ParticlePortals = ParticlePortalsGeometry;
-
-/* jshint ignore:end */

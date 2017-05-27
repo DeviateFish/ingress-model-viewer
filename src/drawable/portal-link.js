@@ -5,17 +5,14 @@ import PortalLinkMesh from '../mesh/portal-link';
 /**
  * A LinkDrawable that represents a link from one portal to another
  * @extends {LinkDrawable}
+ * @param  {vec2} start          X, Z of origin portal
+ * @param  {vec2} end            X, Z of destination portal
+ * @param  {vec4} color          Color of link
+ * @param  {Number} startPercent Percent health of the origin portal
+ * @param  {Number} endPercent   Percent health of the destination portal
  */
 class PortalLinkDrawable extends LinkDrawable {
 
-  /**
-   * Construct a portal link
-   * @param  {vec2} start          X, Z of origin portal
-   * @param  {vec2} end            X, Z of destination portal
-   * @param  {vec4} color          Color of link
-   * @param  {Number} startPercent Percent health of the origin portal
-   * @param  {Number} endPercent   Percent health of the destination portal
-   */
   constructor(start, end, color, startPercent, endPercent) {
     super(Constants.Program.Link, Constants.Texture.PortalLink);
     this.start = start;

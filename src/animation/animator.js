@@ -1,29 +1,37 @@
 import Animation from './animation';
 
+/**
+ * This class handles running animations on animatable objects.
+ *
+ * This is generally composed into a class (e.g. Camera or Drawable)
+ */
 class Animator {
 	constructor() {
     this._animations = [];
 	}
 
   /**
-   * Adds an animation
+   * Adds an animation.
+   *
+   * Note that this does not start the animation.
    *
    * @chainable
    * @param {Animation} animation The animation to be run.
-   *                              This will need to be started independently, or prior to being added.
-   * @return {this}
+   *                              This will need to be started independently, or
+   *                              prior to being added.
+   * @return {this} Returns `this`
    */
   addAnimation(animation) {
     if (!(animation instanceof Animation)) {
-      console.warn('New animation should be an instance of an Animation');
+      throw new Error('New animation should be an instance of an Animation');
     }
     this._animations.unshift(animation);
     return this;
   }
 
   /**
-   * @param  {Number}  Time since last update
-   * @param  {Object}  Object to animate
+   * @param  {Number} delta    Time since last update
+   * @param  {Object} subject  Object to animate
    * @return {void}
    */
   runAnimations(delta, subject) {

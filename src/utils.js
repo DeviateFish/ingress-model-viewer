@@ -4,6 +4,7 @@ import TexturedDrawable from './drawable/textured';
 /**
  * Reset the GL state to some base state
  * @param  {context} gl A WebGL context
+ * @return {void}
  */
 export function resetGL(gl) {
   gl.lineWidth(1.0);
@@ -23,6 +24,7 @@ export function resetGL(gl) {
  * @param {Object} base  Parameter definition with defaults
  * @param {Object} opts  Options (overrides)
  * @param {Boolean} deep Do deep copying on objects.
+ * @return {Object} The base object
  */
 export function setParams(base, opts, deep) {
   for(var i in base)
@@ -56,8 +58,13 @@ export function disco(delta, elapsed) {
   return true;
 }
 
+/**
+ * Makes an artifact drawable class
+ * @param  {String} meshName    Name of the mesh to use
+ * @param  {String} textureName Name of the texture to use
+ * @return {ArtifactDrawable}   A new drawable class for this artifact
+ */
 export function makeArtifact(meshName, textureName) {
-
   class artifact extends TexturedDrawable {
     constructor() {
       super(Constants.Program.Textured, meshName, textureName);
@@ -69,6 +76,8 @@ export function makeArtifact(meshName, textureName) {
 
 /**
  * Generate a set of artifacts
+ *
+ * @private
  * @param  {String}  series    Series name
  *                             Should match the internal name of the resources
  * @param  {Number}  num       Number of artifacts in the series

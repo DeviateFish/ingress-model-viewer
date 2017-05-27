@@ -12,7 +12,6 @@ class Animation {
    * Create an animation for a drawable
    *
    * @chainable
-   * @param  {Drawable} drawable  The object ot animate
    * @param  {Number}  duration   Duration of one cycle of the animation
    * @param  {Function} transform Animation callback
    *                              Parameter: Number t
@@ -36,7 +35,7 @@ class Animation {
    * Starts the animation
    *
    * @chainable
-   * @return {this}
+   * @return {this} Returns `this`
    */
   start() {
     if(!this.running) {
@@ -49,7 +48,7 @@ class Animation {
    * Stops the animation, and resets the elasped time to 0
    *
    * @chainable
-   * @return {this}
+   * @return {this} Returns `this`
    */
   stop() {
     this.elapsed = 0;
@@ -60,7 +59,7 @@ class Animation {
    * Pauses the running animation
    *
    * @chainable
-   * @return {this}
+   * @return {this} Returns `this`
    */
   pause() {
     if(this.running) {
@@ -96,13 +95,14 @@ class Animation {
    * Allows for chaining of animations
    *
    * @chainable
-   * @param  {Animation}    The animation to queue after this one completes
-   *                        Note that this isn't really valid for looping animations
-   * @return {this}
+   * @param  {Animation} animation  The animation to queue after this one
+   *                                completes. Note that this isn't really
+   *                                valid for looping animations
+   * @return {this} Returns `this`
    */
   chain(animation) {
     if (!(animation instanceof Animation)) {
-      console.warn('New animation should be an instance of an Animation');
+      throw new Error('New animation should be an instance of an Animation');
     }
     this.next.push(animation);
     return this;
