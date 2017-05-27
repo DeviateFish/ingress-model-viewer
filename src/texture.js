@@ -4,16 +4,14 @@ import GLBound from './gl-bound';
  * A gl-bound texture
  * Supports most (all?) of the texture binding options.
  * Also generates mipmaps if the texture requires it.
+ *
+ * @class
+ * @param  {context} gl   A WebGL context
+ * @param  {Object} info  Texture parameters
+ * @param  {Images} image An image to use as the texture
  */
 class Texture extends GLBound {
 
-  /**
-   * Constructs a gl-bound texture, sets all the proper parameters, and binds
-   * it to the context
-   * @param  {context} gl   A WebGL context
-   * @param  {Object} info  Texture parameters
-   * @param  {Images} image An image to use as the texture
-   */
   constructor(gl, info, image) {
     super(gl);
     this.info = info;
@@ -44,7 +42,9 @@ class Texture extends GLBound {
 
   /**
    * Bind the texture to a particular texture index
+   *
    * @param  {Number} index Texture index to bind to
+   * @return {void}
    */
   use(index) {
     var gl = this._gl;
@@ -55,6 +55,8 @@ class Texture extends GLBound {
 
   /**
    * NYI: TODO
+   *
+   * @return {void}
    */
   dispose() {
     // TODO: Figure out when this should be called.

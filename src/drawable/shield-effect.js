@@ -22,14 +22,12 @@ var defaultContributions = vec3.fromValues(0.5, 0.5, 0.5);
  * So, perhaps a better way would be to have the base class hardcode the texture
  * and mesh internal names, and then the derived classes pick a program and handle
  * the variables.
+ *
+ * @param  {String} meshName    Mesh internal name
+ * @param  {String} textureName Texture internal name
  */
 class ShieldEffectDrawable extends TexturedDrawable {
 
-  /**
-   * Constructs a shield effect
-   * @param  {String} meshName    Mesh internal name
-   * @param  {String} textureName Texture internal name
-   */
   constructor(meshName, textureName) {
     super(PROGRAM, meshName, textureName);
     this.uniforms.u_color = vec4.clone(defaultColor);

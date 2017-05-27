@@ -6,17 +6,14 @@ import ResonatorLinkMesh from '../mesh/resonator-link';
 /**
  * A ResonatorLinkDrawable is a LinkDrawable that represents a link
  * between a portal and a resonator
+ * @param  {vec2} portalPosition     X,Z of the portal (usually 0,0)
+ * @param  {Number} slot             Slot (0-7)
+ * @param  {Number} distance         Usually 0-40
+ * @param  {vec4} color              Color of the resonator link (TODO: make this disco)
+ * @param  {Number} resonatorPercent Percent health of the resonator
  */
 class ResonatorLinkDrawable extends LinkDrawable {
 
-  /**
-   * Construct a portal link resonator
-   * @param  {vec2} portalPosition     X,Z of the portal (usually 0,0)
-   * @param  {Number} slot             Slot (0-7)
-   * @param  {Number} distance         Usually 0-40
-   * @param  {vec4} color              Color of the resonator link (TODO: make this disco)
-   * @param  {Number} resonatorPercent Percent health of the resonator
-   */
   constructor(portalPosition, slot, distance, color, resonatorPercent) {
     super(Constants.Program.Link, Constants.Texture.ResonatorLink);
     this.portalPosition = portalPosition;

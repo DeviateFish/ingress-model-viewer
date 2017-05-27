@@ -7,14 +7,10 @@ const PROGRAM = Constants.Program.RegionTextured;
 /**
  * An OrnamentDrawable is a TextuedDrawable that draws an ornament on
  * a unit plane.
+ * @param  {String} meshName    Internal name of the ornament mesh
+ * @param  {String} textureName Internal name of the texture
  */
 class OrnamentDrawable extends TexturedDrawable {
-
-  /**
-   * Constructs an ornament
-   * @param  {String} meshName    Internal name of the ornament mesh
-   * @param  {String} textureName Internal name of the texture
-   */
   constructor(meshName, textureName) {
     super(PROGRAM, meshName, textureName);
     this.uniforms.u_texCoordBase = vec2.fromValues(0, 0);

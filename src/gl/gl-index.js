@@ -3,13 +3,14 @@ import GLBuffer from './gl-buffer';
 /**
  * A GLIndex is a GLBuffer representing an index buffer of some kind
  *
+ * @private
  * @extends {GLBuffer}
  * @chainable
  * @param  {context} gl           WebGL context
  * @param  {ArrayBuffer} values   Values to initialize the buffer with
  * @param  {enum} drawMode        Draw mode @see https://www.khronos.org/registry/webgl/specs/1.0/#5.14.11
  * @param  {enum} usage           Usage @see https://www.khronos.org/registry/webgl/specs/1.0/#5.14.5
- * @return {this}
+ * @return {this} The new GLIndex
  */
 class GLIndex extends GLBuffer {
 
@@ -26,7 +27,7 @@ class GLIndex extends GLBuffer {
    * Perform a draw call using this index buffer.
    *
    * @chainable
-   * @return {this}
+   * @return {this} Returns `this`
    */
   draw() {
     var gl = this._gl;

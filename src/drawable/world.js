@@ -11,6 +11,7 @@ import OrnamentDrawable from './ornament';
  * @type {Object}
  */
 var World = {};
+
 var meshes = Constants.Mesh.World;
 var textures = Constants.Texture;
 

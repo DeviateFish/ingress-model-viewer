@@ -14,19 +14,16 @@ import { vec3, mat4 } from 'gl-matrix';
  *
  * Also includes a few simple functions for demoing various entities/drawables.  This
  * will probably go away in a future release.
+ *
+ * @param  {HTMLCanvas} canvas       A Canvas element
+ * @param  {Object} assets           A manifest to pass to the internal AssetManager
+ *                                   @see  AssetManager
+ * @param  {Boolean} enableSnapshots If set to true, the canvas will preserve its drawing
+ *                                   buffer, to allow for accurate .toDataURL calls.
+ *                                   This will have a performance impact.
  */
 class Engine {
 
-  /**
-   * Constructs an engine, given a canvas to render on and a list of assets to seed
-   * its AssetManager with.
-   * @param  {HTMLCanvas} canvas       A Canvas element
-   * @param  {Object} assets           A manifest to pass to the internal AssetManager
-   *                                   @see  AssetManager
-   * @param  {Boolean} enableSnapshots If set to true, the canvas will preserve its drawing
-   *                                   buffer, to allow for accurate .toDataURL calls.
-   *                                   This will have a performance impact.
-   */
   constructor(canvas, assets, enableSnapshots) {
     this.canvas = canvas;
     var opt = {};
@@ -62,9 +59,9 @@ class Engine {
    * if not provided.
    *
    * @chainable
-   * @param {Number} width   @optional width
-   * @param {Number} height  @optional height
-   * @return {this}
+   * @param {Number} width   (optional) width
+   * @param {Number} height  (optional) height
+   * @return {this} Returns `this`
    */
   resize(width, height) {
     let devicePixels = window.devicePixelRatio;
@@ -87,8 +84,8 @@ class Engine {
    * Sets the scaling factor for the canvas.
    *
    * @chainable
-   * @param  {Number}
-   * @return {this}
+   * @param  {Number} factor The scale factor
+   * @return {this} Returns `this`
    */
   rescale(factor) {
     this.scale = factor;
@@ -99,7 +96,7 @@ class Engine {
    * Updates the current drawing viewport to the canvas' current dimensions
    *
    * @chainable
-   * @return {this}
+   * @return {this} Returns `this`
    */
   updateView() {
     this.objectRenderer.updateView(this.camera);
@@ -110,7 +107,7 @@ class Engine {
    * Stops the render loop, if it's running.
    *
    * @chainable
-   * @return {this}
+   * @return {this} Returns `this`
    */
   stop() {
     this._last = this._start = null;
@@ -239,6 +236,13 @@ class Engine {
     return this.assetManager.loadAll();
   }
 
+  /**
+   * Captures a screenshot, if enabled
+   *
+   * @param  {String} mimeType The mime type of the image
+   * @param  {Number} quality  Quality, if applicable (applies to image/jpeg)
+   * @return {Promise}         A promise that resolves when the screenshot is complete
+   */
   capture(mimeType, quality) {
     if (this.canScreenshot) {
       this.stop();

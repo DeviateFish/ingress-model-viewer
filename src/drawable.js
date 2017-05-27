@@ -142,6 +142,7 @@ class Drawable {
   /**
    * Adds a drawable as a child of this one.
    * @param {Drawable} drawable The child drawable.
+   * @return {void}
    */
   addChild(drawable) {
     if (!(drawable instanceof Drawable)) {
@@ -156,6 +157,7 @@ class Drawable {
    * by applying world and local transforms to the model
    * matrix.  Then, propagate the new local transform to all the children
    * by way of their world transforms.
+   * @return {void}
    */
   updateMatrix() {
     var translateRotate = mat4.create();
@@ -171,6 +173,7 @@ class Drawable {
   /**
    * Updates the model's "world" transform.
    * @param  {mat4} world   A world transform
+   * @return {void}
    */
   updateWorld(world) {
     this.world = world;
@@ -180,8 +183,9 @@ class Drawable {
   /**
    * Update the internal viewProject matrix (projection * view matrices)
    * @param  {mat4} viewProject Projection matrix multiplied by view matrix
+   * @return {void}
    */
-  updateView(viewProject) {
+  updateView(viewProject/*, camera*/) {
     this.viewProject = viewProject;
     this.updateMatrix();
     this.updateRay();
@@ -190,6 +194,7 @@ class Drawable {
   /**
    * Updates the internal representation of the ray from the camera to the
    * drawable
+   * @return {void}
    */
   updateRay() {
     vec3.copy(this._ray, this._translate);
@@ -200,6 +205,7 @@ class Drawable {
   /**
    * Translate a model along some vector
    * @param  {vec3} vec   The vector
+   * @return {void}
    */
   translate(vec) {
     vec3.add(this._translate, this._translate, vec);
@@ -210,6 +216,7 @@ class Drawable {
   /**
    * Sets the position to some vector
    * @param {vec3} vec The new position
+   * @return {void}
    */
   setTranslation(vec) {
     this._translate = vec3.create();
@@ -219,6 +226,7 @@ class Drawable {
   /**
    * Scale a model by some vector
    * @param  {vec3} vec   The vector
+   * @return {void}
    */
   scale(vec) {
     vec3.multiply(this._scale, this._scale, vec);
@@ -228,6 +236,7 @@ class Drawable {
   /**
    * Sets the scale of the local transform
    * @param {vec3} vec The scale to set to.
+   * @return {void}
    */
   setScale(vec) {
     this._scale = vec3.fromValues(1, 1, 1);
@@ -236,7 +245,8 @@ class Drawable {
 
   /**
    * Rotate a model with a quaternion
-   * @param  {quat} quat   The quaternion
+   * @param  {quat} q   The quaternion
+   * @return {void}
    */
   rotate(q) {
     quat.multiply(this._rotate, this._rotate, q);
@@ -245,7 +255,8 @@ class Drawable {
 
   /**
    * Sets the object's rotation from a quaternion
-   * @param {quat} quat The new rotation
+   * @param {quat} q The new rotation
+   * @return {void}
    */
   setRotation(q) {
     this._rotate = quat.create();
@@ -255,6 +266,7 @@ class Drawable {
   /**
    * Translate the model along the X axis
    * @param  {float} dist  Distance to translate
+   * @return {void}
    */
   translateX(dist) {
     this.translate(vec3.fromValues(dist, 0, 0));
@@ -263,6 +275,7 @@ class Drawable {
   /**
    * Translate the model along the Y axis
    * @param  {float} dist  Distance to translate
+   * @return {void}
    */
   translateY(dist) {
     this.translate(vec3.fromValues(0, dist, 0));
@@ -271,6 +284,7 @@ class Drawable {
   /**
    * Translate the model along the Z axis
    * @param  {float} dist  Distance to translate
+   * @return {void}
    */
   translateZ(dist) {
     this.translate(vec3.fromValues(0, 0, dist));
@@ -279,6 +293,7 @@ class Drawable {
   /**
    * Scale all dimensions by the same value
    * @param  {Number} f The amount to _scale
+   * @return {void}
    */
   scalarScale(f) {
     this.scale(vec3.fromValues(f, f, f));
@@ -287,6 +302,7 @@ class Drawable {
   /**
    * Sets the local scale to some scalar value (for x, y, and z)
    * @param {Number} f Amount to set the scale to.
+   * @return {void}
    */
   setScalarScale(f) {
     this.setScale(vec3.fromValues(f, f, f));
@@ -298,6 +314,7 @@ class Drawable {
    *
    * @see  Mesh
    * @param {enum} mode One of the Mesh.MODE_* constants
+   * @return {void}
    */
   setDrawMode(mode) {
     let modes = [Mesh.MODE_TRIANGLES, Mesh.MODE_LINES];
@@ -309,6 +326,7 @@ class Drawable {
 
   /**
    * Sets the draw mode to draw lines
+   * @return {void}
    */
   drawLines() {
     this.setDrawMode(Mesh.MODE_LINES);
@@ -316,6 +334,7 @@ class Drawable {
 
   /**
    * Sets the draw mode to draw triangles
+   * @return {void}
    */
   drawFaces() {
     this.setDrawMode(Mesh.MODE_TRIANGLES);
@@ -335,7 +354,7 @@ class Drawable {
    * @chainable
    * @param {Animation} animation The animation to be run.
    *                              This will need to be started independently, or prior to being added.
-   * @return {this}
+   * @return {this} Returns `this`
    */
   addAnimation(animation) {
     this.animator.addAnimation(animation);

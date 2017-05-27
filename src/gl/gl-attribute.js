@@ -3,13 +3,14 @@ import GLBuffer from './gl-buffer';
 /**
  * A GLAttribute is a GLBuffer that represents vertex attributes
  *
+ * @private
  * @extends {GLBuffer}
  * @chainable
  * @param  {context} gl             WebGLContext
  * @param  {Array} attributes       An array of VertexAttributes
  * @param  {ArrayBuffer} values     Values to fill the buffer with
  * @param  {enum} usage             Usage @see https://www.khronos.org/registry/webgl/specs/1.0/#5.14.5
- * @return {this}
+ * @return {this} The new GLAttribute
  */
 class GLAttribute extends GLBuffer {
   constructor(gl, attributes, values, usage) {

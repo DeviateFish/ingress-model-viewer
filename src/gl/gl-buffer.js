@@ -3,6 +3,7 @@ import GLBound from '../gl-bound';
 /**
  * A GLBuffer is a buffer of some sort that will be passed to the gpu
  *
+ * @private
  * @extends {GLBound}
  * @chainable
  * @param  {context} gl    WebGL context
@@ -25,7 +26,7 @@ class GLBuffer extends GLBound {
    * Binds the buffer to the gpu
    *
    * @chainable
-   * @return {this}
+   * @return {this} Returns `this`
    */
   bindBuffer() {
     if(!this.values) {
@@ -42,7 +43,7 @@ class GLBuffer extends GLBound {
    * Unbinds the buffer (NPI)
    *
    * @chainable
-   * @return {this}
+   * @return {this} Returns `this`
    */
   unbindBuffer() {
     // this._gl.bindBuffer(this.target, 0);  // apparently this makes webgl cranky
@@ -53,7 +54,7 @@ class GLBuffer extends GLBound {
    * Update the buffer data on the gpu
    *
    * @chainable
-   * @return {this}
+   * @return {this} Returns `this`
    */
   update() {
     this.bindBuffer();
@@ -70,7 +71,7 @@ class GLBuffer extends GLBound {
    * @chainable
    * @param {ArrayBuffer} values Values to store in the buffer
    * @param {Number} offset      Offset to write the values
-   * @return {this}
+   * @return {this} Returns `this`
    */
   setValues(values, offset) {
     if(!this.values) {
@@ -88,7 +89,7 @@ class GLBuffer extends GLBound {
    * @chainable
    * @param  {Number} start Start of deletion
    * @param  {Number} end   End of deletion
-   * @return {this}
+   * @return {this} Returns `this`
    */
   deleteWithin(start, end) {
     if(!this.values) {
@@ -110,7 +111,7 @@ class GLBuffer extends GLBound {
    *                             the contents of the buffer at that offset)
    * @param  {Number}   start    Offset to start
    * @param  {Number}   end      Offset to end
-   * @return {this}
+   * @return {this} Returns `this`
    */
   map(callback, start, end) {
     start = start === undefined ? 0 : start;
@@ -126,7 +127,7 @@ class GLBuffer extends GLBound {
    *
    * @chainable
    * @param  {ArrayBuffer} values New values to fill the buffer with
-   * @return {this}
+   * @return {this} Returns `this`
    */
   updateBuffer(values) {
     this.values = values;

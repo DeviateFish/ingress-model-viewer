@@ -9,16 +9,14 @@ const defaultAltColor = vec4.clone(Constants.xmColors.coreGlowAlt);
 
 /**
  * An XmDrawable is a drawable representing the animate "xm core" of inventory items
+ *
+ * @param  {String} meshName    Mesh internal name
+ * @param  {String} textureName Texture internal name
+ * @param  {vec4} teamColor     Color of the xm glow.
+ * @return {[type]}             [description]
  */
 class XmDrawable extends TexturedDrawable {
 
-  /**
-   * Construct an xm core
-   * @param  {String} meshName    Mesh internal name
-   * @param  {String} textureName Texture internal name
-   * @param  {vec4} teamColor     Color of the xm glow.
-   * @return {[type]}             [description]
-   */
   constructor(meshName, textureName, teamColor) {
     super(PROGRAM, meshName, textureName);
     this.uniforms.u_elapsedTime = 0;

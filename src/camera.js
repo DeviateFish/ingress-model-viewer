@@ -5,15 +5,13 @@ import Animator from './animation/animator';
  * A Camera is a class to manage view of the scene.
  *
  * @class
+ * @chainable
+ * @param {Number} width  The width of the viewport
+ * @param {Number} height The height of the viewport
+ * @return {this} The new Camera
  */
 class Camera {
 
-  /**
-   * Creates a camera
-   *
-   * @chainable
-   * @return {this} The new Camera
-   */
   constructor(width, height) {
     this.position = vec3.create();
     this.view = mat4.create();

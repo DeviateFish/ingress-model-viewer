@@ -4605,16 +4605,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 /**
  * A TexturedDrawable is a Drawable with a specific texture
+ *
+ * @param  {String} programName Program internal name
+ * @param  {String} meshName    Mesh internal name
+ * @param  {String} textureName Texture internal name
  */
 var TexturedDrawable = function (_Drawable) {
   _inherits(TexturedDrawable, _Drawable);
 
-  /**
-   * Construct a textured drawable, given a program, mesh, and texture
-   * @param  {String} programName Program internal name
-   * @param  {String} meshName    Mesh internal name
-   * @param  {String} textureName Texture internal name
-   */
   function TexturedDrawable(programName, meshName, textureName) {
     _classCallCheck(this, TexturedDrawable);
 
@@ -4694,18 +4692,15 @@ var MODE_LINES = 'lines';
  * Base class for all meshes
  *
  * @extends {GLBound}
+ * @param  {context} gl              A webgl context
+ * @param  {Float32Array} attributes A typed array of vertex attributes
+ * @param  {Uint16Array} faces       A typed array of face indices
+ * @param  {Uint16Array} lines       A typed array of line indices
  */
 
 var Mesh = function (_GLBound) {
   _inherits(Mesh, _GLBound);
 
-  /**
-   * Initializes a mesh
-   * @param  {context} gl              A webgl context
-   * @param  {Float32Array} attributes A typed array of vertex attributes
-   * @param  {Uint16Array} faces       A typed array of face indices
-   * @param  {Uint16Array} lines       A typed array of line indices
-   */
   function Mesh(gl, attributes, faces, lines) {
     _classCallCheck(this, Mesh);
 
@@ -4721,7 +4716,10 @@ var Mesh = function (_GLBound) {
 
   /**
    * Given a set of locations from the currently-active shader, draw this mesh
-   * @param  {Object} locations A hash of locations by name
+   * @param {Object} locations A hash of locations by name
+   * @param {String} mode (optional) The draw mode
+   *                      Either MODE_TRIANGLES or MODE_LINES
+   * @return {void}
    */
 
 
@@ -4820,7 +4818,18 @@ var Mesh = function (_GLBound) {
   return Mesh;
 }(_glBound2.default);
 
+/**
+ * Specifies drawing in `lines` mode
+ * @type {String}
+ */
+
+
 Mesh.MODE_LINES = MODE_LINES;
+
+/**
+ * Specifies drawing in `triangles` mode
+ * @type {String}
+ */
 Mesh.MODE_TRIANGLES = MODE_TRIANGLES;
 
 exports.default = Mesh;
@@ -4840,14 +4849,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /**
  * Base class for all things bound to a gl context.
- */
-var GLBound =
-
-/**
- * Binds to a gl context
+ *
  * @param  {context} gl  A webgl context
  */
-function GLBound(gl) {
+var GLBound = function GLBound(gl) {
   _classCallCheck(this, GLBound);
 
   this._gl = gl;
@@ -4883,21 +4888,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 /**
  * A GLAttribute is a GLBuffer that represents vertex attributes
  *
+ * @private
  * @extends {GLBuffer}
+ * @chainable
+ * @param  {context} gl             WebGLContext
+ * @param  {Array} attributes       An array of VertexAttributes
+ * @param  {ArrayBuffer} values     Values to fill the buffer with
+ * @param  {enum} usage             Usage @see https://www.khronos.org/registry/webgl/specs/1.0/#5.14.5
+ * @return {this} The new GLAttribute
  */
 var GLAttribute = function (_GLBuffer) {
   _inherits(GLAttribute, _GLBuffer);
 
-  /**
-   * Construct a vertex attribute buffer
-   *
-   * @chainable
-   * @param  {context} gl             WebGLContext
-   * @param  {Array} attributes       An array of VertexAttributes
-   * @param  {ArrayBuffer} values     Values to fill the buffer with
-   * @param  {enum} usage             Usage @see https://www.khronos.org/registry/webgl/specs/1.0/#5.14.5
-   * @return {this}
-   */
   function GLAttribute(gl, attributes, values, usage) {
     var _ret;
 
@@ -5054,21 +5056,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 /**
  * A GLIndex is a GLBuffer representing an index buffer of some kind
  *
+ * @private
  * @extends {GLBuffer}
+ * @chainable
+ * @param  {context} gl           WebGL context
+ * @param  {ArrayBuffer} values   Values to initialize the buffer with
+ * @param  {enum} drawMode        Draw mode @see https://www.khronos.org/registry/webgl/specs/1.0/#5.14.11
+ * @param  {enum} usage           Usage @see https://www.khronos.org/registry/webgl/specs/1.0/#5.14.5
+ * @return {this} The new GLIndex
  */
 var GLIndex = function (_GLBuffer) {
   _inherits(GLIndex, _GLBuffer);
 
-  /**
-   * Construct an index buffer
-   *
-   * @chainable
-   * @param  {context} gl           WebGL context
-   * @param  {ArrayBuffer} values   Values to initialize the buffer with
-   * @param  {enum} drawMode        Draw mode @see https://www.khronos.org/registry/webgl/specs/1.0/#5.14.11
-   * @param  {enum} usage           Usage @see https://www.khronos.org/registry/webgl/specs/1.0/#5.14.5
-   * @return {this}
-   */
   function GLIndex(gl, values, drawMode, usage) {
     var _ret;
 
@@ -5088,7 +5087,7 @@ var GLIndex = function (_GLBuffer) {
    * Perform a draw call using this index buffer.
    *
    * @chainable
-   * @return {this}
+   * @return {this} Returns `this`
    */
 
 
@@ -5126,14 +5125,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /**
  * A vertex attribute
- */
-var VertexAttribute =
-/**
- * A vertex attribute
+ *
  * @param  {String} name Name of the attribute
  * @param  {Number} size Size of the attribute (in bytes)
+ * @param  {Number} type The type of vertex attribute
  */
-function VertexAttribute(name, size, type) {
+var VertexAttribute = function VertexAttribute(name, size, type) {
   _classCallCheck(this, VertexAttribute);
 
   this.name = name;
@@ -5181,6 +5178,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 /**
  * Reset the GL state to some base state
  * @param  {context} gl A WebGL context
+ * @return {void}
  */
 function resetGL(gl) {
   gl.lineWidth(1.0);
@@ -5200,6 +5198,7 @@ function resetGL(gl) {
  * @param {Object} base  Parameter definition with defaults
  * @param {Object} opts  Options (overrides)
  * @param {Boolean} deep Do deep copying on objects.
+ * @return {Object} The base object
  */
 function setParams(base, opts, deep) {
   for (var i in base) {
@@ -5228,6 +5227,12 @@ function disco(delta, elapsed) {
   return true;
 }
 
+/**
+ * Makes an artifact drawable class
+ * @param  {String} meshName    Name of the mesh to use
+ * @param  {String} textureName Name of the texture to use
+ * @return {ArtifactDrawable}   A new drawable class for this artifact
+ */
 function makeArtifact(meshName, textureName) {
   var artifact = function (_TexturedDrawable) {
     _inherits(artifact, _TexturedDrawable);
@@ -5246,6 +5251,8 @@ function makeArtifact(meshName, textureName) {
 
 /**
  * Generate a set of artifacts
+ *
+ * @private
  * @param  {String}  series    Series name
  *                             Should match the internal name of the resources
  * @param  {Number}  num       Number of artifacts in the series
@@ -5395,7 +5402,7 @@ var Drawable = function () {
      *
      * @chainable
      * @param {Function} fn The draw function to use when drawable this object
-     * @return {this}
+     * @return {this} Returns `this`
      */
 
   }, {
@@ -5428,7 +5435,7 @@ var Drawable = function () {
      * @chainable
      * @param {String} name  Name of the drawable to set
      * @param {mixed} value  Value to set on the drawable.
-     * @returns {this}
+     * @returns {this} Returns `this`
      */
 
   }, {
@@ -5461,6 +5468,7 @@ var Drawable = function () {
     /**
      * Adds a drawable as a child of this one.
      * @param {Drawable} drawable The child drawable.
+     * @return {void}
      */
 
   }, {
@@ -5478,6 +5486,7 @@ var Drawable = function () {
      * by applying world and local transforms to the model
      * matrix.  Then, propagate the new local transform to all the children
      * by way of their world transforms.
+     * @return {void}
      */
 
   }, {
@@ -5498,6 +5507,7 @@ var Drawable = function () {
     /**
      * Updates the model's "world" transform.
      * @param  {mat4} world   A world transform
+     * @return {void}
      */
 
   }, {
@@ -5510,11 +5520,12 @@ var Drawable = function () {
     /**
      * Update the internal viewProject matrix (projection * view matrices)
      * @param  {mat4} viewProject Projection matrix multiplied by view matrix
+     * @return {void}
      */
 
   }, {
     key: 'updateView',
-    value: function updateView(viewProject) {
+    value: function updateView(viewProject /*, camera*/) {
       this.viewProject = viewProject;
       this.updateMatrix();
       this.updateRay();
@@ -5523,6 +5534,7 @@ var Drawable = function () {
     /**
      * Updates the internal representation of the ray from the camera to the
      * drawable
+     * @return {void}
      */
 
   }, {
@@ -5536,6 +5548,7 @@ var Drawable = function () {
     /**
      * Translate a model along some vector
      * @param  {vec3} vec   The vector
+     * @return {void}
      */
 
   }, {
@@ -5549,6 +5562,7 @@ var Drawable = function () {
     /**
      * Sets the position to some vector
      * @param {vec3} vec The new position
+     * @return {void}
      */
 
   }, {
@@ -5561,6 +5575,7 @@ var Drawable = function () {
     /**
      * Scale a model by some vector
      * @param  {vec3} vec   The vector
+     * @return {void}
      */
 
   }, {
@@ -5573,6 +5588,7 @@ var Drawable = function () {
     /**
      * Sets the scale of the local transform
      * @param {vec3} vec The scale to set to.
+     * @return {void}
      */
 
   }, {
@@ -5584,7 +5600,8 @@ var Drawable = function () {
 
     /**
      * Rotate a model with a quaternion
-     * @param  {quat} quat   The quaternion
+     * @param  {quat} q   The quaternion
+     * @return {void}
      */
 
   }, {
@@ -5596,7 +5613,8 @@ var Drawable = function () {
 
     /**
      * Sets the object's rotation from a quaternion
-     * @param {quat} quat The new rotation
+     * @param {quat} q The new rotation
+     * @return {void}
      */
 
   }, {
@@ -5609,6 +5627,7 @@ var Drawable = function () {
     /**
      * Translate the model along the X axis
      * @param  {float} dist  Distance to translate
+     * @return {void}
      */
 
   }, {
@@ -5620,6 +5639,7 @@ var Drawable = function () {
     /**
      * Translate the model along the Y axis
      * @param  {float} dist  Distance to translate
+     * @return {void}
      */
 
   }, {
@@ -5631,6 +5651,7 @@ var Drawable = function () {
     /**
      * Translate the model along the Z axis
      * @param  {float} dist  Distance to translate
+     * @return {void}
      */
 
   }, {
@@ -5642,6 +5663,7 @@ var Drawable = function () {
     /**
      * Scale all dimensions by the same value
      * @param  {Number} f The amount to _scale
+     * @return {void}
      */
 
   }, {
@@ -5653,6 +5675,7 @@ var Drawable = function () {
     /**
      * Sets the local scale to some scalar value (for x, y, and z)
      * @param {Number} f Amount to set the scale to.
+     * @return {void}
      */
 
   }, {
@@ -5667,6 +5690,7 @@ var Drawable = function () {
      *
      * @see  Mesh
      * @param {enum} mode One of the Mesh.MODE_* constants
+     * @return {void}
      */
 
   }, {
@@ -5681,6 +5705,7 @@ var Drawable = function () {
 
     /**
      * Sets the draw mode to draw lines
+     * @return {void}
      */
 
   }, {
@@ -5691,6 +5716,7 @@ var Drawable = function () {
 
     /**
      * Sets the draw mode to draw triangles
+     * @return {void}
      */
 
   }, {
@@ -5716,7 +5742,7 @@ var Drawable = function () {
      * @chainable
      * @param {Animation} animation The animation to be run.
      *                              This will need to be started independently, or prior to being added.
-     * @return {this}
+     * @return {this} Returns `this`
      */
 
   }, {
@@ -5778,15 +5804,17 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 /**
- * This file constructs the drawable primitives for many of the inventory items.
+ * Contains drawable primitives for many of the inventory items.
  */
-
 var Inventory = {};
+
 var meshes = _constants2.default.Mesh.Inventory;
 var textures = _constants2.default.Texture;
 
 /**
  * Creates the outer "shell" for an xm item.
+ *
+ * @private
  * @param  {String} name Internal name of the mesh
  * @return {itembase}    A BicoloredDrawable with the specified mesh name
  *                       and the flipcard texture
@@ -5809,6 +5837,8 @@ function createShell(name) {
 
 /**
  * Creates the xm "core" of an item
+ *
+ * @private
  * @param  {String} name Internal name of the xm mesh
  * @return {xmbase}      An XmDrawable with the specified mesh name
  *                       and the Xm texture.
@@ -5831,6 +5861,8 @@ function createCore(name) {
 
 /**
  * Creates a media item
+ *
+ * @private
  * @param  {String} name Media mesh internal name
  * @return {media}       A TexturedDrawable with the Textured program,
  *                       the specified mesh, and the flipcard texture.
@@ -5914,6 +5946,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * @type {Object}
  */
 var World = {};
+
 var meshes = _constants2.default.Mesh.World;
 var textures = _constants2.default.Texture;
 
@@ -6031,12 +6064,16 @@ var PROGRAM = _constants2.default.Program.Bicolored;
 
 /**
  * Default quality color.
+ *
+ * @private
  * @type {vec4}
  */
 var defaultColor0 = _glMatrix.vec4.clone(_constants2.default.qualityColors.VERY_RARE);
 
 /**
  * Default glow color
+ *
+ * @private
  * @type {vec4}
  */
 var defaultColor1 = _glMatrix.vec4.clone(_constants2.default.xmColors.coreGlow);
@@ -6049,16 +6086,13 @@ var defaultColor1 = _glMatrix.vec4.clone(_constants2.default.xmColors.coreGlow);
  * Otherwise, it's the texture color blended with u_color1
  *
  * Or something like that.
+ * @param  {String} meshName    Internal name of the mesh for this drawable
+ * @param  {String} textureName Internal name of the texture for this drawble
  */
 
 var BicoloredDrawable = function (_TexturedDrawable) {
   _inherits(BicoloredDrawable, _TexturedDrawable);
 
-  /**
-   * Initialized a bi-colored drawable
-   * @param  {String} meshName    Internal name of the mesh for this drawable
-   * @param  {String} textureName Internal name of the texture for this drawble
-   */
   function BicoloredDrawable(meshName, textureName) {
     _classCallCheck(this, BicoloredDrawable);
 
@@ -6105,15 +6139,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 /**
  * The LinkDrawable represents the base class for link-type drawables.
+ *
+ * @param  {String} programName Internal name of the program to use
+ * @param  {String} textureName Internal name of the texture to use
  */
 var LinkDrawable = function (_TexturedDrawable) {
   _inherits(LinkDrawable, _TexturedDrawable);
 
-  /**
-   * Constructs a link drawable witth the given program and texture.
-   * @param  {String} programName Internal name of the program to use
-   * @param  {String} textureName Internal name of the texture to use
-   */
   function LinkDrawable(programName, textureName) {
     _classCallCheck(this, LinkDrawable);
 
@@ -6126,9 +6158,8 @@ var LinkDrawable = function (_TexturedDrawable) {
 
   /**
    * Updates the camera transforms for the link drawables
-   * @param  {mat4} viewProject Combined view and project matrix
-   * @param  {mat4} view        View Matrix
-   * @param  {mat4} project     Projection matrix
+   * @param  {mat4}   viewProject Combined view and project matrix
+   * @param  {Camera} camera      The camera
    * @return {void}
    */
 
@@ -6179,8 +6210,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-exports.fixPrecision = fixPrecision;
-
 var _glBound = __webpack_require__(4);
 
 var _glBound2 = _interopRequireDefault(_glBound);
@@ -6192,26 +6221,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/**
- * Fixes an issue with shaders where the shader doesn't set a precision,
- * leading it to have a mismatch with its counterpart
- *
- * I.e. the vertex shader might set a precision, but the fragment shader
- * does not, leading to precision mismatch errors.
- * @param  {String} shader The shader to check/fix
- * @return {String}        The fixed shader, or the original if it needed
- *                         no patching.
- */
-function fixPrecision(shader) {
-  if (/precision mediump float/g.test(shader)) {
-    return shader;
-  } else {
-    var lines = shader.split("\n");
-    lines.splice(1, 0, "#ifdef GL_ES", "precision mediump float;", "#endif");
-    return lines.join("\n");
-  }
-}
 
 // Taken from PhiloGL's program class:
 //Returns a Magic Uniform Setter
@@ -6327,27 +6336,26 @@ function getUniformSetter(gl, program, info, isArray) {
 /**
  * Represents a shader program consisting of a vertex shader and a fragment
  * shader.
+ *
+ * Manages the shader's attributes and uniforms.
+ *
+ * @class
  * @extends {GLBound}
+ * @param  {context} gl      Webgl context
+ * @param  {String} vertex   Vertex shader
+ * @param  {String} fragment Fragment shader
  */
 
 var Program = function (_GLBound) {
   _inherits(Program, _GLBound);
 
-  /**
-   * Constructs a program from the given vertex and fragment shader strings.
-   *
-   * Manages the shader's attributes and uniforms.
-   * @param  {context} gl      Webgl context
-   * @param  {String} vertex   Vertex shader
-   * @param  {String} fragment Fragment shader
-   */
   function Program(gl, vertex, fragment) {
     _classCallCheck(this, Program);
 
     var _this = _possibleConstructorReturn(this, (Program.__proto__ || Object.getPrototypeOf(Program)).call(this, gl));
 
     _this.program = null;
-    _this.vertexSource = fixPrecision(vertex);
+    _this.vertexSource = Program.fixPrecision(vertex);
     _this.fragmentSource = fragment;
     _this.attributes = {};
     _this.uniforms = {};
@@ -6359,11 +6367,13 @@ var Program = function (_GLBound) {
    *
    * Parses out shader parameters, compiles the shader, and binds it to
    * the context.
+   *
+   * @return {void}
    */
 
 
   _createClass(Program, [{
-    key: "init",
+    key: 'init',
     value: function init() {
       var gl = this._gl,
           vertex,
@@ -6405,10 +6415,11 @@ var Program = function (_GLBound) {
      * @param  {Function} fn Function to handle the actual drawing.
      *                       The programs attributes and uniforms will
      *                       be passed to the draw function for use.
+     * @return {void}
      */
 
   }, {
-    key: "use",
+    key: 'use',
     value: function use(fn) {
       var gl = this._gl;
       if (!this.program) {
@@ -6420,7 +6431,7 @@ var Program = function (_GLBound) {
       //gl.useProgram(0);
     }
   }, {
-    key: "_setupLocations",
+    key: '_setupLocations',
     value: function _setupLocations() {
       var gl = this._gl,
           program = this.program;
@@ -6442,6 +6453,30 @@ var Program = function (_GLBound) {
         //if array name then clean the array brackets
         name = name[name.length - 1] == ']' ? name.substr(0, name.length - 3) : name;
         this.uniforms[name] = getUniformSetter(gl, program, info, info.name != name);
+      }
+    }
+
+    /**
+     * Fixes an issue with shaders where the shader doesn't set a precision,
+     * leading it to have a mismatch with its counterpart
+     *
+     * I.e. the vertex shader might set a precision, but the fragment shader
+     * does not, leading to precision mismatch errors.
+     * @static
+     * @param  {String} shader The shader to check/fix
+     * @return {String}        The fixed shader, or the original if it needed
+     *                         no patching.
+     */
+
+  }], [{
+    key: 'fixPrecision',
+    value: function fixPrecision(shader) {
+      if (/precision mediump float/g.test(shader)) {
+        return shader;
+      } else {
+        var lines = shader.split("\n");
+        lines.splice(1, 0, "#ifdef GL_ES", "precision mediump float;", "#endif");
+        return lines.join("\n");
       }
     }
   }]);
@@ -6485,7 +6520,6 @@ var Animation = function () {
    * Create an animation for a drawable
    *
    * @chainable
-   * @param  {Drawable} drawable  The object ot animate
    * @param  {Number}  duration   Duration of one cycle of the animation
    * @param  {Function} transform Animation callback
    *                              Parameter: Number t
@@ -6511,7 +6545,7 @@ var Animation = function () {
    * Starts the animation
    *
    * @chainable
-   * @return {this}
+   * @return {this} Returns `this`
    */
 
 
@@ -6528,7 +6562,7 @@ var Animation = function () {
      * Stops the animation, and resets the elasped time to 0
      *
      * @chainable
-     * @return {this}
+     * @return {this} Returns `this`
      */
 
   }, {
@@ -6542,7 +6576,7 @@ var Animation = function () {
      * Pauses the running animation
      *
      * @chainable
-     * @return {this}
+     * @return {this} Returns `this`
      */
 
   }, {
@@ -6633,9 +6667,9 @@ var Ease = function Ease() {
 
 /**
  * @method linear
- * @param {Number} t
+ * @param {Number} t Parametric value (from 0 to 1)
  * @static
- * @return {Number}
+ * @return {Number} The transformed value
  **/
 
 
@@ -6646,9 +6680,9 @@ Ease.linear = function (t) {
 /**
  * Identical to linear.
  * @method none
- * @param {Number} t
+ * @param {Number} t Parametric value (from 0 to 1)
  * @static
- * @return {Number}
+ * @return {Number} The linear transform
  **/
 Ease.none = Ease.linear;
 
@@ -6657,7 +6691,7 @@ Ease.none = Ease.linear;
  * @method get
  * @param {Number} amount A value from -1 (ease in) to 1 (ease out) indicating the strength and direction of the ease.
  * @static
- * @return {Function}
+ * @return {Function} The parametric easing function
  **/
 Ease.get = function (amount) {
   if (amount < -1) {
@@ -6682,7 +6716,7 @@ Ease.get = function (amount) {
  * @method getPowIn
  * @param {Number} pow The exponent to use (ex. 3 would return a cubic ease).
  * @static
- * @return {Function}
+ * @return {Function} The parametric easing function
  **/
 Ease.getPowIn = function (pow) {
   return function (t) {
@@ -6695,7 +6729,7 @@ Ease.getPowIn = function (pow) {
  * @method getPowOut
  * @param {Number} pow The exponent to use (ex. 3 would return a cubic ease).
  * @static
- * @return {Function}
+ * @return {Function} The parametric easing function
  **/
 Ease.getPowOut = function (pow) {
   return function (t) {
@@ -6708,7 +6742,7 @@ Ease.getPowOut = function (pow) {
  * @method getPowInOut
  * @param {Number} pow The exponent to use (ex. 3 would return a cubic ease).
  * @static
- * @return {Function}
+ * @return {Function} The parametric easing function
  **/
 Ease.getPowInOut = function (pow) {
   return function (t) {
@@ -6721,97 +6755,97 @@ Ease.getPowInOut = function (pow) {
 
 /**
  * @method quadIn
- * @param {Number} t
+ * @param {Number} t Parametric value (from 0 to 1)
  * @static
- * @return {Number}
+ * @return {Number} A quadratic ease-in
  **/
 Ease.quadIn = Ease.getPowIn(2);
 /**
  * @method quadOut
- * @param {Number} t
+ * @param {Number} t Parametric value (from 0 to 1)
  * @static
- * @return {Number}
+ * @return {Number} a quadratic ease-out
  **/
 Ease.quadOut = Ease.getPowOut(2);
 /**
  * @method quadInOut
- * @param {Number} t
+ * @param {Number} t Parametric value (from 0 to 1)
  * @static
- * @return {Number}
+ * @return {Number} a quadratic in-out ease
  **/
 Ease.quadInOut = Ease.getPowInOut(2);
 
 /**
  * @method cubicIn
- * @param {Number} t
+ * @param {Number} t Parametric value (from 0 to 1)
  * @static
- * @return {Number}
+ * @return {Number} a cubic ease-in
  **/
 Ease.cubicIn = Ease.getPowIn(3);
 /**
  * @method cubicOut
- * @param {Number} t
+ * @param {Number} t Parametric value (from 0 to 1)
  * @static
- * @return {Number}
+ * @return {Number} a cubic ease-out
  **/
 Ease.cubicOut = Ease.getPowOut(3);
 /**
  * @method cubicInOut
- * @param {Number} t
+ * @param {Number} t Parametric value (from 0 to 1)
  * @static
- * @return {Number}
+ * @return {Number} a cubic ease in-out
  **/
 Ease.cubicInOut = Ease.getPowInOut(3);
 
 /**
  * @method quartIn
- * @param {Number} t
+ * @param {Number} t Parametric value (from 0 to 1)
  * @static
- * @return {Number}
+ * @return {Number} a quartic ease-in
  **/
 Ease.quartIn = Ease.getPowIn(4);
 /**
  * @method quartOut
- * @param {Number} t
+ * @param {Number} t Parametric value (from 0 to 1)
  * @static
- * @return {Number}
+ * @return {Number} a quartic ease-out
  **/
 Ease.quartOut = Ease.getPowOut(4);
 /**
  * @method quartInOut
- * @param {Number} t
+ * @param {Number} t Parametric value (from 0 to 1)
  * @static
- * @return {Number}
+ * @return {Number} a quartic ease in-out
  **/
 Ease.quartInOut = Ease.getPowInOut(4);
 
 /**
  * @method quintIn
- * @param {Number} t
+ * @param {Number} t Parametric value (from 0 to 1)
  * @static
- * @return {Number}
+ * @return {Number} a quintic ease-in
  **/
 Ease.quintIn = Ease.getPowIn(5);
 /**
  * @method quintOut
- * @param {Number} t
+ * @param {Number} t Parametric value (from 0 to 1)
  * @static
- * @return {Number}
+ * @return {Number} a quintic ease-out
  **/
 Ease.quintOut = Ease.getPowOut(5);
 /**
  * @method quintInOut
- * @param {Number} t
+ * @param {Number} t Parametric value (from 0 to 1)
  * @static
- * @return {Number}
+ * @return {Number} a quintic ease in-out
  **/
 Ease.quintInOut = Ease.getPowInOut(5);
 
 /**
  * @method sineIn
- * @param {Number} t
+ * @param {Number} t Parametric value (from 0 to 1)
  * @static
- * @return {Number}
+ * @return {Number} a sine ease-in
  **/
 Ease.sineIn = function (t) {
   return 1 - Math.cos(t * Math.PI / 2);
@@ -6819,9 +6853,9 @@ Ease.sineIn = function (t) {
 
 /**
  * @method sineOut
- * @param {Number} t
+ * @param {Number} t Parametric value (from 0 to 1)
  * @static
- * @return {Number}
+ * @return {Number} a sine ease-out
  **/
 Ease.sineOut = function (t) {
   return Math.sin(t * Math.PI / 2);
@@ -6829,9 +6863,9 @@ Ease.sineOut = function (t) {
 
 /**
  * @method sineInOut
- * @param {Number} t
+ * @param {Number} t Parametric value (from 0 to 1)
  * @static
- * @return {Number}
+ * @return {Number} a sine ease in-out
  **/
 Ease.sineInOut = function (t) {
   return -0.5 * (Math.cos(Math.PI * t) - 1);
@@ -6842,7 +6876,7 @@ Ease.sineInOut = function (t) {
  * @method getBackIn
  * @param {Number} amount The strength of the ease.
  * @static
- * @return {Function}
+ * @return {Function} The configured "back in" ease function
  **/
 Ease.getBackIn = function (amount) {
   return function (t) {
@@ -6852,9 +6886,9 @@ Ease.getBackIn = function (amount) {
 
 /**
  * @method backIn
- * @param {Number} t
+ * @param {Number} t Parametric value (from 0 to 1)
  * @static
- * @return {Number}
+ * @return {Number} a default "back in" ease
  **/
 Ease.backIn = Ease.getBackIn(1.7);
 
@@ -6863,7 +6897,7 @@ Ease.backIn = Ease.getBackIn(1.7);
  * @method getBackOut
  * @param {Number} amount The strength of the ease.
  * @static
- * @return {Function}
+ * @return {Function} The configured "back out" ease function
  **/
 Ease.getBackOut = function (amount) {
   return function (t) {
@@ -6873,9 +6907,9 @@ Ease.getBackOut = function (amount) {
 
 /**
  * @method backOut
- * @param {Number} t
+ * @param {Number} t Parametric value (from 0 to 1)
  * @static
- * @return {Number}
+ * @return {Number} a default "back out" ease
  **/
 Ease.backOut = Ease.getBackOut(1.7);
 
@@ -6884,7 +6918,7 @@ Ease.backOut = Ease.getBackOut(1.7);
  * @method getBackInOut
  * @param {Number} amount The strength of the ease.
  * @static
- * @return {Function}
+ * @return {Function} The configured "back in out" ease function
  **/
 Ease.getBackInOut = function (amount) {
   amount *= 1.525;
@@ -6898,17 +6932,17 @@ Ease.getBackInOut = function (amount) {
 
 /**
  * @method backInOut
- * @param {Number} t
+ * @param {Number} t Parametric value (from 0 to 1)
  * @static
- * @return {Number}
+ * @return {Number} a default "back in out" ease
  **/
 Ease.backInOut = Ease.getBackInOut(1.7);
 
 /**
  * @method circIn
- * @param {Number} t
+ * @param {Number} t Parametric value (from 0 to 1)
  * @static
- * @return {Number}
+ * @return {Number} A "circIn" ease
  **/
 Ease.circIn = function (t) {
   return -(Math.sqrt(1 - t * t) - 1);
@@ -6916,9 +6950,9 @@ Ease.circIn = function (t) {
 
 /**
  * @method circOut
- * @param {Number} t
+ * @param {Number} t Parametric value (from 0 to 1)
  * @static
- * @return {Number}
+ * @return {Number} A "circOut" ease
  **/
 Ease.circOut = function (t) {
   return Math.sqrt(1 - --t * t);
@@ -6926,9 +6960,9 @@ Ease.circOut = function (t) {
 
 /**
  * @method circInOut
- * @param {Number} t
+ * @param {Number} t Parametric value (from 0 to 1)
  * @static
- * @return {Number}
+ * @return {Number} A "circInOut" ease
  **/
 Ease.circInOut = function (t) {
   if ((t *= 2) < 1) {
@@ -6939,9 +6973,9 @@ Ease.circInOut = function (t) {
 
 /**
  * @method bounceIn
- * @param {Number} t
+ * @param {Number} t Parametric value (from 0 to 1)
  * @static
- * @return {Number}
+ * @return {Number} A "bounceIn" ease
  **/
 Ease.bounceIn = function (t) {
   return 1 - Ease.bounceOut(1 - t);
@@ -6949,9 +6983,9 @@ Ease.bounceIn = function (t) {
 
 /**
  * @method bounceOut
- * @param {Number} t
+ * @param {Number} t Parametric value (from 0 to 1)
  * @static
- * @return {Number}
+ * @return {Number} A "bounceOut" ease
  **/
 Ease.bounceOut = function (t) {
   if (t < 1 / 2.75) {
@@ -6967,9 +7001,9 @@ Ease.bounceOut = function (t) {
 
 /**
  * @method bounceInOut
- * @param {Number} t
+ * @param {Number} t Parametric value (from 0 to 1)
  * @static
- * @return {Number}
+ * @return {Number} A "bounceInOut" ease
  **/
 Ease.bounceInOut = function (t) {
   if (t < 0.5) {
@@ -6981,10 +7015,10 @@ Ease.bounceInOut = function (t) {
 /**
  * Configurable elastic ease.
  * @method getElasticIn
- * @param {Number} amplitude
- * @param {Number} period
+ * @param {Number} amplitude Amplitude of the bounce
+ * @param {Number} period Period of the bounce
  * @static
- * @return {Function}
+ * @return {Function} A configured "elastic in" ease function
  **/
 Ease.getElasticIn = function (amplitude, period) {
   var pi2 = Math.PI * 2;
@@ -6999,19 +7033,19 @@ Ease.getElasticIn = function (amplitude, period) {
 
 /**
  * @method elasticIn
- * @param {Number} t
+ * @param {Number} t Parametric value (from 0 to 1)
  * @static
- * @return {Number}
+ * @return {Number} A default "elastic in" ease
  **/
 Ease.elasticIn = Ease.getElasticIn(1, 0.3);
 
 /**
  * Configurable elastic ease.
  * @method getElasticOut
- * @param {Number} amplitude
- * @param {Number} period
+ * @param {Number} amplitude Amplitude of the bounce
+ * @param {Number} period Period of the bounce
  * @static
- * @return {Function}
+ * @return {Function} A configured "elastic out" ease function
  **/
 Ease.getElasticOut = function (amplitude, period) {
   var pi2 = Math.PI * 2;
@@ -7026,19 +7060,19 @@ Ease.getElasticOut = function (amplitude, period) {
 
 /**
  * @method elasticOut
- * @param {Number} t
+ * @param {Number} t Parametric value (from 0 to 1)
  * @static
- * @return {Number}
+ * @return {Number} A default "elastic out" ease
  **/
 Ease.elasticOut = Ease.getElasticOut(1, 0.3);
 
 /**
  * Configurable elastic ease.
  * @method getElasticInOut
- * @param {Number} amplitude
- * @param {Number} period
+ * @param {Number} amplitude Amplitude of the bounce
+ * @param {Number} period Period of the bounce
  * @static
- * @return {Function}
+ * @return {Function} A configured "elastic in-out" ease function
  **/
 Ease.getElasticInOut = function (amplitude, period) {
   var pi2 = Math.PI * 2;
@@ -7053,9 +7087,9 @@ Ease.getElasticInOut = function (amplitude, period) {
 
 /**
  * @method elasticInOut
- * @param {Number} t
+ * @param {Number} t Parametric value (from 0 to 1)
  * @static
- * @return {Number}
+ * @return {Number} A default "elastic in-out" ease
  **/
 Ease.elasticInOut = Ease.getElasticInOut(1, 0.3 * 1.5);
 
@@ -7074,8 +7108,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-exports.loadResource = loadResource;
-
 var _libtga = __webpack_require__(52);
 
 var _libtga2 = _interopRequireDefault(_libtga);
@@ -7089,74 +7121,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
- * Loads a resource via xhr or Image
- * @param  {String}   url      href of the resource to fetch
- * @param  {String}   type     One of XHMLHttpRequest's supported responseType
- *                             values (arraybuffer, blob, document, json, text)
- *                             or 'image' or 'image.co' (for a cross-origin image)
- * @return {Promise}           Returns a promise that resolves on success, or rejects
- *                             on failure.
- */
-function loadResource(url, type) {
-  return new _es6Promises2.default(function (resolve, reject) {
-    if (type === 'image' || type === 'image.co') {
-      if (/\.tga$/.test(url)) {
-        _libtga2.default.loadFile(url, function (err, tga) {
-          if (err) {
-            reject(err);
-            return;
-          }
-          var canvas = document.createElement('canvas');
-          var context = canvas.getContext('2d');
-          var imageData = context.createImageData(tga.width, tga.height);
-          imageData.data.set(tga.imageData);
-          canvas.height = tga.height;
-          canvas.width = tga.width;
-          context.putImageData(imageData, 0, 0);
-          var image = new Image();
-          image.onload = function () {
-            resolve(this);
-          };
-          image.onerror = function (e) {
-            reject(e);
-          };
-          image.src = canvas.toDataURL();
-        });
-      } else {
-        var i = new Image();
-        // cross-origin image:
-        if (type === 'image.co') {
-          i.crossOrigin = 'anoymous';
-        }
-        i.onload = function () {
-          resolve(this);
-        };
-        i.onerror = function (e) {
-          reject(e);
-        };
-        i.src = url;
-      }
-    } else {
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', url);
-      xhr.responseType = type;
-      xhr.onload = function () {
-        resolve(this.response);
-      };
-      xhr.onerror = function (e) {
-        reject(e);
-      };
-
-      xhr.send();
-    }
-  });
-}
-
-/**
  * An AssetLoader manages loading one or more assets.  It handles debouncing of
  * of multiple requests for the same asset, etc.
+ *
+ * @class
  */
-
 var AssetLoader = function () {
 
   /**
@@ -7172,9 +7141,12 @@ var AssetLoader = function () {
   /**
    * Loads a single asset.
    *
-   * @returns { Promise } Returns a promise.  Resolves immediately
-   *                      if the asset it already loaded.
-   * @see loadResource
+   * @param {String} url  The url of the asset to load.
+   * @param {String} type The type of asset being requested
+   *
+   * @returns { Promise }  Returns a promise.  Resolves immediately
+   *                       if the asset it already loaded.
+   * @see AssetLoader.loadResource
    */
 
 
@@ -7192,7 +7164,7 @@ var AssetLoader = function () {
           _this._callbacks[name].push({ resolve: resolve, reject: reject });
           if (!_this._assets.hasOwnProperty(name)) {
             _this._assets[name] = false;
-            loadResource(url, type).then(function (value) {
+            AssetLoader.loadResource(url, type).then(function (value) {
               _this._assets[name] = value;
               var cb;
               while (cb = _this._callbacks[name].shift()) {
@@ -7211,10 +7183,11 @@ var AssetLoader = function () {
 
     /**
      * Load a set of assets in parallel
-     * @param  {Array}   urls      Array of urls of resources
-     * @param  {Array}   types     Array of types of resources
-     * @return {Promise}
-     * @see  loadResource
+     * @param  {Array} urls   Array of urls of resources
+     * @param  {Array} types  Array of types of resources
+     * @return {Promise}      A Promise that resolves when all assets are loaded,
+     *                        or rejects when any fail.
+     * @see  AssetLoader.loadResource
      */
 
   }, {
@@ -7240,6 +7213,75 @@ var AssetLoader = function () {
     key: 'getAsset',
     value: function getAsset(name) {
       return this._assets[name];
+    }
+
+    /**
+     * Loads a resource via xhr or Image
+     *
+     * @static
+     * @param  {String}   url      href of the resource to fetch
+     * @param  {String}   type     One of XHMLHttpRequest's supported responseType
+     *                             values (arraybuffer, blob, document, json, text)
+     *                             or 'image' or 'image.co' (for a cross-origin image)
+     * @return {Promise}           Returns a promise that resolves on success, or rejects
+     *                             on failure.
+     */
+
+  }], [{
+    key: 'loadResource',
+    value: function loadResource(url, type) {
+      return new _es6Promises2.default(function (resolve, reject) {
+        if (type === 'image' || type === 'image.co') {
+          if (/\.tga$/.test(url)) {
+            _libtga2.default.loadFile(url, function (err, tga) {
+              if (err) {
+                reject(err);
+                return;
+              }
+              var canvas = document.createElement('canvas');
+              var context = canvas.getContext('2d');
+              var imageData = context.createImageData(tga.width, tga.height);
+              imageData.data.set(tga.imageData);
+              canvas.height = tga.height;
+              canvas.width = tga.width;
+              context.putImageData(imageData, 0, 0);
+              var image = new Image();
+              image.onload = function () {
+                resolve(this);
+              };
+              image.onerror = function (e) {
+                reject(e);
+              };
+              image.src = canvas.toDataURL();
+            });
+          } else {
+            var i = new Image();
+            // cross-origin image:
+            if (type === 'image.co') {
+              i.crossOrigin = 'anoymous';
+            }
+            i.onload = function () {
+              resolve(this);
+            };
+            i.onerror = function (e) {
+              reject(e);
+            };
+            i.src = url;
+          }
+        } else {
+          var xhr = new XMLHttpRequest();
+          xhr.open('GET', url);
+          xhr.responseType = type;
+          xhr.onload = function () {
+            resolve(this.response);
+          };
+          xhr.onerror = function (e) {
+            reject(e);
+          };
+
+          xhr.send();
+        }
+      });
     }
   }]);
 
@@ -7286,18 +7328,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 /**
  * A ResonatorLinkDrawable is a LinkDrawable that represents a link
  * between a portal and a resonator
+ * @param  {vec2} portalPosition     X,Z of the portal (usually 0,0)
+ * @param  {Number} slot             Slot (0-7)
+ * @param  {Number} distance         Usually 0-40
+ * @param  {vec4} color              Color of the resonator link (TODO: make this disco)
+ * @param  {Number} resonatorPercent Percent health of the resonator
  */
 var ResonatorLinkDrawable = function (_LinkDrawable) {
   _inherits(ResonatorLinkDrawable, _LinkDrawable);
 
-  /**
-   * Construct a portal link resonator
-   * @param  {vec2} portalPosition     X,Z of the portal (usually 0,0)
-   * @param  {Number} slot             Slot (0-7)
-   * @param  {Number} distance         Usually 0-40
-   * @param  {vec4} color              Color of the resonator link (TODO: make this disco)
-   * @param  {Number} resonatorPercent Percent health of the resonator
-   */
   function ResonatorLinkDrawable(portalPosition, slot, distance, color, resonatorPercent) {
     _classCallCheck(this, ResonatorLinkDrawable);
 
@@ -7668,6 +7707,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+/**
+ * This class handles running animations on animatable objects.
+ *
+ * This is generally composed into a class (e.g. Camera or Drawable)
+ */
 var Animator = function () {
   function Animator() {
     _classCallCheck(this, Animator);
@@ -7676,7 +7720,9 @@ var Animator = function () {
   }
 
   /**
-   * Adds an animation
+   * Adds an animation.
+   *
+   * Note that this does not start the animation.
    *
    * @chainable
    * @param {Animation} animation The animation to be run.
@@ -7826,20 +7872,17 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 /**
  * A GLBuffer is a buffer of some sort that will be passed to the gpu
  *
+ * @private
  * @extends {GLBound}
+ * @chainable
+ * @param  {context} gl    WebGL context
+ * @param  {enum} target   gl target  @see https://www.khronos.org/registry/webgl/specs/1.0/#5.14.5
+ * @param  {enum} usage    gl usage @see https://www.khronos.org/registry/webgl/specs/1.0/#5.14.5
+ * @return {this}          the GLBuffer
  */
 var GLBuffer = function (_GLBound) {
   _inherits(GLBuffer, _GLBound);
 
-  /**
-   * Construct a gl-bound buffer
-   *
-   * @chainable
-   * @param  {context} gl    WebGL context
-   * @param  {enum} target   gl target  @see https://www.khronos.org/registry/webgl/specs/1.0/#5.14.5
-   * @param  {enum} usage    gl usage @see https://www.khronos.org/registry/webgl/specs/1.0/#5.14.5
-   * @return {this}          the GLBuffer
-   */
   function GLBuffer(gl, target, usage) {
     var _ret;
 
@@ -7858,7 +7901,7 @@ var GLBuffer = function (_GLBound) {
    * Binds the buffer to the gpu
    *
    * @chainable
-   * @return {this}
+   * @return {this} Returns `this`
    */
 
 
@@ -7879,7 +7922,7 @@ var GLBuffer = function (_GLBound) {
      * Unbinds the buffer (NPI)
      *
      * @chainable
-     * @return {this}
+     * @return {this} Returns `this`
      */
 
   }, {
@@ -7893,7 +7936,7 @@ var GLBuffer = function (_GLBound) {
      * Update the buffer data on the gpu
      *
      * @chainable
-     * @return {this}
+     * @return {this} Returns `this`
      */
 
   }, {
@@ -7913,7 +7956,7 @@ var GLBuffer = function (_GLBound) {
      * @chainable
      * @param {ArrayBuffer} values Values to store in the buffer
      * @param {Number} offset      Offset to write the values
-     * @return {this}
+     * @return {this} Returns `this`
      */
 
   }, {
@@ -7934,7 +7977,7 @@ var GLBuffer = function (_GLBound) {
      * @chainable
      * @param  {Number} start Start of deletion
      * @param  {Number} end   End of deletion
-     * @return {this}
+     * @return {this} Returns `this`
      */
 
   }, {
@@ -7959,7 +8002,7 @@ var GLBuffer = function (_GLBound) {
      *                             the contents of the buffer at that offset)
      * @param  {Number}   start    Offset to start
      * @param  {Number}   end      Offset to end
-     * @return {this}
+     * @return {this} Returns `this`
      */
 
   }, {
@@ -7978,7 +8021,7 @@ var GLBuffer = function (_GLBound) {
      *
      * @chainable
      * @param  {ArrayBuffer} values New values to fill the buffer with
-     * @return {this}
+     * @return {this} Returns `this`
      */
 
   }, {
@@ -8505,23 +8548,22 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var PROGRAM = _constants2.default.Program.Atmosphere;
 
 /**
+ * Creates an "atmosphere" effect.
+ *
  * This is a modified version of the atmosphere program from:
  * https://github.com/dataarts/webgl-globe/blob/master/globe/globe.js
+ * @param  {Number} radius      Radius of the world.
+ *                              This should match the radius of the world mesh the
+ *                              atmosphere is being rendered over.
+ * @param  {Number} vSlices     Number of vertical slices for the sphere mesh
+ * @param  {Number} hSlices     Number of horizontal slices for the sphere mesh
+ * @param  {Number} scaleFactor The percent to scale the mesh
+ * @return {void}
  */
 
 var AtmosphereDrawable = function (_Drawable) {
   _inherits(AtmosphereDrawable, _Drawable);
 
-  /**
-   * Initializer
-   * @param  {Number} radius      Radius of the world.
-   *                              This should match the radius of the world mesh the
-   *                              atmosphere is being rendered over.
-   * @param  {Number} vSlices     Number of vertical slices for the sphere mesh
-   * @param  {Number} hSlices     Number of horizontal slices for the sphere mesh
-   * @param  {Number} scaleFactor The percent to scale the mesh
-   * @return {void}
-   */
   function AtmosphereDrawable(radius, vSlices, hSlices, scaleFactor) {
     _classCallCheck(this, AtmosphereDrawable);
 
@@ -8542,7 +8584,7 @@ var AtmosphereDrawable = function (_Drawable) {
    * @chainable
    * @see    src/drawable/model.js#updateView
    * @param  {mat4} viewProject   combined projection matrix multiplied by view matrix.
-   * @return {this}
+   * @return {this} Returns `this`
    */
 
 
@@ -8561,7 +8603,7 @@ var AtmosphereDrawable = function (_Drawable) {
      *
      * @see    src/drawable.js
      * @param  {AssetManager} manager The AssetManager containing the required assets.
-     * @return {boolean}
+     * @return {Promise}  A Promise that resolves when the asset is initialized
      */
 
   }, {
@@ -8617,6 +8659,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var PROGRAM = _constants2.default.Program.ParticlePortal;
 var MAX_SYSTEMS = 40;
 
+/**
+ * A drawable representing a system of particles emanating from a portal
+ *
+ * @class
+ * @extends {ParticleDrawable}
+ * @param  {vec4}   color    The particle color
+ * @param  {Number} height   The height to propagate
+ * @param  {Number} count    The number of particles
+ * @param  {Number} spread   The spread between particles
+ * @param  {Number} distance The distance
+ */
+
 var ParticlePortalDrawable = function (_ParticleDrawable) {
   _inherits(ParticlePortalDrawable, _ParticleDrawable);
 
@@ -8644,6 +8698,7 @@ var ParticlePortalDrawable = function (_ParticleDrawable) {
    * Update the view, and uniforms pertaining to the view
    * @param  {mat4} viewProject   Camera's combine view and projection matrix
    * @param  {Camera} camera      The camera
+   * @return {void}
    */
 
 
@@ -8729,18 +8784,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 /**
  * A LinkDrawable that represents a link from one portal to another
  * @extends {LinkDrawable}
+ * @param  {vec2} start          X, Z of origin portal
+ * @param  {vec2} end            X, Z of destination portal
+ * @param  {vec4} color          Color of link
+ * @param  {Number} startPercent Percent health of the origin portal
+ * @param  {Number} endPercent   Percent health of the destination portal
  */
 var PortalLinkDrawable = function (_LinkDrawable) {
   _inherits(PortalLinkDrawable, _LinkDrawable);
 
-  /**
-   * Construct a portal link
-   * @param  {vec2} start          X, Z of origin portal
-   * @param  {vec2} end            X, Z of destination portal
-   * @param  {vec4} color          Color of link
-   * @param  {Number} startPercent Percent health of the origin portal
-   * @param  {Number} endPercent   Percent health of the destination portal
-   */
   function PortalLinkDrawable(start, end, color, startPercent, endPercent) {
     _classCallCheck(this, PortalLinkDrawable);
 
@@ -8813,19 +8865,17 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * Represents a portal link that follows the surface of a sphere.
  *
  * Hooray for custom shaders, etc!
+ *
+ * @param  {Number} sphereRadius Radius of the sphere
+ * @param  {vec2} start          Lat,lng of the origin portal
+ * @param  {vec2} end            Lat,lng of the destination portal
+ * @param  {vec4} color          Color of the link
+ * @param  {Number} startPercent Percent health of the origin portal
+ * @param  {Number} endPercent   Percent health of the destination portal
  */
 var SphericalPortalLinkDrawable = function (_LinkDrawable) {
   _inherits(SphericalPortalLinkDrawable, _LinkDrawable);
 
-  /**
-   * Construct a spherical portal link
-   * @param  {Number} sphereRadius Radius of the sphere
-   * @param  {vec2} start          Lat,lng of the origin portal
-   * @param  {vec2} end            Lat,lng of the destination portal
-   * @param  {vec4} color          Color of the link
-   * @param  {Number} startPercent Percent health of the origin portal
-   * @param  {Number} endPercent   Percent health of the destination portal
-   */
   function SphericalPortalLinkDrawable(sphereRadius, start, end, color, startPercent, endPercent) {
     _classCallCheck(this, SphericalPortalLinkDrawable);
 
@@ -8906,18 +8956,16 @@ var PROGRAM = _constants2.default.Program.Textured;
 
 /**
  * A sphere with a texture mapped to it
+ *
+ * @param  {String} textureName Internal name of the texture to use
+ * @param  {Number} radius      Radius of the sphere
+ * @param  {Number} vSlices     Number of vertical slices
+ * @param  {Number} hSlices     Number of horizontal slices
  */
 
 var TexturedSphereDrawable = function (_TexturedDrawable) {
   _inherits(TexturedSphereDrawable, _TexturedDrawable);
 
-  /**
-   * Construct a textured sphere
-   * @param  {String} textureName Internal name of the texture to use
-   * @param  {Number} radius      Radius of the sphere
-   * @param  {Number} vSlices     Number of vertical slices
-   * @param  {Number} hSlices     Number of horizontal slices
-   */
   function TexturedSphereDrawable(textureName, radius, vSlices, hSlices) {
     _classCallCheck(this, TexturedSphereDrawable);
 
@@ -9007,19 +9055,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  *
  * Also includes a few simple functions for demoing various entities/drawables.  This
  * will probably go away in a future release.
+ *
+ * @param  {HTMLCanvas} canvas       A Canvas element
+ * @param  {Object} assets           A manifest to pass to the internal AssetManager
+ *                                   @see  AssetManager
+ * @param  {Boolean} enableSnapshots If set to true, the canvas will preserve its drawing
+ *                                   buffer, to allow for accurate .toDataURL calls.
+ *                                   This will have a performance impact.
  */
 var Engine = function () {
-
-  /**
-   * Constructs an engine, given a canvas to render on and a list of assets to seed
-   * its AssetManager with.
-   * @param  {HTMLCanvas} canvas       A Canvas element
-   * @param  {Object} assets           A manifest to pass to the internal AssetManager
-   *                                   @see  AssetManager
-   * @param  {Boolean} enableSnapshots If set to true, the canvas will preserve its drawing
-   *                                   buffer, to allow for accurate .toDataURL calls.
-   *                                   This will have a performance impact.
-   */
   function Engine(canvas, assets, enableSnapshots) {
     _classCallCheck(this, Engine);
 
@@ -9052,9 +9096,9 @@ var Engine = function () {
    * if not provided.
    *
    * @chainable
-   * @param {Number} width   @optional width
-   * @param {Number} height  @optional height
-   * @return {this}
+   * @param {Number} width   (optional) width
+   * @param {Number} height  (optional) height
+   * @return {this} Returns `this`
    */
 
 
@@ -9081,8 +9125,8 @@ var Engine = function () {
      * Sets the scaling factor for the canvas.
      *
      * @chainable
-     * @param  {Number}
-     * @return {this}
+     * @param  {Number} factor The scale factor
+     * @return {this} Returns `this`
      */
 
   }, {
@@ -9096,7 +9140,7 @@ var Engine = function () {
      * Updates the current drawing viewport to the canvas' current dimensions
      *
      * @chainable
-     * @return {this}
+     * @return {this} Returns `this`
      */
 
   }, {
@@ -9110,7 +9154,7 @@ var Engine = function () {
      * Stops the render loop, if it's running.
      *
      * @chainable
-     * @return {this}
+     * @return {this} Returns `this`
      */
 
   }, {
@@ -9259,6 +9303,15 @@ var Engine = function () {
     value: function preload() {
       return this.assetManager.loadAll();
     }
+
+    /**
+     * Captures a screenshot, if enabled
+     *
+     * @param  {String} mimeType The mime type of the image
+     * @param  {Number} quality  Quality, if applicable (applies to image/jpeg)
+     * @return {Promise}         A promise that resolves when the screenshot is complete
+     */
+
   }, {
     key: 'capture',
     value: function capture(mimeType, quality) {
@@ -9332,16 +9385,14 @@ function getTouchIndex(touches, touch) {
  * with variable position and depth.
  *
  * This is a port of the THREE.js OrbitControls found with the webgl globe.
+ *
+ * @class
+ * @param  {HTMLElement} element  Target element to bind listeners to
+ * @param  {Number} distance Starting distance from origin
+ * @param  {Object} options  Hash of options for configuration
  */
 
 var OrbitControls = function () {
-
-  /**
-   * Constructs an orbiting camera control.
-   * @param  {HTMLElement} element  Target element to bind listeners to
-   * @param  {Number} distance Starting distance from origin
-   * @param  {Object} options  Hash of options for configuration
-   */
   function OrbitControls(element, camera, distance, options) {
     _classCallCheck(this, OrbitControls);
 
@@ -9393,6 +9444,8 @@ var OrbitControls = function () {
 
   /**
    * Unbinds all listeners and disables the controls
+   *
+   * @return {void}
    */
 
 
@@ -9415,6 +9468,8 @@ var OrbitControls = function () {
 
     /**
      * Binds all listeners and enables the controls
+     *
+     * @return {void}
      */
 
   }, {
@@ -9433,6 +9488,7 @@ var OrbitControls = function () {
     /**
      * Update the given camera matrix with new position information, etc
      * @param  {mat4} view   A view matrix
+     * @return {void}
      */
 
   }, {
@@ -9442,6 +9498,7 @@ var OrbitControls = function () {
           dy = this.target.y - this.rotation.y,
           dz = this.distanceTarget - this.distance,
           cameraPosition = _glMatrix.vec3.create();
+
       if (Math.abs(dx) > 0.00001 || Math.abs(dy) > 0.00001 || Math.abs(dz) > 0.00001) {
         this.rotation.x += dx * this.options.friction;
         this.rotation.y += dy * this.options.friction;
@@ -9599,9 +9656,6 @@ var OrbitControls = function () {
     value: function _onTouchLeave(ev) {
       this._removeTouches(ev);
     }
-
-    //?
-
   }, {
     key: '_onTouchCancel',
     value: function _onTouchCancel(ev) {
@@ -9744,6 +9798,8 @@ var AssetManager = function (_GLBound) {
    *
    * Additional manifests should be merged in before loading.
    * @param {Object} manifest @see constructor
+   *
+   * @return {void}
    */
 
 
@@ -9757,6 +9813,8 @@ var AssetManager = function (_GLBound) {
      * Adds a bound texture to the texture cache, under a given internal name
      * @param {String} name     Texture internal name
      * @param {Texture} texture A bound Texture
+     *
+     * @return {void}
      */
 
   }, {
@@ -9769,6 +9827,8 @@ var AssetManager = function (_GLBound) {
      * Adds a bound mesh to the mesh cache, under a given internal name
      * @param {String} name Mesh internal name
      * @param {Mesh} mesh   A bound mesh
+     *
+     * @return {void}
      */
 
   }, {
@@ -9781,6 +9841,8 @@ var AssetManager = function (_GLBound) {
      * Adds a bound program to the program cache, under a given internal name
      * @param {String} name     Program internal name
      * @param {Program} program A bound Program
+     *
+     * @return {void}
      */
 
   }, {
@@ -9996,15 +10058,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /**
  * A Camera is a class to manage view of the scene.
+ *
+ * @class
+ * @chainable
+ * @param {Number} width  The width of the viewport
+ * @param {Number} height The height of the viewport
+ * @return {this} The new Camera
  */
 var Camera = function () {
-
-  /**
-   * Creates a camera
-   *
-   * @chainable
-   * @return {this}
-   */
   function Camera(width, height) {
     _classCallCheck(this, Camera);
 
@@ -10028,7 +10089,7 @@ var Camera = function () {
    *
    * @chainable
    * @param  {vec3} point   The point to look at
-   * @return {this}
+   * @return {this} Returns `this`
    */
 
 
@@ -10046,7 +10107,7 @@ var Camera = function () {
      *
      * @chainable
      * @param  {vec3} vec   The vector to translate by
-     * @return {this}
+     * @return {this} Returns `this`
      */
 
   }, {
@@ -10061,6 +10122,7 @@ var Camera = function () {
      *
      * @chainable
      * @param {vec3} position Camera position
+     * @return {this} Returns `this`
      */
 
   }, {
@@ -10076,7 +10138,7 @@ var Camera = function () {
      * @chainable
      * @param {Number} width  Viewport width
      * @param {Number} height Viewport height
-     * @return {this}
+     * @return {this} Returns `this`
      */
 
   }, {
@@ -10092,7 +10154,7 @@ var Camera = function () {
      *
      * @chainable
      * @param {Number} fov Field of view, in radians
-     * @return {this}
+     * @return {this} Returns `this`
      */
 
   }, {
@@ -10107,6 +10169,7 @@ var Camera = function () {
      *
      * @chainable
      * @param {Number} far Max viewable distance
+     * @return {this} Returns `this`
      */
 
   }, {
@@ -10122,7 +10185,7 @@ var Camera = function () {
      * @chainable
      * @param {Animation} animation The animation to be run.
      *                              This will need to be started independently, or prior to being added.
-     * @return {this}
+     * @return {this} Returns `this`
      */
 
   }, {
@@ -10133,8 +10196,8 @@ var Camera = function () {
     }
 
     /**
-     * @param  {Number}
-     * @return {this}
+     * @param {Number} delta The time elapsed since the last draw
+     * @return {this} Returns `this`
      */
 
   }, {
@@ -10148,7 +10211,7 @@ var Camera = function () {
      * Updates the camera's view matrix from all parameters.
      *
      * @chainable
-     * @return {this}
+     * @return {this} Returns `this`
      */
 
   }, {
@@ -10162,7 +10225,7 @@ var Camera = function () {
      * Update the camera's projection matrix
      *
      * @chainable
-     * @return {this}
+     * @return {this} Returns `this`
      */
 
   }, {
@@ -10215,6 +10278,8 @@ var PROGRAM = _constants2.default.Program.Glowramp;
 
 /**
  * Default base color for the glowramp drawable
+ *
+ * @private
  * @type {vec4}
  */
 var defaultBaseColor = _glMatrix.vec4.clone(_constants2.default.teamColors.NEUTRAL);
@@ -10222,16 +10287,14 @@ var defaultBaseColor = _glMatrix.vec4.clone(_constants2.default.teamColors.NEUTR
 /**
  * A "glowramp" refers to the usage of the red, green, and blue channels to create
  * a "glowing" texture.
+ *
+ * @param  {String} meshName    Internal name of the mesh
+ * @param  {String} textureName Internal name of the texture
  */
 
 var GlowrampDrawable = function (_TexturedDrawable) {
   _inherits(GlowrampDrawable, _TexturedDrawable);
 
-  /**
-   * Creates a glowramp drawable
-   * @param  {String} meshName    Internal name of the mesh
-   * @param  {String} textureName Internal name of the texture
-   */
   function GlowrampDrawable(meshName, textureName) {
     _classCallCheck(this, GlowrampDrawable);
 
@@ -10303,16 +10366,13 @@ var PROGRAM = _constants2.default.Program.RegionTextured;
 /**
  * An OrnamentDrawable is a TextuedDrawable that draws an ornament on
  * a unit plane.
+ * @param  {String} meshName    Internal name of the ornament mesh
+ * @param  {String} textureName Internal name of the texture
  */
 
 var OrnamentDrawable = function (_TexturedDrawable) {
   _inherits(OrnamentDrawable, _TexturedDrawable);
 
-  /**
-   * Constructs an ornament
-   * @param  {String} meshName    Internal name of the ornament mesh
-   * @param  {String} textureName Internal name of the texture
-   */
   function OrnamentDrawable(meshName, textureName) {
     _classCallCheck(this, OrnamentDrawable);
 
@@ -10429,6 +10489,8 @@ var meshes = _constants2.default.Mesh.Resource;
 
 /**
  * Creates a resource drawable
+ *
+ * @private
  * @param  {String} name InternalName
  * @return {itembase}    A BicoloredDrawable representing this resource item
  */
@@ -10507,16 +10569,14 @@ var defaultContributions = _glMatrix.vec3.fromValues(0.5, 0.5, 0.5);
  * So, perhaps a better way would be to have the base class hardcode the texture
  * and mesh internal names, and then the derived classes pick a program and handle
  * the variables.
+ *
+ * @param  {String} meshName    Mesh internal name
+ * @param  {String} textureName Texture internal name
  */
 
 var ShieldEffectDrawable = function (_TexturedDrawable) {
   _inherits(ShieldEffectDrawable, _TexturedDrawable);
 
-  /**
-   * Constructs a shield effect
-   * @param  {String} meshName    Mesh internal name
-   * @param  {String} textureName Texture internal name
-   */
   function ShieldEffectDrawable(meshName, textureName) {
     _classCallCheck(this, ShieldEffectDrawable);
 
@@ -10597,18 +10657,16 @@ var defaultAltColor = _glMatrix.vec4.clone(_constants2.default.xmColors.coreGlow
 
 /**
  * An XmDrawable is a drawable representing the animate "xm core" of inventory items
+ *
+ * @param  {String} meshName    Mesh internal name
+ * @param  {String} textureName Texture internal name
+ * @param  {vec4} teamColor     Color of the xm glow.
+ * @return {[type]}             [description]
  */
 
 var XmDrawable = function (_TexturedDrawable) {
   _inherits(XmDrawable, _TexturedDrawable);
 
-  /**
-   * Construct an xm core
-   * @param  {String} meshName    Mesh internal name
-   * @param  {String} textureName Texture internal name
-   * @param  {vec4} teamColor     Color of the xm glow.
-   * @return {[type]}             [description]
-   */
   function XmDrawable(meshName, textureName, teamColor) {
     _classCallCheck(this, XmDrawable);
 
@@ -11487,16 +11545,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * transparent glowramp drawables
  *
  * @extends {Program}
+ * @param  {context} gl      WebGL context
+ * @param  {String} vertex   Vertex shader source
+ * @param  {String} fragment Fragment shader source
  */
 var GlowrampProgram = function (_Program) {
   _inherits(GlowrampProgram, _Program);
 
-  /**
-   * Constructs a Glowramp program given vertex and fragment shader sources
-   * @param  {context} gl      WebGL context
-   * @param  {String} vertex   Vertex shader source
-   * @param  {String} fragment Fragment shader source
-   */
   function GlowrampProgram(gl, vertex, fragment) {
     _classCallCheck(this, GlowrampProgram);
 
@@ -11508,6 +11563,7 @@ var GlowrampProgram = function (_Program) {
    *
    * Sets up the proper blending modes, etc
    * @param  {Function} fn The draw function
+   * @return {void}
    */
 
 
@@ -11570,17 +11626,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * And OpaqueProgram is a Program used to draw opaque drawables
  *
  * @extends {Program}
+ * @param  {context} gl      WebGL context
+ * @param  {String} vertex   Vertex shader source
+ * @param  {String} fragment Fragment shader source
  */
 var OpaqueProgram = function (_Program) {
   _inherits(OpaqueProgram, _Program);
 
-  /**
-   * Construct an opaque program given vertex and fragment shader
-   * sources.
-   * @param  {context} gl      WebGL context
-   * @param  {String} vertex   Vertex shader source
-   * @param  {String} fragment Fragment shader source
-   */
   function OpaqueProgram(gl, vertex, fragment) {
     _classCallCheck(this, OpaqueProgram);
 
@@ -11591,7 +11643,9 @@ var OpaqueProgram = function (_Program) {
    * Use this program to draw.
    *
    * Sets up the proper culling for drawing opaque objects
+   *
    * @param  {Function} fn The draw function
+   * @return {void}
    */
 
 
@@ -11654,17 +11708,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * It seems that ObjectRenderer inherits from this class, but it's also
  * the only renderer that's currently used.
  * TODO: Revisit this
+ *
+ * @class
  * @extends {GLBound}
+ * @param  {context} gl           A WebGL context
+ * @param  {AssetManager} manager An AssetManager to manage GL-bound
  */
 var Renderer = function (_GLBound) {
   _inherits(Renderer, _GLBound);
 
-  /**
-   * Construct a renderer given a context and a manager
-   * @param  {context} gl           A WebGL context
-   * @param  {AssetManager} manager An AssetManager to manage GL-bound
-   *                                resources
-   */
   function Renderer(gl, manager) {
     _classCallCheck(this, Renderer);
 
@@ -11680,8 +11732,9 @@ var Renderer = function (_GLBound) {
 
   /**
    * Update the internal view and projection matrices
-   * @param  {mat4} view    View matrix
-   * @param  {mat4} project Projection matrix
+   *
+   * @param  {Camera} camera    The camera
+   * @return {void}
    */
 
 
@@ -11695,6 +11748,9 @@ var Renderer = function (_GLBound) {
 
     /**
      * Actually controls the render loop?
+     *
+     * @abstract
+     * @return {void}
      */
 
   }, {
@@ -11705,7 +11761,9 @@ var Renderer = function (_GLBound) {
 
     /**
      * Updates the internal counter of elapsed time.
+     *
      * @param  {Number} delta Time elapsed since last render call
+     * @return {void}
      */
 
   }, {
@@ -11882,17 +11940,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * A gl-bound texture
  * Supports most (all?) of the texture binding options.
  * Also generates mipmaps if the texture requires it.
+ *
+ * @class
+ * @param  {context} gl   A WebGL context
+ * @param  {Object} info  Texture parameters
+ * @param  {Images} image An image to use as the texture
  */
 var Texture = function (_GLBound) {
   _inherits(Texture, _GLBound);
 
-  /**
-   * Constructs a gl-bound texture, sets all the proper parameters, and binds
-   * it to the context
-   * @param  {context} gl   A WebGL context
-   * @param  {Object} info  Texture parameters
-   * @param  {Images} image An image to use as the texture
-   */
   function Texture(gl, info, image) {
     _classCallCheck(this, Texture);
 
@@ -11926,7 +11982,9 @@ var Texture = function (_GLBound) {
 
   /**
    * Bind the texture to a particular texture index
+   *
    * @param  {Number} index Texture index to bind to
+   * @return {void}
    */
 
 
@@ -11941,6 +11999,8 @@ var Texture = function (_GLBound) {
 
     /**
      * NYI: TODO
+     *
+     * @return {void}
      */
 
   }, {
@@ -12532,8 +12592,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var IMV = {
   Constants: _constants2.default,
   Engine: _engine2.default,
+  AssetLoader: _assetLoader2.default,
   Utilities: {
-    loadResource: _assetLoader.loadResource,
     resetGL: _utils.resetGL,
     setParams: _utils.setParams,
     disco: _utils.disco,
@@ -12541,7 +12601,6 @@ var IMV = {
     makeArtifact: _utils.makeArtifact,
     Ease: _easing2.default,
     Animation: _animation2.default,
-    AssetLoader: _assetLoader2.default,
     GLMatrix: _glMatrix2.default
   },
   Drawables: {

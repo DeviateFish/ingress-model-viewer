@@ -111,18 +111,17 @@ function getUniformSetter(gl, program, info, isArray) {
 /**
  * Represents a shader program consisting of a vertex shader and a fragment
  * shader.
+ *
+ * Manages the shader's attributes and uniforms.
+ *
+ * @class
  * @extends {GLBound}
+ * @param  {context} gl      Webgl context
+ * @param  {String} vertex   Vertex shader
+ * @param  {String} fragment Fragment shader
  */
 class Program extends GLBound {
 
-  /**
-   * Constructs a program from the given vertex and fragment shader strings.
-   *
-   * Manages the shader's attributes and uniforms.
-   * @param  {context} gl      Webgl context
-   * @param  {String} vertex   Vertex shader
-   * @param  {String} fragment Fragment shader
-   */
   constructor(gl, vertex, fragment) {
     super(gl);
     this.program = null;
@@ -137,6 +136,8 @@ class Program extends GLBound {
    *
    * Parses out shader parameters, compiles the shader, and binds it to
    * the context.
+   *
+   * @return {void}
    */
   init() {
     var gl = this._gl, vertex, fragment;
@@ -180,6 +181,7 @@ class Program extends GLBound {
    * @param  {Function} fn Function to handle the actual drawing.
    *                       The programs attributes and uniforms will
    *                       be passed to the draw function for use.
+   * @return {void}
    */
   use(fn) {
     var gl = this._gl;
