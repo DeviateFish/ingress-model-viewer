@@ -1,20 +1,17 @@
+// TODO: fix documentation
 /**
  * Easing functions
  *
  * Adapted from https://github.com/CreateJS/TweenJS/blob/master/src/tweenjs/Ease.js
+ * @namespace
  */
-
-class Ease {
-  constructor() {
-    throw "Ease cannot be instantiated.";
-  }
-}
-
+const Ease = {};
 
 /**
  * @method linear
  * @param {Number} t Parametric value (from 0 to 1)
  * @static
+ * @memberOf Ease
  * @return {Number} The transformed value
  **/
 Ease.linear = function(t) {
@@ -26,6 +23,7 @@ Ease.linear = function(t) {
  * @method none
  * @param {Number} t Parametric value (from 0 to 1)
  * @static
+ * @memberOf Ease
  * @return {Number} The linear transform
  **/
 Ease.none = Ease.linear;
@@ -35,6 +33,7 @@ Ease.none = Ease.linear;
  * @method get
  * @param {Number} amount A value from -1 (ease in) to 1 (ease out) indicating the strength and direction of the ease.
  * @static
+ * @memberOf Ease
  * @return {Function} The parametric easing function
  **/
 Ease.get = function(amount) {
@@ -60,6 +59,7 @@ Ease.get = function(amount) {
  * @method getPowIn
  * @param {Number} pow The exponent to use (ex. 3 would return a cubic ease).
  * @static
+ * @memberOf Ease
  * @return {Function} The parametric easing function
  **/
 Ease.getPowIn = function(pow) {
@@ -73,6 +73,7 @@ Ease.getPowIn = function(pow) {
  * @method getPowOut
  * @param {Number} pow The exponent to use (ex. 3 would return a cubic ease).
  * @static
+ * @memberOf Ease
  * @return {Function} The parametric easing function
  **/
 Ease.getPowOut = function(pow) {
@@ -86,6 +87,7 @@ Ease.getPowOut = function(pow) {
  * @method getPowInOut
  * @param {Number} pow The exponent to use (ex. 3 would return a cubic ease).
  * @static
+ * @memberOf Ease
  * @return {Function} The parametric easing function
  **/
 Ease.getPowInOut = function(pow) {
@@ -101,6 +103,7 @@ Ease.getPowInOut = function(pow) {
  * @method quadIn
  * @param {Number} t Parametric value (from 0 to 1)
  * @static
+ * @memberOf Ease
  * @return {Number} A quadratic ease-in
  **/
 Ease.quadIn = Ease.getPowIn(2);
@@ -108,6 +111,7 @@ Ease.quadIn = Ease.getPowIn(2);
  * @method quadOut
  * @param {Number} t Parametric value (from 0 to 1)
  * @static
+ * @memberOf Ease
  * @return {Number} a quadratic ease-out
  **/
 Ease.quadOut = Ease.getPowOut(2);
@@ -115,6 +119,7 @@ Ease.quadOut = Ease.getPowOut(2);
  * @method quadInOut
  * @param {Number} t Parametric value (from 0 to 1)
  * @static
+ * @memberOf Ease
  * @return {Number} a quadratic in-out ease
  **/
 Ease.quadInOut = Ease.getPowInOut(2);
@@ -123,6 +128,7 @@ Ease.quadInOut = Ease.getPowInOut(2);
  * @method cubicIn
  * @param {Number} t Parametric value (from 0 to 1)
  * @static
+ * @memberOf Ease
  * @return {Number} a cubic ease-in
  **/
 Ease.cubicIn = Ease.getPowIn(3);
@@ -130,6 +136,7 @@ Ease.cubicIn = Ease.getPowIn(3);
  * @method cubicOut
  * @param {Number} t Parametric value (from 0 to 1)
  * @static
+ * @memberOf Ease
  * @return {Number} a cubic ease-out
  **/
 Ease.cubicOut = Ease.getPowOut(3);
@@ -137,6 +144,7 @@ Ease.cubicOut = Ease.getPowOut(3);
  * @method cubicInOut
  * @param {Number} t Parametric value (from 0 to 1)
  * @static
+ * @memberOf Ease
  * @return {Number} a cubic ease in-out
  **/
 Ease.cubicInOut = Ease.getPowInOut(3);
@@ -145,6 +153,7 @@ Ease.cubicInOut = Ease.getPowInOut(3);
  * @method quartIn
  * @param {Number} t Parametric value (from 0 to 1)
  * @static
+ * @memberOf Ease
  * @return {Number} a quartic ease-in
  **/
 Ease.quartIn = Ease.getPowIn(4);
@@ -152,6 +161,7 @@ Ease.quartIn = Ease.getPowIn(4);
  * @method quartOut
  * @param {Number} t Parametric value (from 0 to 1)
  * @static
+ * @memberOf Ease
  * @return {Number} a quartic ease-out
  **/
 Ease.quartOut = Ease.getPowOut(4);
@@ -159,6 +169,7 @@ Ease.quartOut = Ease.getPowOut(4);
  * @method quartInOut
  * @param {Number} t Parametric value (from 0 to 1)
  * @static
+ * @memberOf Ease
  * @return {Number} a quartic ease in-out
  **/
 Ease.quartInOut = Ease.getPowInOut(4);
@@ -167,6 +178,7 @@ Ease.quartInOut = Ease.getPowInOut(4);
  * @method quintIn
  * @param {Number} t Parametric value (from 0 to 1)
  * @static
+ * @memberOf Ease
  * @return {Number} a quintic ease-in
  **/
 Ease.quintIn = Ease.getPowIn(5);
@@ -174,6 +186,7 @@ Ease.quintIn = Ease.getPowIn(5);
  * @method quintOut
  * @param {Number} t Parametric value (from 0 to 1)
  * @static
+ * @memberOf Ease
  * @return {Number} a quintic ease-out
  **/
 Ease.quintOut = Ease.getPowOut(5);
@@ -181,6 +194,7 @@ Ease.quintOut = Ease.getPowOut(5);
  * @method quintInOut
  * @param {Number} t Parametric value (from 0 to 1)
  * @static
+ * @memberOf Ease
  * @return {Number} a quintic ease in-out
  **/
 Ease.quintInOut = Ease.getPowInOut(5);
@@ -189,6 +203,7 @@ Ease.quintInOut = Ease.getPowInOut(5);
  * @method sineIn
  * @param {Number} t Parametric value (from 0 to 1)
  * @static
+ * @memberOf Ease
  * @return {Number} a sine ease-in
  **/
 Ease.sineIn = function(t) {
@@ -199,6 +214,7 @@ Ease.sineIn = function(t) {
  * @method sineOut
  * @param {Number} t Parametric value (from 0 to 1)
  * @static
+ * @memberOf Ease
  * @return {Number} a sine ease-out
  **/
 Ease.sineOut = function(t) {
@@ -209,6 +225,7 @@ Ease.sineOut = function(t) {
  * @method sineInOut
  * @param {Number} t Parametric value (from 0 to 1)
  * @static
+ * @memberOf Ease
  * @return {Number} a sine ease in-out
  **/
 Ease.sineInOut = function(t) {
@@ -220,6 +237,7 @@ Ease.sineInOut = function(t) {
  * @method getBackIn
  * @param {Number} amount The strength of the ease.
  * @static
+ * @memberOf Ease
  * @return {Function} The configured "back in" ease function
  **/
 Ease.getBackIn = function(amount) {
@@ -232,6 +250,7 @@ Ease.getBackIn = function(amount) {
  * @method backIn
  * @param {Number} t Parametric value (from 0 to 1)
  * @static
+ * @memberOf Ease
  * @return {Number} a default "back in" ease
  **/
 Ease.backIn = Ease.getBackIn(1.7);
@@ -241,6 +260,7 @@ Ease.backIn = Ease.getBackIn(1.7);
  * @method getBackOut
  * @param {Number} amount The strength of the ease.
  * @static
+ * @memberOf Ease
  * @return {Function} The configured "back out" ease function
  **/
 Ease.getBackOut = function(amount) {
@@ -253,6 +273,7 @@ Ease.getBackOut = function(amount) {
  * @method backOut
  * @param {Number} t Parametric value (from 0 to 1)
  * @static
+ * @memberOf Ease
  * @return {Number} a default "back out" ease
  **/
 Ease.backOut = Ease.getBackOut(1.7);
@@ -262,6 +283,7 @@ Ease.backOut = Ease.getBackOut(1.7);
  * @method getBackInOut
  * @param {Number} amount The strength of the ease.
  * @static
+ * @memberOf Ease
  * @return {Function} The configured "back in out" ease function
  **/
 Ease.getBackInOut = function(amount) {
@@ -278,6 +300,7 @@ Ease.getBackInOut = function(amount) {
  * @method backInOut
  * @param {Number} t Parametric value (from 0 to 1)
  * @static
+ * @memberOf Ease
  * @return {Number} a default "back in out" ease
  **/
 Ease.backInOut = Ease.getBackInOut(1.7);
@@ -286,6 +309,7 @@ Ease.backInOut = Ease.getBackInOut(1.7);
  * @method circIn
  * @param {Number} t Parametric value (from 0 to 1)
  * @static
+ * @memberOf Ease
  * @return {Number} A "circIn" ease
  **/
 Ease.circIn = function(t) {
@@ -296,6 +320,7 @@ Ease.circIn = function(t) {
  * @method circOut
  * @param {Number} t Parametric value (from 0 to 1)
  * @static
+ * @memberOf Ease
  * @return {Number} A "circOut" ease
  **/
 Ease.circOut = function(t) {
@@ -306,6 +331,7 @@ Ease.circOut = function(t) {
  * @method circInOut
  * @param {Number} t Parametric value (from 0 to 1)
  * @static
+ * @memberOf Ease
  * @return {Number} A "circInOut" ease
  **/
 Ease.circInOut = function(t) {
@@ -319,6 +345,7 @@ Ease.circInOut = function(t) {
  * @method bounceIn
  * @param {Number} t Parametric value (from 0 to 1)
  * @static
+ * @memberOf Ease
  * @return {Number} A "bounceIn" ease
  **/
 Ease.bounceIn = function(t) {
@@ -329,6 +356,7 @@ Ease.bounceIn = function(t) {
  * @method bounceOut
  * @param {Number} t Parametric value (from 0 to 1)
  * @static
+ * @memberOf Ease
  * @return {Number} A "bounceOut" ease
  **/
 Ease.bounceOut = function(t) {
@@ -347,6 +375,7 @@ Ease.bounceOut = function(t) {
  * @method bounceInOut
  * @param {Number} t Parametric value (from 0 to 1)
  * @static
+ * @memberOf Ease
  * @return {Number} A "bounceInOut" ease
  **/
 Ease.bounceInOut = function(t) {
@@ -362,6 +391,7 @@ Ease.bounceInOut = function(t) {
  * @param {Number} amplitude Amplitude of the bounce
  * @param {Number} period Period of the bounce
  * @static
+ * @memberOf Ease
  * @return {Function} A configured "elastic in" ease function
  **/
 Ease.getElasticIn = function(amplitude, period) {
@@ -379,6 +409,7 @@ Ease.getElasticIn = function(amplitude, period) {
  * @method elasticIn
  * @param {Number} t Parametric value (from 0 to 1)
  * @static
+ * @memberOf Ease
  * @return {Number} A default "elastic in" ease
  **/
 Ease.elasticIn = Ease.getElasticIn(1, 0.3);
@@ -389,6 +420,7 @@ Ease.elasticIn = Ease.getElasticIn(1, 0.3);
  * @param {Number} amplitude Amplitude of the bounce
  * @param {Number} period Period of the bounce
  * @static
+ * @memberOf Ease
  * @return {Function} A configured "elastic out" ease function
  **/
 Ease.getElasticOut = function(amplitude,period) {
@@ -406,6 +438,7 @@ Ease.getElasticOut = function(amplitude,period) {
  * @method elasticOut
  * @param {Number} t Parametric value (from 0 to 1)
  * @static
+ * @memberOf Ease
  * @return {Number} A default "elastic out" ease
  **/
 Ease.elasticOut = Ease.getElasticOut(1, 0.3);
@@ -416,6 +449,7 @@ Ease.elasticOut = Ease.getElasticOut(1, 0.3);
  * @param {Number} amplitude Amplitude of the bounce
  * @param {Number} period Period of the bounce
  * @static
+ * @memberOf Ease
  * @return {Function} A configured "elastic in-out" ease function
  **/
 Ease.getElasticInOut = function(amplitude,period) {
@@ -433,6 +467,7 @@ Ease.getElasticInOut = function(amplitude,period) {
  * @method elasticInOut
  * @param {Number} t Parametric value (from 0 to 1)
  * @static
+ * @memberOf Ease
  * @return {Number} A default "elastic in-out" ease
  **/
 Ease.elasticInOut = Ease.getElasticInOut(1, 0.3 * 1.5);

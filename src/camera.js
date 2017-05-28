@@ -130,6 +130,7 @@ class Camera {
    * Updates the camera's view matrix from all parameters.
    *
    * @chainable
+   * @private
    * @return {this} Returns `this`
    */
   _updateView() {
@@ -141,6 +142,7 @@ class Camera {
    * Update the camera's projection matrix
    *
    * @chainable
+   * @private
    * @return {this} Returns `this`
    */
   _updateProjection() {

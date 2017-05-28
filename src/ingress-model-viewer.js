@@ -55,7 +55,7 @@ const IMV = {
   Controls: {
     Orbit: OrbitControls
   },
-  VERSION: '0.21.0'
+  VERSION: '0.22.2'
 };
 
 export default IMV;

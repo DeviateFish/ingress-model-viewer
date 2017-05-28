@@ -1,6 +1,6 @@
 {
   "name": "ingress-model-viewer",
-  "version": "0.22.0",
+  "version": "0.22.2",
   "main": "dist/ingress-model-viewer.min.js",
   "description": "Rendering engine for Ingress game models",
   "repository": {
@@ -11,7 +11,7 @@
     "build": "webpack",
     "lint": "eslint ./src/ --ext .js -c .eslintrc.js",
     "serve": "webpack-dev-server --open",
-    "docs": "documentation build ./src/ingress-model-viewer.js -f html -o docs -g true"
+    "docs": "docma -c docma.config.json"
   },
   "keywords": [],
   "author": "Daniel Benton",
@@ -27,8 +27,7 @@
     "babel-core": "^6.22.1",
     "babel-loader": "^6.2.10",
     "babel-preset-es2015": "^6.22.0",
-    "documentation": "^4.0.0-rc.1",
-    "documentation-loader": "^0.1.1-beta",
+    "docma": "^1.5.1",
     "eslint": "^3.19.0",
     "eslint-loader": "^1.7.1",
     "webpack": "^2.2.1",
