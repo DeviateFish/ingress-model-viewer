@@ -23,7 +23,8 @@
     "title": "Ingress Model Viewer",
     "routing": "query",
     "entrance": "api:engine",
-    "server": "github"
+    "server": "github",
+    "base": "/ingress-model-viewer"
   },
   "jsdoc": {
     "module": false,
