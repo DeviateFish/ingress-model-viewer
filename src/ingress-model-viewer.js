@@ -59,3 +59,5 @@ const IMV = {
 };
 
 export default IMV;
+
+module.exports = IMV; // eslint-disable-line no-undef
