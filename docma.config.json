@@ -1,0 +1,74 @@
+{
+  "src": {
+    "engine": [
+      "./src/engine.js",
+      "./src/camera.js",
+      "./src/asset-manager.js"
+    ],
+    "assets": "./src/asset-loader.js",
+    "utilities": [
+      "./src/utils.js",
+      "./src/animation/animation.js",
+      "./src/animation/easing.js"
+    ],
+    "drawables": [
+      "./src/drawable/*.js",
+      "./src/drawable.js"
+    ],
+    "constants": "./src/constants.js",
+    "internals": "./src/**/*.js"
+  },
+  "dest": "./docs",
+  "app": {
+    "title": "Ingress Model Viewer",
+    "routing": "query",
+    "entrance": "api:engine",
+    "server": "github"
+  },
+  "jsdoc": {
+    "module": false,
+    "sort": "grouped"
+  },
+  "template": {
+    "options": {
+      "outline": "tree",
+      "navItems": [
+        {
+          "label": "Documentation",
+          "iconClass": "ico-book",
+          "items": [
+            {
+              "label": "Core",
+              "href": "?api=engine"
+            },
+            {
+              "label": "AssetLoader",
+              "href": "?api=assets"
+            },
+            {
+              "label": "Utilities",
+              "href": "?api=utilities"
+            },
+            {
+              "label": "Drawables",
+              "href": "?api=drawables"
+            },
+            {
+              "label": "Constants",
+              "href": "?api=constants"
+            },
+            {
+              "label": "Internals",
+              "href": "?api=internals"
+            }
+          ]
+        },
+        {
+          "label": "Github",
+          "href": "https://github.com/DeviateFish/ingress-model-viewer/",
+          "iconClass": "ico-github"
+        }
+      ]
+    }
+  }
+}

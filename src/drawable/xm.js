@@ -13,7 +13,7 @@ const defaultAltColor = vec4.clone(Constants.xmColors.coreGlowAlt);
  * @param  {String} meshName    Mesh internal name
  * @param  {String} textureName Texture internal name
  * @param  {vec4} teamColor     Color of the xm glow.
- * @return {[type]}             [description]
+ * @return {void}
  */
 class XmDrawable extends TexturedDrawable {
 
