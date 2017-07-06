@@ -4,6 +4,7 @@
     <title>Ingress Model Sandbox</title>
     <script src="../node_modules/gl-matrix/dist/gl-matrix.js"></script>
     <script src="../dist/ingress-model-viewer.js"></script>
+    <script src="https://rawgit.com/eligrey/FileSaver.js/master/FileSaver.min.js"></script>
     <style>
       html, body {
         height: 100%;
@@ -14,7 +15,7 @@
     </style>
 </head>
 <body>
-<canvas id="screen" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%"></canvas>
+<canvas id="screen" style="position: absolute; left: 0; top: 0; width: 1920px; height: 1080px"></canvas>
 <div style="width: 100%; text-align: center; color: #ccc; position: fixed; top: 0;height: 50px; line-height: 50px"
      id="controls"></div>
 <script type="text/javascript">
@@ -22,9 +23,9 @@
   canvas.width = document.body.offsetWidth;
   canvas.height = document.body.offsetHeight;
 
-  window.addEventListener('resize', function() {
-    engine.resize();
-  });
+  // window.addEventListener('resize', function() {
+  //   engine.resize();
+  // });
 
   var minifest = {
     "texture": {
@@ -44,12 +45,10 @@
       }
     },
     "mesh": {
-      "InterestCapsuleMesh": {
-        "path": "scanner/interestCapsuleResource.obj"
-      },
-      "CapsuleXmMesh": {
-        "path": "scanner/capsuleResourceXM.obj"
-      }
+      "TransmuterAttackMesh": { "path": "scanner/transmuterAttackResource.obj" },
+      "TransmuterAttackXmMesh": { "path": "scanner/transmuterAttackResourceXM.obj" },
+      "TransmuterDefenseMesh": { "path": "scanner/transmuterDefenseResource.obj" },
+      "TransmuterDefenseXmMesh": { "path": "scanner/transmuterDefenseResourceXM.obj" },
     },
     "rawProgram": {},
     "program": {
@@ -66,24 +65,81 @@
     }
   };
 
+  var FrameGrabber = (function() {
+    function captureOutput(engine, name) {
+      return engine.capture('image/png').then(function(s) {
+        saveAs(s, name);
+      });
+    }
+
+    function pause(delay) {
+      return new IMV.Utilities.Promise(function(resolve) {
+        setTimeout(resolve, delay);
+      });
+    }
+
+    function executePipeline(pipeline, engine, prefix, framePause, frameSkip) {
+      return pipeline.reduce(function(p, m, i) {
+        return p.then(function() {
+          m();
+          return captureOutput(engine, prefix + i + '.png')
+            .then(function() {
+              engine.draw(frameSkip);
+              return pause(framePause);
+            });
+        });
+      }, IMV.Utilities.Promise.resolve());
+    }
+
+    function FrameGrabber(engine, frameSkip, framePause, prefix) {
+      this.engine = engine;
+      this.frameSkip = frameSkip;
+      this.framePause = framePause;
+      this.prefix = prefix;
+      this.pipeline = [];
+      this.capturing = false;
+      return this;
+    };
+
+    FrameGrabber.prototype.addPipeline = function(pipeline) {
+      this.pipeline = this.pipeline.concat(pipeline);
+    };
+
+    FrameGrabber.prototype.capture = function() {
+      if (this.capturing) {
+        throw new Error('cannot start capturing while already capturing');
+      }
+      var pipeline = this.pipeline.slice();
+      var self = this;
+      this.pipeline = [];
+      this.capturing = true;
+      return executePipeline(pipeline, this.engine, this.prefix, this.framePause, this.frameSkip)
+        .then(function() {
+          self.capturing = false;
+        });
+    };
+
+    return FrameGrabber;
+  }());
+
   var init = function(assets) {
-    engine = new IMV.Engine(canvas, assets);
-    engine.preload(function() {
-      engine.camera.setPosition([0.0, 6, 12]).lookAt([0, 0, 0]);
+    engine = new IMV.Engine(canvas, assets, true);
+    engine.preload().then(function() {
+      engine.camera.setPosition([0.0, 3, 6]).lookAt([0, 0, 0]);
       engine.updateView();
       var parent = new IMV.Drawables.Drawable();
       var ic = new IMV.Drawables.Drawable();
-      ic.addChild(new IMV.Drawables.Inventory.InterestCapsule());
-      ic.addChild(new IMV.Drawables.Inventory.CapsuleXm());
+      ic.addChild(new IMV.Drawables.Inventory.TransmuterAttack());
+      ic.addChild(new IMV.Drawables.Inventory.TransmuterAttackXm());
+      ic.setTranslation(vec3.fromValues(0, 0, 1));
       parent.addChild(ic);
-      var anim = new IMV.Utilities.Animation(4000, rotate, IMV.Utilities.Ease.linear, true);
-      anim.start();
-      ic.addAnimation(anim);
-      parent.addAnimation((new IMV.Utilities.Animation(4000, orbit, IMV.Utilities.Ease.linear, true)).start());
       var ic2 = new IMV.Drawables.Drawable();
-      ic2.addChild(new IMV.Drawables.Inventory.InterestCapsule());
-      ic2.addChild(new IMV.Drawables.Inventory.CapsuleXm());
-      engine.objectRenderer.addDrawable(ic2);
+      ic2.addChild(new IMV.Drawables.Inventory.TransmuterDefense());
+      ic2.addChild(new IMV.Drawables.Inventory.TransmuterDefenseXm());
+      ic2.setTranslation(vec3.fromValues(0, 0, -1));
+      parent.addChild(ic2);
+      parent.addAnimation((new IMV.Utilities.Animation(4000, rotate, IMV.Utilities.Ease.linear, true)).start());
+      //engine.objectRenderer.addDrawable(ic2);
       engine.objectRenderer.addDrawable(parent);
     });
   };
@@ -96,9 +152,9 @@
 
   var orbit = function(t, drawable) {
     var t = vec3.fromValues(
-      2 * Math.sin(t * Math.PI * 2),
+      Math.sin(t * Math.PI * 2),
       0,
-      2 * Math.cos(t * Math.PI * 2)
+      Math.cos(t * Math.PI * 2)
     );
     drawable.setTranslation(t);
   };

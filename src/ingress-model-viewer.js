@@ -20,6 +20,7 @@ import { resetGL, setParams, disco, generateArtifacts, makeArtifact } from './ut
 import Ease from './animation/easing';
 import Animation from './animation/animation';
 import GLMatrix from 'gl-matrix';
+import Promise from 'es6-promises';
 
 const IMV = {
   Constants,
@@ -34,6 +35,7 @@ const IMV = {
     Ease,
     Animation,
     GLMatrix,
+    Promise,
   },
   Drawables: {
     Inventory,
