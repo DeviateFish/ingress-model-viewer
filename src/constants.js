@@ -97,6 +97,35 @@ var Constants = {
     }
   },
   /**
+   * Constants for key locker colors. Each capsule has two colors: the 0 index
+   * color is for the highlight markings on the key locker; the 1 index color is
+   * the base color of the key locker. These correspond to u_color0 and
+   * u_color1.
+   * @type {Object}
+   */
+  keyCapsuleColors: {
+    blue: [
+      vec4.fromValues(0.3686274509803921, 0.6784313725490196, 1.0, 1.0),
+      vec4.fromValues(0.3568627450980392, 0.4705882352941176, 0.6470588235294117, 1.0)
+    ],
+    green: [
+      vec4.fromValues(0.2117647058823529, 1.0, 0.4705882352941176, 1.0),
+      vec4.fromValues(0.2980392156862745, 0.5607843137254901, 0.4117647058823529, 1.0)
+    ],
+    red: [
+      vec4.fromValues(1.0, 0.0431372549019607, 0.3764705882352941, 1.0),
+      vec4.fromValues(0.6784313725490196, 0.2078431372549019, 0.3607843137254901, 1.0)
+    ],
+    white: [
+      vec4.fromValues(1.0, 1.0, 1.0, 1.0),
+      vec4.fromValues(0.5921568627450980, 0.5882352941176470, 0.5843137254901960, 1.0)
+    ],
+    yellow: [
+      vec4.fromValues(0.9019607843137254, 0.9411764705882352, 0.1647058823529411, 1.0),
+      vec4.fromValues(0.6862745098039215, 0.6509803921568627, 0.3607843137254901, 1.0)
+    ]
+  },
+  /**
    * Constants for xm glow colors (for item xm cores)
    * @type {Object}
    */
@@ -104,7 +133,8 @@ var Constants = {
     coreGlow: vec4.fromValues(0.92, 0.7, 0.89, 1.0),
     coreGlowAlt: vec4.fromValues(0.6, 0.4, 0.6, 0.8),
     coreGlowAda: vec4.fromValues(0, 0.7607843137254902, 1, 1.0),
-    coreGlowJarvis: vec4.fromValues(0.1568627450980392, 0.9568627450980393, 0.1568627450980392, 1.0)
+    coreGlowJarvis: vec4.fromValues(0.1568627450980392, 0.9568627450980393, 0.1568627450980392, 1.0),
+    coreGlowChaotic: vec4.fromValues(1, 0.25, 0.0, 1.0)
   },
   /**
    * Mesh internal name constants.
@@ -140,7 +170,10 @@ var Constants = {
       Capsule: 'CapsuleMesh',
       InterestCapsule: 'InterestCapsuleMesh',
       KeyCapsule: 'KeyCapsuleMesh',
+      KeyCapsuleXm: 'KeyCapsuleXmMesh',
       CapsuleXm: 'CapsuleXmMesh',
+      Fracker: 'FrackerMesh',
+      FrackerXm: 'FrackerXmMesh',
       TransmuterAttack: 'TransmuterAttackMesh',
       TransmuterAttackXm: 'TransmuterAttackXmMesh',
       TransmuterDefense: 'TransmuterDefenseMesh',
@@ -149,6 +182,10 @@ var Constants = {
       MysteriousXm: 'MysteriousXmMesh',
       Niantic: 'NianticMesh',
       ExtraShield: 'ExtraShieldMesh',
+      BoostedPowerCube: 'BoostedPowerCubeMesh',
+      BoostedPowerCubeXm: 'BoostedPowerCubeXmMesh',
+      BoostedPowerCubeK: 'BoostedPowerCubeKMesh',
+      BoostedPowerCubeKXm: 'BoostedPowerCubeKXmMesh',
       MediaCube: 'MediaCubeMesh',
       MediaPlaneMesh: 'MediaPlaneMesh'
     },
@@ -169,10 +206,14 @@ var Constants = {
       PortalShield: 'PortalShieldResourceUnitMesh',
       Capsule: 'CapsuleResourceUnitMesh',
       InterestCapsule: 'InterestCapsuleResourceUnitMesh',
+      Fracker: 'FrackerResourceUnitMesh',
       TransmuterAttack: 'TransmuterAttackResourceUnitMesh',
       TransmuterDefense: 'TransmuterDefenseResourceUnitMesh',
       Mysterious: 'MysteriousResourceUnitMesh',
       ExtraShield: 'ExtraShieldResourceUnitMesh',
+      KeyCapsule: 'KeyCapsuleResourceUnitMesh',
+      BoostedPowerCube: 'BoostedPowerCubeResourceUnitMesh',
+      BoostedPowerCubeK: 'BoostedPowerCubeKResourceUnitMesh'
     },
     Player: {
       Player: 'PlayerMesh',
