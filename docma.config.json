@@ -16,13 +16,14 @@
       "./src/drawable.js"
     ],
     "constants": "./src/constants.js",
-    "internals": "./src/**/*.js"
+    "internals": "./src/**/*.js",
+    "readme": "./README.md"
   },
   "dest": "./docs",
   "app": {
     "title": "Ingress Model Viewer",
     "routing": "query",
-    "entrance": "api:engine",
+    "entrance": "content:readme",
     "server": "github",
     "base": "/ingress-model-viewer"
   },
@@ -38,6 +39,10 @@
           "label": "Documentation",
           "iconClass": "ico-book",
           "items": [
+            {
+              "label": "Readme",
+              "href": "?content=readme"
+            },
             {
               "label": "Core",
               "href": "?api=engine"

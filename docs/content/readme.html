@@ -1,0 +1,26 @@
+
+<html><head></head><body><h1 id="ingress-model-viewer">ingress-model-viewer</h1>
+<hr />
+<p>Rendering engine for Ingress game models</p>
+<h2 id="about">About</h2>
+<p>Capable of rendering Ingress game models in the browser, with no conversion required.  However, this does require a copy of the <code>assets</code> directory from some version of the Ingress apk.  Not all models are found in all versions of Ingress; you may have to look in older versions to find some assets.  Shards, in particular, have been added and removed over time.</p>
+<p>A JavaScript library by Daniel Benton.</p>
+<h2 id="installation">Installation</h2>
+<p>Grab the <a href="https://github.com/DeviateFish/ingress-model-viewer/blob/master/dist/ingress-model-viewer.js">compiled library</a>.  Alternatively, build the library yourself, from source (see below).</p>
+<h2 id="usage">Usage</h2>
+<p>Before starting, be sure to install dependencies with <code>npm install</code>.</p>
+<h3 id="starting-development-server">Starting development server</h3>
+<p>Use <code>npm run serve</code> to start a development server.  This will watch for changes and rebuild as necessary.</p>
+<h3 id="running-eslint">Running ESLint</h3>
+<p>Use <code>npm run lint</code> to run ESLint on all source files</p>
+<h3 id="adding-assets">Adding assets</h3>
+<p>By default, all demos will look for a directory named <code>assets</code> in the root directory.  This can be the assets directory straight from a version of the ingress apk, extracted with your tool of choice.  This library is capable of reading and parsing assets from the ingress apk without any conversion required.</p>
+<h3 id="demos">Demos</h3>
+<p>Note that as of this writing, not all demos are functional or self-explanatory.  They are mostly sandboxes for development at this time, but some are nifty demos of custom shaders/models (e.g. <a href="https://github.com/DeviateFish/ingress-model-viewer/blob/master/demo/globe.html"><code>demos/globe.html</code></a>).  These sometimes will attempt to include external resources, such as <a href="https://rawgit.com/eligrey/FileSaver.js/"><code>FileSaver</code></a>.</p>
+<h3 id="building-documentation">Building documentation</h3>
+<p>Use <code>npm run docs</code> to rebuild the documentation pages. </p>
+<h2 id="documentation">Documentation</h2>
+<p>See the <a href="https://deviatefish.github.io/ingress-model-viewer/">documentation site</a></p>
+<h2 id="license">License</h2>
+<p>MIT. See <a href="https://github.com/DeviateFish/ingress-model-viewer/blob/master/LICENSE"><code>LICENSE</code></a></p>
+</body></html>
