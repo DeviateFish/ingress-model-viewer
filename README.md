@@ -4,7 +4,9 @@ Rendering engine for Ingress game models
 
 ## About
 
-A JavaScript library by Daniel Benton.  Capable of rendering Ingress game models in the browser, with no conversion required.  However, this does require a copy of the `assets` directory from some version of the Ingress apk.  Not all models are found in all versions of Ingress; you may have to look in older versions to find some assets.  Shards, in particular, have been added and removed over time.
+Capable of rendering Ingress game models in the browser, with no conversion required.  However, this does require a copy of the `assets` directory from some version of the Ingress apk.  Not all models are found in all versions of Ingress; you may have to look in older versions to find some assets.  Shards, in particular, have been added and removed over time.
+
+A JavaScript library by Daniel Benton.
 
 ## Installation
 
@@ -25,6 +27,9 @@ By default, all demos will look for a directory named `assets` in the root direc
 
 ### Demos
 Note that as of this writing, not all demos are functional or self-explanatory.  They are mostly sandboxes for development at this time, but some are nifty demos of custom shaders/models (e.g. [`demos/globe.html`](https://github.com/DeviateFish/ingress-model-viewer/blob/master/demo/globe.html)).  These sometimes will attempt to include external resources, such as [`FileSaver`](https://rawgit.com/eligrey/FileSaver.js/).
+
+### Building documentation
+Use `npm run docs` to rebuild the documentation pages. 
 
 ## Documentation
 

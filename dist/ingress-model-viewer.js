@@ -64,7 +64,7 @@ var IMV =
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 46);
+/******/ 	return __webpack_require__(__webpack_require__.s = 45);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -100,12 +100,12 @@ THE SOFTWARE. */
 // END HEADER
 
 exports.glMatrix = __webpack_require__(3);
-exports.mat2 = __webpack_require__(57);
-exports.mat2d = __webpack_require__(58);
+exports.mat2 = __webpack_require__(56);
+exports.mat2d = __webpack_require__(57);
 exports.mat3 = __webpack_require__(27);
-exports.mat4 = __webpack_require__(59);
-exports.quat = __webpack_require__(60);
-exports.vec2 = __webpack_require__(61);
+exports.mat4 = __webpack_require__(58);
+exports.quat = __webpack_require__(59);
+exports.vec2 = __webpack_require__(60);
 exports.vec3 = __webpack_require__(28);
 exports.vec4 = __webpack_require__(29);
 
@@ -1683,7 +1683,7 @@ var _bicolored = __webpack_require__(14);
 
 var _bicolored2 = _interopRequireDefault(_bicolored);
 
-var _xm = __webpack_require__(45);
+var _xm = __webpack_require__(44);
 
 var _xm2 = _interopRequireDefault(_xm);
 
@@ -1811,7 +1811,7 @@ var _constants = __webpack_require__(1);
 
 var _constants2 = _interopRequireDefault(_constants);
 
-var _glowramp = __webpack_require__(40);
+var _glowramp = __webpack_require__(39);
 
 var _glowramp2 = _interopRequireDefault(_glowramp);
 
@@ -1819,11 +1819,11 @@ var _bicolored = __webpack_require__(14);
 
 var _bicolored2 = _interopRequireDefault(_bicolored);
 
-var _shieldEffect = __webpack_require__(44);
+var _shieldEffect = __webpack_require__(43);
 
 var _shieldEffect2 = _interopRequireDefault(_shieldEffect);
 
-var _ornament = __webpack_require__(41);
+var _ornament = __webpack_require__(40);
 
 var _ornament2 = _interopRequireDefault(_ornament);
 
@@ -1954,7 +1954,7 @@ exports.default = World;
     var REQUIRES_NEW = 'constructor Promise requires "new".';
     var CHAINING_CYCLE = 'then() cannot return same Promise that it resolves.';
 
-    var setImmediate = global.setImmediate || __webpack_require__(67).setImmediate;
+    var setImmediate = global.setImmediate || __webpack_require__(65).setImmediate;
     var isArray = Array.isArray || function (anything) {
         return Object.prototype.toString.call(anything) == '[object Array]';
     };
@@ -3351,7 +3351,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _libtga = __webpack_require__(64);
+var _libtga = __webpack_require__(62);
 
 var _libtga2 = _interopRequireDefault(_libtga);
 
@@ -3556,7 +3556,7 @@ var _link = __webpack_require__(15);
 
 var _link2 = _interopRequireDefault(_link);
 
-var _resonatorLink = __webpack_require__(50);
+var _resonatorLink = __webpack_require__(49);
 
 var _resonatorLink2 = _interopRequireDefault(_resonatorLink);
 
@@ -6587,33 +6587,6 @@ module.exports = vec4;
 
 /***/ }),
 /* 30 */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
-/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6724,7 +6697,7 @@ var AtmosphereDrawable = function (_Drawable) {
 exports.default = AtmosphereDrawable;
 
 /***/ }),
-/* 32 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6742,11 +6715,11 @@ var _constants = __webpack_require__(1);
 
 var _constants2 = _interopRequireDefault(_constants);
 
-var _particle = __webpack_require__(42);
+var _particle = __webpack_require__(41);
 
 var _particle2 = _interopRequireDefault(_particle);
 
-var _particlePortal = __webpack_require__(48);
+var _particlePortal = __webpack_require__(47);
 
 var _particlePortal2 = _interopRequireDefault(_particlePortal);
 
@@ -6851,7 +6824,7 @@ var ParticlePortalDrawable = function (_ParticleDrawable) {
 exports.default = ParticlePortalDrawable;
 
 /***/ }),
-/* 33 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6873,7 +6846,7 @@ var _link = __webpack_require__(15);
 
 var _link2 = _interopRequireDefault(_link);
 
-var _portalLink = __webpack_require__(49);
+var _portalLink = __webpack_require__(48);
 
 var _portalLink2 = _interopRequireDefault(_portalLink);
 
@@ -6931,7 +6904,7 @@ var PortalLinkDrawable = function (_LinkDrawable) {
 exports.default = PortalLinkDrawable;
 
 /***/ }),
-/* 34 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6953,7 +6926,7 @@ var _link = __webpack_require__(15);
 
 var _link2 = _interopRequireDefault(_link);
 
-var _sphericalPortalLink = __webpack_require__(51);
+var _sphericalPortalLink = __webpack_require__(50);
 
 var _sphericalPortalLink2 = _interopRequireDefault(_sphericalPortalLink);
 
@@ -7022,7 +6995,7 @@ var SphericalPortalLinkDrawable = function (_LinkDrawable) {
 exports.default = SphericalPortalLinkDrawable;
 
 /***/ }),
-/* 35 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7102,7 +7075,7 @@ var TexturedSphereDrawable = function (_TexturedDrawable) {
 exports.default = TexturedSphereDrawable;
 
 /***/ }),
-/* 36 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7114,11 +7087,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _assetManager = __webpack_require__(38);
+var _assetManager = __webpack_require__(37);
 
 var _assetManager2 = _interopRequireDefault(_assetManager);
 
-var _object = __webpack_require__(55);
+var _object = __webpack_require__(54);
 
 var _object2 = _interopRequireDefault(_object);
 
@@ -7128,7 +7101,7 @@ var _world = __webpack_require__(12);
 
 var _world2 = _interopRequireDefault(_world);
 
-var _resource = __webpack_require__(43);
+var _resource = __webpack_require__(42);
 
 var _resource2 = _interopRequireDefault(_resource);
 
@@ -7144,7 +7117,7 @@ var _portal = __webpack_require__(22);
 
 var _portal2 = _interopRequireDefault(_portal);
 
-var _camera = __webpack_require__(39);
+var _camera = __webpack_require__(38);
 
 var _camera2 = _interopRequireDefault(_camera);
 
@@ -7450,7 +7423,7 @@ var Engine = function () {
 exports.default = Engine;
 
 /***/ }),
-/* 37 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7780,7 +7753,7 @@ var OrbitControls = function () {
 exports.default = OrbitControls;
 
 /***/ }),
-/* 38 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7804,11 +7777,11 @@ var _assetLoader = __webpack_require__(19);
 
 var _assetLoader2 = _interopRequireDefault(_assetLoader);
 
-var _file = __webpack_require__(47);
+var _file = __webpack_require__(46);
 
 var _file2 = _interopRequireDefault(_file);
 
-var _texture = __webpack_require__(56);
+var _texture = __webpack_require__(55);
 
 var _texture2 = _interopRequireDefault(_texture);
 
@@ -7816,11 +7789,11 @@ var _program = __webpack_require__(16);
 
 var _program2 = _interopRequireDefault(_program);
 
-var _glowramp = __webpack_require__(52);
+var _glowramp = __webpack_require__(51);
 
 var _glowramp2 = _interopRequireDefault(_glowramp);
 
-var _opaque = __webpack_require__(53);
+var _opaque = __webpack_require__(52);
 
 var _opaque2 = _interopRequireDefault(_opaque);
 
@@ -8118,7 +8091,7 @@ var AssetManager = function (_GLBound) {
 exports.default = AssetManager;
 
 /***/ }),
-/* 39 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8328,7 +8301,7 @@ var Camera = function () {
 exports.default = Camera;
 
 /***/ }),
-/* 40 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8419,7 +8392,7 @@ var GlowrampDrawable = function (_TexturedDrawable) {
 exports.default = GlowrampDrawable;
 
 /***/ }),
-/* 41 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8476,7 +8449,7 @@ var OrnamentDrawable = function (_TexturedDrawable) {
 exports.default = OrnamentDrawable;
 
 /***/ }),
-/* 42 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8544,7 +8517,7 @@ var ParticleDrawable = function (_TexturedDrawable) {
 exports.default = ParticleDrawable;
 
 /***/ }),
-/* 43 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8603,7 +8576,7 @@ for (var i in meshes) {
 exports.default = Resource;
 
 /***/ }),
-/* 44 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8705,7 +8678,7 @@ var ShieldEffectDrawable = function (_TexturedDrawable) {
 exports.default = ShieldEffectDrawable;
 
 /***/ }),
-/* 45 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8786,7 +8759,7 @@ var XmDrawable = function (_TexturedDrawable) {
 exports.default = XmDrawable;
 
 /***/ }),
-/* 46 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8800,7 +8773,7 @@ var _constants = __webpack_require__(1);
 
 var _constants2 = _interopRequireDefault(_constants);
 
-var _engine = __webpack_require__(36);
+var _engine = __webpack_require__(35);
 
 var _engine2 = _interopRequireDefault(_engine);
 
@@ -8820,7 +8793,7 @@ var _world = __webpack_require__(12);
 
 var _world2 = _interopRequireDefault(_world);
 
-var _portalLink = __webpack_require__(33);
+var _portalLink = __webpack_require__(32);
 
 var _portalLink2 = _interopRequireDefault(_portalLink);
 
@@ -8828,19 +8801,19 @@ var _resonatorLink = __webpack_require__(20);
 
 var _resonatorLink2 = _interopRequireDefault(_resonatorLink);
 
-var _sphericalPortalLink = __webpack_require__(34);
+var _sphericalPortalLink = __webpack_require__(33);
 
 var _sphericalPortalLink2 = _interopRequireDefault(_sphericalPortalLink);
 
-var _atmosphere = __webpack_require__(31);
+var _atmosphere = __webpack_require__(30);
 
 var _atmosphere2 = _interopRequireDefault(_atmosphere);
 
-var _texturedSphere = __webpack_require__(35);
+var _texturedSphere = __webpack_require__(34);
 
 var _texturedSphere2 = _interopRequireDefault(_texturedSphere);
 
-var _particlePortal = __webpack_require__(32);
+var _particlePortal = __webpack_require__(31);
 
 var _particlePortal2 = _interopRequireDefault(_particlePortal);
 
@@ -8852,7 +8825,7 @@ var _portal = __webpack_require__(22);
 
 var _portal2 = _interopRequireDefault(_portal);
 
-var _orbitControls = __webpack_require__(37);
+var _orbitControls = __webpack_require__(36);
 
 var _orbitControls2 = _interopRequireDefault(_orbitControls);
 
@@ -8920,7 +8893,7 @@ exports.default = IMV;
 module.exports = IMV; // eslint-disable-line no-undef
 
 /***/ }),
-/* 47 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8946,7 +8919,7 @@ var _glAttribute = __webpack_require__(6);
 
 var _glAttribute2 = _interopRequireDefault(_glAttribute);
 
-var _javaDeserializer = __webpack_require__(63);
+var _javaDeserializer = __webpack_require__(61);
 
 var _javaDeserializer2 = _interopRequireDefault(_javaDeserializer);
 
@@ -9032,7 +9005,7 @@ var FileMesh = function (_Mesh) {
 exports.default = FileMesh;
 
 /***/ }),
-/* 48 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9149,7 +9122,7 @@ var ParticlePortalMesh = function (_Mesh) {
 exports.default = ParticlePortalMesh;
 
 /***/ }),
-/* 49 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9324,7 +9297,7 @@ var PortalLinkMesh = function (_Mesh) {
 exports.default = PortalLinkMesh;
 
 /***/ }),
-/* 50 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9501,7 +9474,7 @@ var ResonatorLinkMesh = function (_Mesh) {
 exports.default = ResonatorLinkMesh;
 
 /***/ }),
-/* 51 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9734,7 +9707,7 @@ var SphericalPortalLinkMesh = function (_Mesh) {
 exports.default = SphericalPortalLinkMesh;
 
 /***/ }),
-/* 52 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9816,7 +9789,7 @@ var GlowrampProgram = function (_Program) {
 exports.default = GlowrampProgram;
 
 /***/ }),
-/* 53 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9897,7 +9870,7 @@ var OpaqueProgram = function (_Program) {
 exports.default = OpaqueProgram;
 
 /***/ }),
-/* 54 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9999,7 +9972,7 @@ var Renderer = function (_GLBound) {
 exports.default = Renderer;
 
 /***/ }),
-/* 55 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10013,7 +9986,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-var _renderer = __webpack_require__(54);
+var _renderer = __webpack_require__(53);
 
 var _renderer2 = _interopRequireDefault(_renderer);
 
@@ -10132,7 +10105,7 @@ var ObjectRenderer = function (_Renderer) {
 exports.default = ObjectRenderer;
 
 /***/ }),
-/* 56 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10237,7 +10210,7 @@ var Texture = function (_GLBound) {
 exports.default = Texture;
 
 /***/ }),
-/* 57 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
@@ -10679,7 +10652,7 @@ module.exports = mat2;
 
 
 /***/ }),
-/* 58 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
@@ -11154,7 +11127,7 @@ module.exports = mat2d;
 
 
 /***/ }),
-/* 59 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
@@ -13296,7 +13269,7 @@ module.exports = mat4;
 
 
 /***/ }),
-/* 60 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
@@ -13902,7 +13875,7 @@ module.exports = quat;
 
 
 /***/ }),
-/* 61 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
@@ -14495,27 +14468,7 @@ module.exports = vec2;
 
 
 /***/ }),
-/* 62 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(global) {var win;
-
-if (typeof window !== "undefined") {
-    win = window;
-} else if (typeof global !== "undefined") {
-    win = global;
-} else if (typeof self !== "undefined"){
-    win = self;
-} else {
-    win = {};
-}
-
-module.exports = win;
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(30)))
-
-/***/ }),
-/* 63 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var require;var require;/*! java-deserializer 19-08-2015 */
@@ -14524,7 +14477,7 @@ var require;var require;/*! java-deserializer 19-08-2015 */
 //# sourceMappingURL=java-deserializer.min.js.map
 
 /***/ }),
-/* 64 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! libtga 13-08-2015 */
@@ -14536,7 +14489,34 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 //# sourceMappingURL=libtga.min.js.map
 
 /***/ }),
-/* 65 */
+/* 63 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+/* 64 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -14723,6 +14703,65 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 process.umask = function() { return 0; };
+
+
+/***/ }),
+/* 65 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var apply = Function.prototype.apply;
+
+// DOM APIs, for completeness
+
+exports.setTimeout = function() {
+  return new Timeout(apply.call(setTimeout, window, arguments), clearTimeout);
+};
+exports.setInterval = function() {
+  return new Timeout(apply.call(setInterval, window, arguments), clearInterval);
+};
+exports.clearTimeout =
+exports.clearInterval = function(timeout) {
+  if (timeout) {
+    timeout.close();
+  }
+};
+
+function Timeout(id, clearFn) {
+  this._id = id;
+  this._clearFn = clearFn;
+}
+Timeout.prototype.unref = Timeout.prototype.ref = function() {};
+Timeout.prototype.close = function() {
+  this._clearFn.call(window, this._id);
+};
+
+// Does not start the time, just sets up the members needed.
+exports.enroll = function(item, msecs) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = msecs;
+};
+
+exports.unenroll = function(item) {
+  clearTimeout(item._idleTimeoutId);
+  item._idleTimeout = -1;
+};
+
+exports._unrefActive = exports.active = function(item) {
+  clearTimeout(item._idleTimeoutId);
+
+  var msecs = item._idleTimeout;
+  if (msecs >= 0) {
+    item._idleTimeoutId = setTimeout(function onTimeout() {
+      if (item._onTimeout)
+        item._onTimeout();
+    }, msecs);
+  }
+};
+
+// setimmediate attaches itself to the global object
+__webpack_require__(66);
+exports.setImmediate = setImmediate;
+exports.clearImmediate = clearImmediate;
 
 
 /***/ }),
@@ -14916,67 +14955,7 @@ process.umask = function() { return 0; };
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(30), __webpack_require__(65)))
-
-/***/ }),
-/* 67 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var apply = Function.prototype.apply;
-
-// DOM APIs, for completeness
-
-exports.setTimeout = function() {
-  return new Timeout(apply.call(setTimeout, window, arguments), clearTimeout);
-};
-exports.setInterval = function() {
-  return new Timeout(apply.call(setInterval, window, arguments), clearInterval);
-};
-exports.clearTimeout =
-exports.clearInterval = function(timeout) {
-  if (timeout) {
-    timeout.close();
-  }
-};
-
-function Timeout(id, clearFn) {
-  this._id = id;
-  this._clearFn = clearFn;
-}
-Timeout.prototype.unref = Timeout.prototype.ref = function() {};
-Timeout.prototype.close = function() {
-  this._clearFn.call(window, this._id);
-};
-
-// Does not start the time, just sets up the members needed.
-exports.enroll = function(item, msecs) {
-  clearTimeout(item._idleTimeoutId);
-  item._idleTimeout = msecs;
-};
-
-exports.unenroll = function(item) {
-  clearTimeout(item._idleTimeoutId);
-  item._idleTimeout = -1;
-};
-
-exports._unrefActive = exports.active = function(item) {
-  clearTimeout(item._idleTimeoutId);
-
-  var msecs = item._idleTimeout;
-  if (msecs >= 0) {
-    item._idleTimeoutId = setTimeout(function onTimeout() {
-      if (item._onTimeout)
-        item._onTimeout();
-    }, msecs);
-  }
-};
-
-// setimmediate attaches itself to the global object
-__webpack_require__(66);
-var global = __webpack_require__(62);
-exports.setImmediate = global.setImmediate;
-exports.clearImmediate = global.clearImmediate;
-
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(63), __webpack_require__(64)))
 
 /***/ })
 /******/ ]);
