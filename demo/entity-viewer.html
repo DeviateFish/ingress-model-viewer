@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Ingress Model Sandbox - Inventory viewer</title>
+  <script src="../node_modules/gl-matrix/dist/gl-matrix.js"></script>
+  <script src="../dist/ingress-model-viewer.js"></script>
+  <script src="https://rawgit.com/eligrey/FileSaver.js/master/FileSaver.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.3/vue.js"></script>
+  <style>
+    html,
+    body {
+      height: 100%;
+      width: 100%;
+      position: relative;
+      margin: 0;
+    }
+
+    #app1{
+      width: 300px;
+    }
+
+    #app1 fieldset{
+      min-width:150px;
+      vertical-align: top;
+    }
+
+    #app1 fieldset label {
+      display: inline-block;
+      min-width:80px;
+      text-align:right;
+    }
+  </style>
+</head>
+
+<body>
+  <form id="app1">
+    <fieldset>
+      <legend>Inventory</legend>
+      <select v-model="inventory" @change="changeInventory()">
+        <option :value="inventoryOption" v-for="inventoryOption in inventoryOptions">{{inventoryOption}}</option>
+      </select>
+    </fieldset>
+    <fieldset>
+      <legend>Camera</legend>
+      <label>Distance:</label>
+      <input type="range" max="5" min="1" v-model="distance" />
+      <br/>
+      <label>Angle:</label>
+      <input type="range" max="90" min="-90" v-model="angle" />
+      <br/>
+    </fieldset>
+  </form>
+  <canvas id="screen" style="position: absolute; left: 300px; top: 0px;height: 100%"></canvas>
+  <script type="text/javascript">
+    var app1 = new Vue({
+      el: "#app1",
+      data: {
+        distance: 2,
+        angle: 30,
+        inventoryOptions: Object.keys(IMV.Entities.Inventory),
+        inventory: "Xmp"
+      },
+      methods: {
+        changeInventory: function () {
+          this.clear();
+          var item = new IMV.Entities.Inventory[this.inventory](engine);
+        },
+        clear: function () {
+          var drawablesLength = engine.objectRenderer.drawables.length;
+          for (var i = 0; i < drawablesLength; i++) {
+            engine.objectRenderer.removeDrawable(engine.objectRenderer.drawables[0]);
+          }
+        }
+      }
+    })
+
+    var canvas = document.getElementById('screen'),
+      engine, assets = {};
+    canvas.width = document.body.offsetWidth - 300;
+    canvas.height = document.body.offsetHeight;
+
+    window.addEventListener('resize', function () {
+      engine.resize();
+    });
+
+    var updateCamera = function () {
+      engine.updateView();
+      window.requestAnimationFrame(updateCamera);
+    };
+
+    var init = function (assets) {
+      engine = new IMV.Engine(canvas, assets, true);
+      controls = new IMV.Controls.Orbit(canvas, engine.camera, 100, {
+        distanceMin: 1,
+        distanceMax: 150
+      });
+      engine.preload().then(function () {
+        console.log('ready');
+        setupScene();
+      }).catch(function (err) {
+        console.error(err);
+      });
+    };
+
+    var setupScene = function () {
+      engine.camera.setFar(500).setPosition([0.0, 30, 20]).lookAt([0.0, 0.0, 0.0]);
+      engine.updateView();
+      engine.render();
+      window.requestAnimationFrame(updateCamera);
+
+      var item = new IMV.Entities.Inventory[app1.inventory](engine);
+    };
+
+    var times = 100;
+    var index = 0;
+
+    IMV.AssetLoader.loadResource('/manifest/assets.json', 'text').then(function (val) {
+      assets = JSON.parse(val);
+      if (assets) {
+        init(assets);
+
+        setInterval(function () {
+          var x = app1.distance * Math.cos(app1.angle * Math.PI / 180) * Math.sin(index / times);
+          var y = app1.distance * Math.cos(app1.angle * Math.PI / 180) * Math.cos(index / times);
+          var height = app1.distance * Math.sin(app1.angle * Math.PI / 180);
+
+          engine.camera.setFar(500).setPosition([x, height, y]).lookAt([0.0, 0.0, 0.0]);
+          engine.updateView();
+
+          index++;
+        }, 30);
+      }
+    });
+
+  </script>
+</body>
+
+</html>
