@@ -187,7 +187,8 @@ var Constants = {
       BoostedPowerCubeK: 'BoostedPowerCubeKMesh',
       BoostedPowerCubeKXm: 'BoostedPowerCubeKXmMesh',
       MediaCube: 'MediaCubeMesh',
-      MediaPlaneMesh: 'MediaPlaneMesh'
+      MediaPlaneMesh: 'MediaPlaneMesh',
+      PortalKeyResourceUnit: 'PortalKeyResourceUnit'
     },
     Resource: {
       Xmp: 'XmpResourceUnitMesh',

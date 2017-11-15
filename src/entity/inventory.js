@@ -86,4 +86,13 @@ class InterestCapsule extends Entity {
 
 InventoryItems.InterestCapsule = InterestCapsule;
 
+class PortalKeyResourceUnit extends Entity {
+  constructor(engine){
+    super(engine);
+    this.addDrawable('PortalKey', new Inventory.PortalKeyResourceUnit());
+  }
+}
+
+InventoryItems.PortalKeyResourceUnit = PortalKeyResourceUnit;
+
 export default InventoryItems;
