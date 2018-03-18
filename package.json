@@ -1,7 +1,7 @@
 {
   "name": "ingress-model-viewer",
   "version": "0.22.2",
-  "main": "dist/ingress-model-viewer.min.js",
+  "main": "src/ingress-model-viewer.js",
   "description": "Rendering engine for Ingress game models",
   "repository": {
     "type": "git",
