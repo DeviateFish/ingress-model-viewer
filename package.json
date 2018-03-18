@@ -13,8 +13,8 @@
     "serve": "webpack-dev-server --open",
     "docs": "docma -c docma.config.json"
   },
-  "keywords": [],
-  "author": "Daniel Benton",
+  "keywords": ["ingress", "renderer", "model viewer"],
+  "author": "DeviateFish",
   "license": "MIT",
   "readmeFilename": "README.md",
   "dependencies": {
