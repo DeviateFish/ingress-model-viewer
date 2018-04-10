@@ -95,4 +95,18 @@ class PortalKeyResourceUnit extends Entity {
 
 InventoryItems.PortalKeyResourceUnit = PortalKeyResourceUnit;
 
+class KeyCapsule extends Entity {
+  constructor(engine) {
+    super(engine);
+    this.addDrawable('KeyCapsule', new Inventory.KeyCapsule());
+    this.addDrawable('KeyCapsuleXm', new Inventory.KeyCapsuleXm());
+    this.drawables.KeyCapsule.uniforms.u_color0 = vec4.clone(Constants.keyCapsuleColors.blue[0]);
+    this.drawables.KeyCapsule.uniforms.u_color1 = vec4.clone(Constants.keyCapsuleColors.blue[1]);
+    this.drawables.KeyCapsuleXm.uniforms.u_teamColor = vec4.clone(Constants.xmColors.coreGlowChaotic);
+    this.drawables.KeyCapsuleXm.uniforms.u_altColor = vec4.clone(Constants.xmColors.coreGlowChaoticAlt);
+  }
+}
+
+InventoryItems.KeyCapsule = KeyCapsule;
+
 export default InventoryItems;
