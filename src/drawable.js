@@ -5,25 +5,12 @@ import Mesh from './mesh';
 /**
  * Base class for all "drawable" things.
  *
- * Requires, at the very least, a program to run.
+ * Empty drawables can be used as
  */
 class Drawable {
 
-  /**
-   * Given a mesh internal name and a program internal name, construct
-   * a Drawable
-   * @param  {String} programName Program internal name
-   * @param  {String} meshName    Mesh internal Name
-   */
-  constructor(programName, meshName) {
-    this.programName = programName;
-    this.meshName = meshName;
-    this.mesh = null;
-    this.program = null;
-    this.uniforms = {};
-    this.drawfn = this._draw.bind(this);
+  constructor() {
     this.elapsed = 0;
-    this.ready = false;
     this.viewProject = mat4.create();
     this._translate = vec3.create();
     this._rotate = quat.create();
@@ -32,94 +19,18 @@ class Drawable {
     this._ray = vec3.create();
     this.local = mat4.create();
     this.world = mat4.create();
-    this.uniforms.u_modelViewProject = mat4.create();
+    this._modelViewProject = mat4.create();
     this.children = [];
-    this.drawMode = Mesh.MODE_TRIANGLES;
     this.animator = new Animator();
-  }
-
-  _loadAssets(manager) {
-    let promises = [];
-    if(this.meshName) {
-      promises.push(
-        manager.loadMesh(this.meshName).then((mesh) => {
-          this.mesh = mesh;
-          return mesh;
-        }).catch((err) => {
-          console.warn('missing mesh ' + this.meshName); // eslint-disable-line no-console
-          return Promise.reject(err);
-        })
-      );
-    }
-    if(this.programName) {
-      promises.push(
-        manager.loadProgram(this.programName).then((program) => {
-          this.program = program;
-          return program;
-        }).catch((err) => {
-          console.warn('missing program' + this.programName); // eslint-disable-line no-console
-          return Promise.reject(err);
-        })
-      );
-    }
-    return promises;
-  }
-
-  /**
-   * Initializer for the drawable
-   *
-   * Hooks up the drawable to all its gl-bound resources
-   *
-   * @param  {AssetManager} manager AssetManager containing the managed resources for this
-   *                                drawable.
-   * @return {Promise}              Resolves if the assets are successfully found and initialized,
-   *                                rejects (and generates a warning) otherwise.
-   */
-  init(manager) {
-    let promises = this._loadAssets(manager);
-    return Promise.all(promises).then(() => {
-      this.ready = true;
-      return this;
-    });
-  }
-
-  /**
-   * Sets the specific draw function for this drawable
-   *
-   * @chainable
-   * @param {Function} fn The draw function to use when drawable this object
-   * @return {this} Returns `this`
-   */
-  setDrawFn(fn) {
-    this.drawfn = fn;
-    return this;
   }
 
   /**
    * Executes a draw call for this object
    *
-   * Issues a warning if the drawable has not yet been initialized with `init`
    * @return {void}
    */
   draw() {
-    if(this.ready) {
-      if(this.program) {
-        this.program.use(this.drawfn);
-      }
-    }
-  }
-
-  /**
-   * Sets a uniform on the drawable
-   *
-   * @chainable
-   * @param {String} name  Name of the drawable to set
-   * @param {mixed} value  Value to set on the drawable.
-   * @returns {this} Returns `this`
-   */
-  setUniform(name, value) {
-    this.uniforms[name] = value;
-    return this;
+    // noop
   }
 
   /**
@@ -164,7 +75,7 @@ class Drawable {
     mat4.fromRotationTranslation(translateRotate, this._rotate, this._translate);
     mat4.scale(this.local, translateRotate, this._scale);
     mat4.multiply(this._model, this.world, this.local);
-    mat4.multiply(this.uniforms.u_modelViewProject, this.viewProject, this._model);
+    mat4.multiply(this._modelViewProject, this.viewProject, this._model);
     this.children.forEach((child) => {
       child.updateWorld(this._model);
     });
@@ -309,38 +220,6 @@ class Drawable {
   }
 
   /**
-   * Sets the drawing mode for this drawable.  Should be one of the modes
-   * found on Mesh
-   *
-   * @see  Mesh
-   * @param {enum} mode One of the Mesh.MODE_* constants
-   * @return {void}
-   */
-  setDrawMode(mode) {
-    let modes = [Mesh.MODE_TRIANGLES, Mesh.MODE_LINES];
-    if(modes.indexOf(mode) === -1) {
-      throw new Error('mode should be one of ' + modes.join(', '));
-    }
-    this.drawMode = mode;
-  }
-
-  /**
-   * Sets the draw mode to draw lines
-   * @return {void}
-   */
-  drawLines() {
-    this.setDrawMode(Mesh.MODE_LINES);
-  }
-
-  /**
-   * Sets the draw mode to draw triangles
-   * @return {void}
-   */
-  drawFaces() {
-    this.setDrawMode(Mesh.MODE_TRIANGLES);
-  }
-
-  /**
    * NYI
    * @return {void}
    */
@@ -359,17 +238,6 @@ class Drawable {
   addAnimation(animation) {
     this.animator.addAnimation(animation);
     return this;
-  }
-
-  _draw(locations, uniforms) {
-    for(var i in this.uniforms)
-    {
-      if(this.uniforms.hasOwnProperty(i) && (i in uniforms))
-      {
-        uniforms[i](this.uniforms[i]);
-      }
-    }
-    this.mesh.draw(locations, this.drawMode);
   }
 }
 

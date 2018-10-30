@@ -129,6 +129,7 @@ class Program extends GLBound {
     this.fragmentSource = fragment;
     this.attributes = {};
     this.uniforms = {};
+    this.init();
   }
 
   /**
@@ -185,14 +186,7 @@ class Program extends GLBound {
    */
   use(fn) {
     var gl = this._gl;
-    if(!this.program)
-    {
-      this.init();
-    }
-    else
-    {
-      gl.useProgram(this.program);
-    }
+    gl.useProgram(this.program);
     fn(this.attributes, this.uniforms);
     //gl.useProgram(0);
   }

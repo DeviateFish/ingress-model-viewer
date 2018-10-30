@@ -117,6 +117,10 @@ class Engine {
     return this;
   }
 
+  create(objectName) {
+
+  }
+
   /**
    * Adds one of each inventory item, and a portal, to the scene
    * @return {void}
