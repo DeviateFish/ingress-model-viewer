@@ -1,4 +1,3 @@
-import Promise from 'es6-promises';
 import GLBound from './gl-bound';
 import AssetLoader from './asset-loader';
 import FileMesh from './mesh/file';

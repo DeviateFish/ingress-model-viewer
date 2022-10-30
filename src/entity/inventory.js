@@ -1,12 +1,11 @@
 import Constants from '../constants';
-import Entity from '../entity';
 import Inventory from '../drawable/inventory';
 import { vec4 } from 'gl-matrix';
+import Drawable from '../drawable';
 
-// TODO: Deprecate in favor of a proper scene graph
-var InventoryItems = {};
+const InventoryItems = {};
 
-var simple = {
+const simple = {
   Xmp: 'L8',
   Ultrastrike: 'L8',
   ResShield: 'VERY_RARE',
@@ -17,96 +16,87 @@ var simple = {
   ForceAmp: 'RARE',
   Turret: 'RARE',
   Resonator: 'L8',
-  Capsule: 'RARE'
+  Capsule: 'RARE',
+  TransmuterAttack: 'RARE',
+  TransmuterDefense: 'RARE',
+  Mysterious: 'VERY_RARE',
+  UltraLinkAmp: 'EXTREMELY_RARE',
+  BoostedPowerCube: 'RARE',
+  BoostedPowerCubeK: 'RARE',
+  Fracker: 'VERY_RARE',
 };
 
-export function createItemEntity(name, color) {
-
-  class entitybase extends Entity {
-    constructor(engine) {
-      super(engine);
-      this.addDrawable(name, new Inventory[name]());
-      this.addDrawable(name + 'Xm', new Inventory[name + 'Xm']());
-      this.drawables[name].uniforms.u_color0 = vec4.clone(color);
+const inventoryItem = (shellClass, coreClass, init) => {
+  class itemEntity extends Drawable {
+    constructor() {
+      super(null, null);
+      const shell = new shellClass();
+      const core = new coreClass();
+      init(shell, core);
+      this.addChild(shell);
+      this.addChild(core);
     }
   }
 
-  return entitybase;
+  return itemEntity;
+};
+
+const simpleInventoryItem = (name, color) => {
+  return inventoryItem(
+    Inventory[name],
+    Inventory[name + 'Xm'],
+    (shell, _) => {
+      shell.uniforms.u_color0 = vec4.clone(color);
+    }
+  );
 }
 
-for(var i in simple) {
-  InventoryItems[i] = createItemEntity(i, Constants.qualityColors[simple[i]]);
+for(let i in simple) {
+  InventoryItems[i] = simpleInventoryItem(i, Constants.qualityColors[simple[i]]);
 }
 
-class FlipCardAda extends Entity {
-  constructor(engine) {
-    super(engine);
-    this.addDrawable('FlipCardAda', new Inventory.FlipCardAda());
-    this.addDrawable('FlipCardXm', new Inventory.FlipCardXm());
-    this.drawables.FlipCardXm.uniforms.u_teamColor = vec4.clone(Constants.teamColors.RESISTANCE);
-    this.drawables.FlipCardAda.uniforms.u_color1 = vec4.clone(Constants.teamColors.RESISTANCE);
-    this.drawables.FlipCardAda.uniforms.u_color0 = vec4.clone(Constants.qualityColors.VERY_RARE);
+const flipCard = (shellClass, teamColor) => {
+  return inventoryItem(
+    shellClass,
+    Inventory.FlipCardXm,
+    (shell, core) => {
+      shell.uniforms.u_color1 = vec4.clone(teamColor);
+      shell.uniforms.u_color0 = vec4.clone(Constants.qualityColors.VERY_RARE);
+      core.uniforms.u_teamColor = vec4.clone(teamColor);
+    }
+  );
+};
+
+InventoryItems.FlipCardAda = flipCard(Inventory.FlipCardAda, Constants.teamColors.RESISTANCE);
+InventoryItems.FlipCardJarvis = flipCard(Inventory.FlipCardJarvis, Constants.teamColors.ENLIGHTENED);
+
+const splitItem = (shellClass, coreClass) => {
+  return inventoryItem(
+    shellClass,
+    coreClass,
+    (shell, _) => {
+      shell.uniforms.u_color0 = vec4.clone(Constants.qualityColors.VERY_RARE);
+    }
+  );
+}
+
+InventoryItems.ExtraShield = splitItem(Inventory.ExtraShield, Inventory.ResShieldXm);
+InventoryItems.InterestCapsule = splitItem(Inventory.InterestCapsule, Inventory.CapsuleXm);
+
+InventoryItems.PortalKeyResourceUnit = Inventory.PortalKeyResourceUnit;
+
+InventoryItems.KeyCapsule = inventoryItem(
+  Inventory.KeyCapsule,
+  Inventory.KeyCapsuleXm,
+  (shell, core) => {
+    shell.uniforms.u_color0 = vec4.clone(Constants.keyCapsuleColors.blue[0]);
+    shell.uniforms.u_color1 = vec4.clone(Constants.keyCapsuleColors.blue[1]);
+
+    core.uniforms.u_teamColor = vec4.clone(Constants.xmColors.coreGlowChaotic);
+    core.uniforms.u_altColor = vec4.clone(Constants.xmColors.coreGlowChaoticAlt);
   }
-}
+);
 
-InventoryItems.FlipCardAda = FlipCardAda;
-
-class FlipCardJarvis extends Entity {
-  constructor(engine) {
-    super(engine);
-    this.addDrawable('FlipCardJarvis', new Inventory.FlipCardJarvis());
-    this.addDrawable('FlipCardXm', new Inventory.FlipCardXm());
-    this.drawables.FlipCardXm.uniforms.u_teamColor = vec4.clone(Constants.teamColors.ENLIGHTENED);
-    this.drawables.FlipCardJarvis.uniforms.u_color1 = vec4.clone(Constants.teamColors.ENLIGHTENED);
-    this.drawables.FlipCardJarvis.uniforms.u_color0 = vec4.clone(Constants.qualityColors.VERY_RARE);
-  }
-}
-
-InventoryItems.FlipCardJarvis = FlipCardJarvis;
-
-class ExtraShield extends Entity {
-  constructor(engine) {
-    super(engine);
-    this.addDrawable('ExtraShield', new Inventory.ExtraShield());
-    this.addDrawable('ResShieldXm', new Inventory.ResShieldXm());
-    this.drawables.ExtraShield.uniforms.u_color0 = vec4.clone(Constants.qualityColors.VERY_RARE);
-  }
-}
-
-InventoryItems.ExtraShield = ExtraShield;
-
-class InterestCapsule extends Entity {
-  constructor(engine) {
-    super(engine);
-    this.addDrawable('InterestCapsule', new Inventory.InterestCapsule());
-    this.addDrawable('CapsuleXm', new Inventory.CapsuleXm());
-    this.drawables.InterestCapsule.uniforms.u_color0 = vec4.clone(Constants.qualityColors.VERY_RARE);
-  }
-}
-
-InventoryItems.InterestCapsule = InterestCapsule;
-
-class PortalKeyResourceUnit extends Entity {
-  constructor(engine){
-    super(engine);
-    this.addDrawable('PortalKey', new Inventory.PortalKeyResourceUnit());
-  }
-}
-
-InventoryItems.PortalKeyResourceUnit = PortalKeyResourceUnit;
-
-class KeyCapsule extends Entity {
-  constructor(engine) {
-    super(engine);
-    this.addDrawable('KeyCapsule', new Inventory.KeyCapsule());
-    this.addDrawable('KeyCapsuleXm', new Inventory.KeyCapsuleXm());
-    this.drawables.KeyCapsule.uniforms.u_color0 = vec4.clone(Constants.keyCapsuleColors.blue[0]);
-    this.drawables.KeyCapsule.uniforms.u_color1 = vec4.clone(Constants.keyCapsuleColors.blue[1]);
-    this.drawables.KeyCapsuleXm.uniforms.u_teamColor = vec4.clone(Constants.xmColors.coreGlowChaotic);
-    this.drawables.KeyCapsuleXm.uniforms.u_altColor = vec4.clone(Constants.xmColors.coreGlowChaoticAlt);
-  }
-}
-
-InventoryItems.KeyCapsule = KeyCapsule;
+InventoryItems.MediaCube = Inventory.MediaCube;
 
 export default InventoryItems;

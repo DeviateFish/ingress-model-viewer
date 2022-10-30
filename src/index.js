@@ -19,8 +19,7 @@ import OrbitControls from './orbit-controls';
 import { resetGL, setParams, disco, generateArtifacts, makeArtifact } from './utils';
 import Ease from './animation/easing';
 import Animation from './animation/animation';
-import GLMatrix from 'gl-matrix';
-import Promise from 'es6-promises';
+import * as GLMatrix from 'gl-matrix';
 
 const IMV = {
   Constants,
@@ -62,4 +61,4 @@ const IMV = {
 
 export default IMV;
 
-module.exports = IMV; // eslint-disable-line no-undef
+//if (module) module.exports = IMV; // eslint-disable-line no-undef

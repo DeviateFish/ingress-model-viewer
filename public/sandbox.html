@@ -2,8 +2,7 @@
 <html>
 <head>
     <title>Ingress Model Sandbox</title>
-    <script src="../node_modules/gl-matrix/dist/gl-matrix.js"></script>
-    <script src="../dist/ingress-model-viewer.js"></script>
+    <script src="./ingress-model-viewer.js"></script>
     <script src="https://cdn.rawgit.com/eligrey/FileSaver.js/5733e40e5af936eb3f48554cf6a8a7075d71d18a/FileSaver.min.js"></script>
     <style>
       html, body {
@@ -22,6 +21,8 @@
   var canvas = document.getElementById('screen'), engine;
   canvas.width = document.body.offsetWidth;
   canvas.height = document.body.offsetHeight;
+  var vec3 = IMV.Utilities.GLMatrix.vec3;
+  var quat = IMV.Utilities.GLMatrix.quat;
 
   // window.addEventListener('resize', function() {
   //   engine.resize();

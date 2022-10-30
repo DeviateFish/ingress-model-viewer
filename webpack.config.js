@@ -1,35 +1,51 @@
 /* eslint-env node */
-var path = require('path');
+const path = require('path');
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 module.exports = {
-  entry: path.resolve(__dirname, 'src', 'ingress-model-viewer.js'),
+  mode: 'development',
+  entry: path.resolve(__dirname, 'src', 'index.js'),
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'ingress-model-viewer.js',
-    libraryTarget: 'var',
+    libraryTarget: 'umd',
+    libraryExport: 'default',
     library: "IMV"
   },
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.m?js$/,
         exclude: /(node_modules|bower_components)/,
-        loader: 'babel-loader',
-        query: {
-          presets: ['es2015']
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env']
+          }
         }
-      },
-      {
-        test: /\.js$/,
-        exclude: /(node_modules|bower_components)/,
-        loader: "eslint-loader",
-        options: {}
-      },
+      }
     ]
   },
+  plugins: [new ESLintPlugin()],
   devServer: {
-    contentBase: path.join(__dirname),
-    port: 8080,
-    publicPath: '/dist/'
+    port: 8000,
+    static: [
+      {}, // will this work?
+      {
+        directory: path.join(__dirname, 'assets'),
+        publicPath: '/assets',
+        serveIndex: false,
+      },
+      {
+        directory: path.join(__dirname, 'static'),
+        publicPath: '/static',
+        serveIndex: false,
+      },
+      {
+        directory: path.join(__dirname, 'manifest'),
+        publicPath: '/manifest',
+        serveIndex: false,
+      }
+    ]
   }
 };
