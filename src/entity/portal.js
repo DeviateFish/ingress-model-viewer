@@ -1,118 +1,195 @@
 import Constants from '../constants';
-import Entity from '../entity';
+import Drawable from '../drawable';
 import World from '../drawable/world';
-import ResonatorLink from '../drawable/resonator-link';
-import { vec3, vec4, mat4 } from 'gl-matrix';
+import ResonatorLink from '../drawable/resonator-link'
+import { vec3, vec4, quat } from 'gl-matrix';
+import Ease from '../animation/easing';
 
 
-// TODO: Deprecate in favor of a proper scene graph
-class PortalEntity extends Entity {
-  constructor(engine) {
-    super(engine);
-    this.addDrawable('Portal', new World.Portal());
-    // why 6? I dunno, ask Niantic
-    mat4.scale(this.drawables.Portal.local, this.drawables.Portal.local, vec3.fromValues(6, 6, 6));
-    this.setColor(vec4.clone(Constants.teamColors.LOKI));
+const { max, min } = Math;
+const clamp = (val, _min, _max) => max(_min, min(_max, val));
+const rotate = (t, drawable) => {
+  var q = quat.create();
+  quat.rotateY(q, q, t * Math.PI * 2);
+  drawable.setRotation(q);
+};
+
+const MARKER_RED = 'Red';
+const MARKER_GREEN = 'Green';
+const MARKER_PURPLE = 'Purple';
+const MARKER_TARGET = 'Target';
+const MARKERS = [
+  MARKER_RED,
+  MARKER_GREEN,
+  MARKER_PURPLE,
+  MARKER_TARGET,
+];
+
+const ORNAMENT_MEETUP = 'MeetupPoint';
+const ORNAMENT_FINISH = 'FinishPoint';
+const ORNAMENT_CLUSTER = 'Cluster';
+const ORNAMENT_VOLATILE = 'Volatile';
+const ORNAMENTS = [
+  ORNAMENT_MEETUP,
+  ORNAMENT_FINISH,
+  ORNAMENT_CLUSTER,
+  ORNAMENT_VOLATILE
+];
+
+
+class PortalEntity extends Drawable {
+  constructor() {
+    super(null, null);
+    this.childMap = {};
+    const portal = this._maybeCreateNamedChild('portal', () => {
+      const drawable = new World.Portal();
+      // I don't know why this is set to 6
+      drawable.setScale(vec3.fromValues(6.0, 6.0, 6.0));
+      return drawable;
+    });
+    this.addChild(portal);
+    this.setColor(vec4.clone(Constants.teamColors.NEUTRAL));
   }
 
   setColor(color) {
     this.color = vec4.clone(color);
-    this.drawables.Portal.uniforms.u_baseColor = this.color;
-    if(this.drawables.Shield) {
-      this.drawables.Shield.uniforms.u_color = this.color;
+    this.childMap.portal.uniforms.u_baseColor = this.color;
+    if(this.childMap.shield) {
+      this.childMap.shield.uniforms.u_color = this.color;
     }
-    if(this.drawables.ArtifactsGreenGlow) {
-      this.drawables.ArtifactsGreenGlow.u_baseColor = this.color;
+    if(this.childMap.artifactsGreenGlow) {
+      this.childMap.artifactsGreenGlow.u_baseColor = this.color;
     }
-    /*for(var i = 0; i < 8; i++) {
-      this._redrawLink(i);sd
-    }*/
   }
 
-  addResonator(level, slot, range, percent) {
-    if(percent === undefined) {
-      percent = 1.0;
-    }
-    if(+slot < 0 || +slot > 8) {
-      throw new Error('slot out of bounds for resonator');
-    }
-    if(!(level in Constants.qualityColors)) {
-      throw new Error('level must be one of ' + Object.keys(Constants.qualityColors).join(' '));
-    }
-    range = range === undefined ? 40 : range;
-    var resonatorName = 'Resonator' + (+slot);
-    var linkName = 'Link' + (+slot);
-    var theta = slot / 8 * 2 * Math.PI;
-    var resonator = new World.Resonator();
-    var x = range * Math.cos(theta);
-    var y = range * Math.sin(theta);
-    var link = new ResonatorLink(
+  addResonator(level, slot, range=40, percent=1.0) {
+    // clamp to 0..7 (int)
+    slot = clamp(parseInt(slot, 10), 0, 7);
+    // clamp to 1..8 (int)
+    level = clamp(parseInt(slot, 10), 1, 8);
+    // clamp to 0..40 (float)
+    range = clamp(parseFloat(range), 0, 40);
+    // clamp to 0..1
+    percent = clamp(parseFloat(percent), 0, 1.0);
+    const levelName = `L${level}`;
+    const linkName = `link${slot}`;
+    const resonatorName = `resonator${slot}`;
+
+    const link = this._maybeCreateNamedChild(linkName, () => new ResonatorLink(
       [0,0],
       slot,
       range,
       vec4.clone(this.color),
-      1.0
-    );
-    resonator.uniforms.u_color0 = vec4.clone(Constants.qualityColors[level]);
-    resonator.world = mat4.clone(this.drawables.Portal.local);
-    //link.local = mat4.clone(this.drawables.Portal.local);
-    mat4.translate(
-      resonator.world,
-      resonator.world,
-      vec3.fromValues(x / 6, 0, y / 6)
-    );
-    resonator.updateMatrix();
-    link.updateMatrix();
+      percent
+    ));
+
+    const resonator = this._maybeCreateNamedChild(resonatorName, () => new World.Resonator());
+    const theta = slot / 8 * 2 * Math.PI;
+    // (x,y) as points on a plane turns into (x, 0, y) in 3d
+    const x = range * Math.cos(theta);
+    const y = range * Math.sin(theta);
+    resonator.uniforms.u_color0 = vec4.clone(Constants.qualityColors[levelName]);
+    resonator.translate(vec3.fromValues(x, 0, y));
+
     // keep the portal sorted last (this is a terrible way of doing this.)
-    this.addDrawable(linkName, link);
-    this.addDrawable(resonatorName, resonator);
-    this.addDrawable('Portal', this.drawables.Portal);
+    this.addChild(link);
+    this.addChild(resonator);
   }
 
   removeResonator(slot) {
-    if(+slot < 0 || +slot > 8) {
-      throw new Error('slot out of bounds for resonator');
-    }
-    var name = 'Resonator' + (+slot);
-    var resonator = this.drawables[name] || null;
+    slot = clamp(parseInt(slot), 0, 7);
+    const resonator = this.childMap[`resonator${slot}`];
     if(resonator) {
       this.removeDrawable(name);
       this._removeResonatorLink(slot);
-      this.addDrawable('Portal', this.drawables.Portal);
+      this.addDrawable('Portal', this.childMap.Portal);
     }
   }
 
   addShield() {
-    if(!('Shield' in this.drawables)) {
-      this.addDrawable('Shield', new World.Shield());
-      // why 12? I don't know.
-      mat4.scale(this.drawables.Shield.local, this.drawables.Shield.local, vec3.fromValues(12, 12, 12));
-      this.drawables.Shield.updateMatrix();
-    }
-    this.drawables.Shield.uniforms.u_color = this.color;
-    this.applyTransform();
+    const shield = this._maybeCreateNamedChild('shield', () => {
+      const drawable = new World.Shield();
+      drawable.setScale(vec3.fromValues(2.0, 2.0, 2.0));
+      return drawable;
+    });
+    shield.uniforms.u_color = this.color;
+    this.addChild(shield);
   }
 
-  addArtifact(artifact, name) {
-    var rotate = function(delta/*, elapsed*/) {
-      mat4.rotateY(this.model, this.model, delta / 1000);
-      this.updateMatrix();
-      return true;
-    };
-    if(!(name in this.drawables)) {
-      this.addDrawable(name, artifact);
+  removeShield() {
+    if (this.childMap.shield) {
+      this.removeChild(this.childMap.shield);
     }
-    this.drawables[name].onUpdate = rotate;
-    this.applyTransform();
+  }
+
+  addArtifactDrawable(drawable, name) {
+    const artifact = this._maybeCreateNamedChild(name, () => {
+      const animation = new Animation(4000, rotate, Ease.linear, true);
+      drawable.addAnimation(animation);
+      return drawable;
+    });
+    this.addChild(artifact);
   }
 
   addGlowMarker(name, color) {
-    var n = 'Artifacts' + name + 'Glow';
-    if(!(n in this.drawables)) {
-      this.addDrawable(n, new World[n]());
+    if (!MARKERS.includes(name)) {
+      throw new Error(`name must be one of "${MARKERS.join(' ')}"`);
     }
-    this.drawables[n].uniforms.u_baseColor = vec4.clone(color);
+    const markerName = `Artifacts${name}Glow`;
+    const marker = this._maybeCreateNamedChild(markerName, () => new World[markerName]());
+    marker.uniforms.u_baseColor = vec4.clone(color);
+    this.addChild(marker);
+    this._resortPortal();
+  }
+
+  removeGlowMarker(name) {
+    if (!MARKERS.includes(name)) {
+      throw new Error(`name must be one of "${MARKERS.join(' ')}"`);
+    }
+    const marker = this.childMap[`Artifacts${name}Glow`];
+    if (marker) {
+      this.removeDrawable(marker);
+    }
+  }
+
+  addOrnament(name, color) {
+    if (!ORNAMENTS.includes(name)) {
+      throw new Error(`name must be one of "${ORNAMENTS.join(' ')}"`);
+    }
+    const ornamentName = `Ornament${name}`;
+    const ornament = this._maybeCreateNamedChild(ornamentName, () => {
+      const ornament = new World[ornamentName]();
+      ornament.setScale(vec3.fromValues(2.0, 2.0, 2.0));
+      return ornament;
+    });
+    ornament.uniforms.u_baseColor = vec4.clone(color);
+    this.addChild(ornament);
+    this._resortPortal();
+  }
+
+  removeOrnament(name) {
+    if (!ORNAMENTS.includes(name)) {
+      throw new Error(`name must be one of "${ORNAMENTS.join(' ')}"`);
+    }
+    const ornament = this.childMap[`Ornament${name}`];
+    if (ornament) {
+      this.removeDrawable(ornament);
+    }
+  }
+
+  _maybeCreateNamedChild(name, initFn) {
+    if (!Object.prototype.hasOwnProperty.call(this.childMap, name)) {
+      this.childMap[name] = initFn();
+    }
+    return this.childMap[name];
+  }
+
+  _resortPortal() {
+    this.removeChild(this.childMap.portal);
+    this.addChild(this.childMap.portal);
   }
 }
+PortalEntity.MARKERS = MARKERS;
+PortalEntity.ORNAMENTS = ORNAMENTS;
 
 export default PortalEntity;

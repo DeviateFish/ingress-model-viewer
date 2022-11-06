@@ -28,10 +28,10 @@ for(var i = 0; i < _len; i++)
   k[i] = clampedSin(1.0 - 2.0 * Math.abs(f - 0.5));
 }
 
-var baseColor = vec4.fromValues(0.78, 0.31, 0.31, 1.0);
-var resonatorMidOffset = 0;
-var portalBaseOffset = 0;
-var up = vec3.fromValues(0, 1, 0);
+const BASE_COLOR = vec4.fromValues(0.78, 0.31, 0.31, 1.0);
+const RESONATOR_MID_OFFSET = 0;
+const PORTAL_BASE_OFFSET = 0;
+const UP = vec3.fromValues(0, 1, 0);
 
 function fillChunk(buf, index, x, y, z, u, v, normal, f6, color)
 {
@@ -61,11 +61,11 @@ function _generateLinkAttributes(portal, resonator, color, resonatorPercent) {
     f5 = 0.9 + 0.1 * resonatorPercent,
     f6 = 0.65 + 0.35 * resonatorPercent,
     f8 = 0.1 + 0.3 * resonatorPercent;
-  var cl = vec4.lerp(vec4.create(), baseColor, color, 0.1 + resonatorPercent * 0.85);
+  var cl = vec4.lerp(vec4.create(), BASE_COLOR, color, 0.1 + resonatorPercent * 0.85);
   cl[3] = 0.75 + 0.25 * resonatorPercent * cl[3];
   var vec = vec3.fromValues(resonator[0], 0, resonator[1]);
   vec3.subtract(vec, vec, vec3.fromValues(portal[0], 0, portal[1]));
-  var right = vec3.cross(vec3.create(), vec, up);
+  var right = vec3.cross(vec3.create(), vec, UP);
   vec3.normalize(right, right);
   var step = _len * 2;
   var f10 = 5.0 * ((portal[0] + portal[1]) - Math.floor(portal[0] + portal[1]));
@@ -74,11 +74,11 @@ function _generateLinkAttributes(portal, resonator, color, resonatorPercent) {
     var f11 = j[i],
       f12 = portal[0] + f11 * vec[0],
       f13 = portal[1] + f11 * vec[2],
-      f14 = portalBaseOffset + f11 * (resonatorMidOffset - portalBaseOffset) + f5 * k[i],
+      f14 = PORTAL_BASE_OFFSET + f11 * (RESONATOR_MID_OFFSET - PORTAL_BASE_OFFSET) + f5 * k[i],
       f15 = f6 * l[i],
       f16 = f11 * f4;
-    fillChunk(values, (i * 2) + 0, f12 + f15 * right[0], f14, f13 + f15 * right[2], 0.0, f16 + f10, up, f8, cl);
-    fillChunk(values, (i * 2) + 1, f12 - f15 * right[0], f14, f13 - f15 * right[2], 1.0, f16 + f10, up, f8, cl);
+    fillChunk(values, (i * 2) + 0, f12 + f15 * right[0], f14, f13 + f15 * right[2], 0.0, f16 + f10, UP, f8, cl);
+    fillChunk(values, (i * 2) + 1, f12 - f15 * right[0], f14, f13 - f15 * right[2], 1.0, f16 + f10, UP, f8, cl);
     fillChunk(values, step + (i * 2) + 0, f12, f14 + f15, f13, 0.0, f16 + f10, right, f8, cl);
     fillChunk(values, step + (i * 2) + 1, f12, f14 - f15, f13, 1.0, f16 + f10, right, f8, cl);
   }

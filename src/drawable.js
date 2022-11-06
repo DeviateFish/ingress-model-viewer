@@ -153,6 +153,22 @@ class Drawable {
   }
 
   /**
+   * Remove a known child of this drawable.  If the provided drawable is not
+   * a child of this drawable, nothing happens.
+   * @param {Drawable} drawable The child to remove
+   * @return {void}
+   */
+  removeChild(drawable) {
+    if (!(drawable instanceof Drawable)) {
+      throw new Error('Child drawable should be an instance of Drawable');
+    }
+    const idx = this.children.indexOf(drawable);
+    if (idx > -1) {
+      this.children.splice(idx, 1);
+    }
+  }
+
+  /**
    * Update the internal u_modelViewProject uniform
    * by applying world and local transforms to the model
    * matrix.  Then, propagate the new local transform to all the children
