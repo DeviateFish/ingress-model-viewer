@@ -229,8 +229,7 @@ class Engine {
 
   /**
    * Preloads all assets
-   * @param  {Function} callback Callback to invoke on completion
-   * @return {void}
+   * @return {Promise<void>}
    */
   preload() {
     return this.assetManager.loadAll();

@@ -1,5 +1,4 @@
 import libtga from 'libtga';
-import Promise from 'es6-promises';
 
 /**
  * An AssetLoader manages loading one or more assets.  It handles debouncing of

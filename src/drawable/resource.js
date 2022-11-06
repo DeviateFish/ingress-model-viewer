@@ -22,7 +22,7 @@ function createResource(name) {
 }
 
 for(var i in meshes) {
-  Resource[name] = createResource(i);
+  Resource[i] = createResource(i);
 }
 
 export default Resource;

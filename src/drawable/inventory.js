@@ -72,9 +72,6 @@ function createMedia(name) {
 
 for(var i in meshes) {
   if(/^Media/.test(i)) {
-    if(i === 'MediaPlane') {
-      continue;
-    }
     Inventory[i] = createMedia(i);
   }
   else {

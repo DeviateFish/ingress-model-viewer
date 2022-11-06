@@ -50,7 +50,7 @@ class Camera {
    * @return {this} Returns `this`
    */
   translate(vec) {
-    vec3.translate(this.position, this.position, vec);
+    vec3.add(this.position, this.position, vec);
     return this._updateView();
   }
 
